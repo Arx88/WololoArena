@@ -19,7 +19,7 @@ Focus on the core drafting logic and synchronization.
 - [x] **Task: Verify Standard Draft Flow (Captains Mode)** 103c1cc
   - [ ] Write Tests: Create tests for ban/pick sequences and state transitions.
   - [ ] Implement Feature: Fix any identified bugs in the `draft-engine.ts` or `draft-interface.tsx`.
-- [ ] **Task: Test Timer and Timeout Logic**
+- [x] **Task: Test Timer and Timeout Logic** d9904a2
   - [ ] Write Tests: Simulate timeouts and late picks.
   - [ ] Implement Feature: Ensure the engine handles timeouts by auto-picking/banning correctly.
 - [ ] **Task: Verify Real-time Sync between Players**
