@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calculateDraftState, processSelection } from '@/lib/draft-engine'
+import { calculateDraftState, processSelection, handleTimeout } from '@/lib/draft-engine'
 import { Draft, Lobby, Preset, DraftStep } from '@/lib/types/draft'
 
 // Mock Data
@@ -145,5 +145,33 @@ describe('Draft Engine - Captains Mode', () => {
     // Let's assume processSelection SHOULD validate.
     const invalidUpdate = processSelection(draft, mockLobby, mockPreset, 'Aztecs')
     expect(invalidUpdate).toBeNull() // Or expect it to throw
+  })
+
+  it('should handle timeout by picking a random available option', () => {
+    // Setup: Host needs to Ban. Aztecs is pool.
+    // We need to provide a pool in the lobby settings for this to work effectively?
+    // In our mockLobby, civ_pool is 'all'.
+    // Real implementation needs to know what "all" means. 
+    // Ideally, we pass the "availableOptions" to handleTimeout or it derives it.
+    // For this test, let's assume handleTimeout relies on lobby settings.
+    
+    // We'll mock the civ pool in lobby settings for control
+    const lobbyWithPool = { 
+        ...mockLobby, 
+        settings: { 
+            ...mockLobby.settings, 
+            civ_pool: 'custom' as any,
+            custom_civ_pool: ['Aztecs', 'Mayans', 'Franks'] 
+        } 
+    }
+
+    const draft = { ...initialDraft, lobby_id: lobbyWithPool.id }
+    
+    const update = handleTimeout(draft, lobbyWithPool, mockPreset)
+    
+    expect(update).not.toBeNull()
+    // It should have picked one of the 3
+    expect(['Aztecs', 'Mayans', 'Franks']).toContain(update?.host_civ_bans?.[0])
+    expect(update?.current_step_index).toBe(1)
   })
 })

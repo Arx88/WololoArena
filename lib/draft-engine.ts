@@ -153,3 +153,49 @@ export function processSelection(
 
   return update;
 }
+
+/**
+ * Handles a timeout by randomly selecting an available option.
+ */
+export function handleTimeout(
+  draft: Draft,
+  lobby: Lobby,
+  preset: Preset
+): Partial<Draft> | null {
+  const currentStep = getNextStep(preset, draft.current_step_index);
+  if (!currentStep) return null;
+
+  let pool: string[] = [];
+
+  if (currentStep.target === 'civ') {
+      if (lobby.settings.civ_pool === 'custom' && lobby.settings.custom_civ_pool) {
+          pool = lobby.settings.custom_civ_pool;
+      } else {
+          // If 'all' or others, we'd need the full list. 
+          // For now, let's fallback to empty or handle gracefully.
+          return null; 
+      }
+  } else if (currentStep.target === 'map') {
+      pool = lobby.settings.map_pool;
+  }
+
+  // Filter available
+  const allSelected = [
+    ...(draft.host_civ_bans || []),
+    ...(draft.guest_civ_bans || []),
+    ...(draft.host_civ_picks || []),
+    ...(draft.guest_civ_picks || []),
+    ...(draft.host_map_bans || []),
+    ...(draft.guest_map_bans || []),
+    ...(draft.host_map_picks || []),
+    ...(draft.guest_map_picks || []),
+  ];
+
+  const available = pool.filter(id => !allSelected.includes(id));
+
+  if (available.length === 0) return null;
+
+  const randomSelection = available[Math.floor(Math.random() * available.length)];
+
+  return processSelection(draft, lobby, preset, randomSelection);
+}
