@@ -2,16 +2,16 @@
 
 This plan outlines the steps to audit and stabilize the existing Wololo Arena features.
 
-## Phase 1: Audit and Test Infrastructure
+## Phase 1: Audit and Test Infrastructure [checkpoint: bc0b106]
 Focus on establishing the testing environment and identifying existing gaps.
 
 - [x] **Task: Audit Existing Test Suite**
   - [x] Write Tests: N/A (Meta-task)
   - [x] Implement Feature: Scan the codebase for existing tests and identify areas with low coverage. **Findings: No testing framework or scripts (Jest/Vitest/Playwright) are currently installed in package.json.**
 - [x] **Task: Setup/Stabilize Testing Framework** 3650289
-  - [ ] Write Tests: N/A (Meta-task)
-  - [ ] Implement Feature: Ensure Vitest/Jest and Playwright are correctly configured and can run in CI mode.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1: Audit and Test Infrastructure' (Protocol in workflow.md)**
+  - [x] Write Tests: N/A (Meta-task)
+  - [x] Implement Feature: Ensure Vitest/Jest and Playwright are correctly configured and can run in CI mode.
+- [x] **Task: Conductor - User Manual Verification 'Phase 1: Audit and Test Infrastructure' (Protocol in workflow.md)**
 
 ## Phase 2: Drafting Engine Stabilization
 Focus on the core drafting logic and synchronization.
