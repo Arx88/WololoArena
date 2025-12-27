@@ -16,7 +16,7 @@ Focus on establishing the testing environment and identifying existing gaps.
 ## Phase 2: Drafting Engine Stabilization
 Focus on the core drafting logic and synchronization.
 
-- [ ] **Task: Verify Standard Draft Flow (Captains Mode)**
+- [x] **Task: Verify Standard Draft Flow (Captains Mode)** 103c1cc
   - [ ] Write Tests: Create tests for ban/pick sequences and state transitions.
   - [ ] Implement Feature: Fix any identified bugs in the `draft-engine.ts` or `draft-interface.tsx`.
 - [ ] **Task: Test Timer and Timeout Logic**
