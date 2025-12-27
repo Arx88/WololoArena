@@ -8,7 +8,7 @@ Focus on establishing the testing environment and identifying existing gaps.
 - [x] **Task: Audit Existing Test Suite**
   - [x] Write Tests: N/A (Meta-task)
   - [x] Implement Feature: Scan the codebase for existing tests and identify areas with low coverage. **Findings: No testing framework or scripts (Jest/Vitest/Playwright) are currently installed in package.json.**
-- [ ] **Task: Setup/Stabilize Testing Framework**
+- [x] **Task: Setup/Stabilize Testing Framework** 3650289
   - [ ] Write Tests: N/A (Meta-task)
   - [ ] Implement Feature: Ensure Vitest/Jest and Playwright are correctly configured and can run in CI mode.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 1: Audit and Test Infrastructure' (Protocol in workflow.md)**
