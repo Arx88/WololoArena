@@ -42,11 +42,17 @@ Ensure the civilization data is accurate and correctly presented.
 Refine the user-facing parts of the application.
 
 - [x] **Task: Audit Profile Persistence and Match History** a367b60
-  - [ ] Write Tests: Test Supabase Auth and Profile table interactions.
-  - [ ] Implement Feature: Fix issues with profile updates or history tracking.
+  - [x] Write Tests: Test Supabase Auth and Profile table interactions.
+  - [x] Implement Feature: Fix issues with profile updates or history tracking.
 - [x] **Task: Responsive UI Audit (Mobile focus)** ae5cbf6
-  - [ ] Write Tests: Visual regression or manual check tasks for mobile views.
-  - [ ] Implement Feature: Adjust CSS/Tailwind classes for 44px touch targets and readable text on small screens.
+  - [x] Write Tests: Visual regression or manual check tasks for mobile views.
+  - [x] Implement Feature: Adjust CSS/Tailwind classes for 44px touch targets and readable text on small screens.
+- [x] **Task: Fix Draft Assist suggestions logic** 9824531
+  - [x] Write Tests: Added tests for filtering own/opponent picks and prioritizing counters.
+  - [x] Implement Feature: Refined getDraftSuggestions to exclude unavailable civs and fallback to general stats.
+- [x] **Task: Implement Coin Flip** f3b246e
+  - [x] Write Tests: Added test for Coin Flip rendering and flow.
+  - [x] Implement Feature: Added Coin Flip phase, toggle in lobby settings, and UI component integration.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 4: User Experience and Profiles' (Protocol in workflow.md)**
 
 ## Phase 5: Final Polish and Internationalization
