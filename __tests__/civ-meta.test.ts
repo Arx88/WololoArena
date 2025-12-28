@@ -19,6 +19,13 @@ describe('Civ Meta Logic', () => {
     // Check if Hindustanis is suggested (Franks weak vs Hindustanis)
     expect(civs).toContain('hindustanis')
     
+    // Verify prioritization: Counters (100) > Meta S-Tier (90)
+    // Gurjaras or Hindustanis should be the top suggestion
+    const topSuggestion = suggestions[0]
+    expect(['aztecs', 'berbers', 'byzantines', 'gurjaras', 'hindustanis', 'saracens']).toContain(topSuggestion.civId)
+    expect(topSuggestion.type).toBe('counter')
+    expect(topSuggestion.score).toBe(100)
+    
     // Verify type
     const gurjaraSuggestion = suggestions.find(s => s.civId === 'gurjaras')
     expect(gurjaraSuggestion?.type).toBe('counter')

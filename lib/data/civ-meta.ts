@@ -506,7 +506,7 @@ export function getDraftSuggestions(
             (matchup.advantage === "strong" || matchup.advantage === "slight") &&
             !unavailableCivs.includes(matchup.civId)
           ) {
-            const counterScore = matchup.advantage === "strong" ? 85 : 70
+            const counterScore = matchup.advantage === "strong" ? 100 : 90
             suggestions.push({
               civId: matchup.civId,
               reason: `Counters ${oppCiv} (${matchup.winRate}% win rate)`,
@@ -519,7 +519,7 @@ export function getDraftSuggestions(
             (matchup.advantage === "weak" || matchup.advantage === "slight_disadvantage") &&
             !unavailableCivs.includes(matchup.opponentCivId)
           ) {
-            const counterScore = matchup.advantage === "weak" ? 85 : 70
+            const counterScore = matchup.advantage === "weak" ? 100 : 90
             suggestions.push({
               civId: matchup.opponentCivId,
               reason: `Counters ${oppCiv} (${100 - matchup.winRate}% win rate)`,
