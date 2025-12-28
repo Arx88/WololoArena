@@ -30,7 +30,7 @@ Focus on the core drafting logic and synchronization.
 ## Phase 3: Content and Database Verification
 Ensure the civilization data is accurate and correctly presented.
 
-- [ ] **Task: Validate Civilization Stats against civisINFO.md**
+- [x] **Task: Validate Civilization Stats against civisINFO.md** 26a1ab7
   - [ ] Write Tests: Scripts to compare database content with the source document.
   - [ ] Implement Feature: Update any outdated or incorrect stats in the database/JSON files.
 - [ ] **Task: Verify Dynamic Counter Charts**
