@@ -38,7 +38,7 @@ Ensure the civilization data is accurate and correctly presented.
   - [x] Implement Feature: Refine the counter display in `civilization-grid.tsx` or similar components.
 - [x] **Task: Conductor - User Manual Verification 'Phase 3: Content and Database Verification' (Protocol in workflow.md)**
 
-## Phase 4: User Experience and Profiles
+## Phase 4: User Experience and Profiles [checkpoint: 7a44e80]
 Refine the user-facing parts of the application.
 
 - [x] **Task: Audit Profile Persistence and Match History** a367b60
@@ -53,11 +53,14 @@ Refine the user-facing parts of the application.
 - [x] **Task: Implement Coin Flip** f3b246e
   - [x] Write Tests: Added test for Coin Flip rendering and flow.
   - [x] Implement Feature: Added Coin Flip phase, toggle in lobby settings, and UI component integration.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 4: User Experience and Profiles' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 4: User Experience and Profiles' (Protocol in workflow.md)**
 
 ## Phase 5: Final Polish and Internationalization
 Ensure the app is ready for a professional release.
 
+- [ ] **Task: Full Site E2E Verification**
+  - [ ] Write Tests: Create Playwright tests covering all major pages (Home, Tournaments, Team Builder, Tutorial, Profile).
+  - [ ] Implement Feature: Fix any navigation or functional bugs discovered during the E2E suite creation.
 - [ ] **Task: Full Localization Audit**
   - [ ] Write Tests: Verify all keys in `lib/i18n` have translations and are used in the UI.
   - [ ] Implement Feature: Fill in missing translations and fix any i18n bugs.
