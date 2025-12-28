@@ -34,4 +34,13 @@ describe('Civ Meta Logic', () => {
     const frankSuggestion = suggestions.find(s => s.civId === 'franks')
     expect(frankSuggestion?.type).toBe('meta')
   })
+
+  it('should fallback to general stats when map is unknown', () => {
+    const suggestions = getDraftSuggestions(null, [], [], [], 'pick')
+    
+    // Should suggest generally strong civs
+    expect(suggestions.length).toBeGreaterThan(0)
+    expect(suggestions[0].type).toBe('meta')
+    expect(suggestions[0].reason).toContain('Generally strong')
+  })
 })

@@ -410,6 +410,34 @@ export function getCivsForMap(mapId: string): CivMapMeta[] {
   })
 }
 
+import { CIVILIZATIONS } from "./civilizations"
+
+export interface CivMapMeta {
+  civId: string
+  mapId: string
+  tier: "S" | "A" | "B" | "C" | "D"
+  winRate: number // Approximate win rate on this map
+  pickRate: number // How often picked on this map
+  banRate: number // How often banned on this map
+  notes?: string
+}
+
+// ... existing interfaces ...
+
+// Helper to get general stats
+function getGeneralCivStats(civId: string): { tier: string, winRate: number } | null {
+  const entries = CIV_MAP_META.filter(m => m.civId === civId)
+  if (entries.length === 0) return null
+  
+  const avgWinRate = entries.reduce((sum, m) => sum + m.winRate, 0) / entries.length
+  let tier = 'C'
+  if (avgWinRate >= 53) tier = 'S'
+  else if (avgWinRate >= 51) tier = 'A'
+  else if (avgWinRate >= 49) tier = 'B'
+  
+  return { tier, winRate: Math.round(avgWinRate) }
+}
+
 // Generate suggestions based on current draft state
 export function getDraftSuggestions(
   mapId: string | null,
@@ -423,37 +451,54 @@ export function getDraftSuggestions(
 
   const unavailableCivs = [...bannedCivs, ...opponentCivs, ...ownCivs]
 
-  if (phase === "ban") {
-    // Suggest banning top tier civs for the map
-    if (mapId) {
-      const topCivs = getCivsForMap(mapId).filter((m) => m.tier === "S" || m.tier === "A")
+  // META SUGGESTIONS
+  let metaAdded = false
+  if (mapId) {
+    const mapCivs = getCivsForMap(mapId).filter((m) => !unavailableCivs.includes(m.civId))
+    if (mapCivs.length > 0) {
+      metaAdded = true
+      // Sort by tier for this map
+      const topCivs = phase === "ban" 
+        ? mapCivs.filter(m => m.tier === "S" || m.tier === "A") 
+        : mapCivs
+
       topCivs.forEach((meta) => {
-        if (!bannedCivs.includes(meta.civId)) {
-          suggestions.push({
-            civId: meta.civId,
-            reason: `${meta.tier}-tier on this map (${meta.winRate}% win rate)`,
-            score: meta.tier === "S" ? 95 : 85,
-            type: "meta",
-          })
-        }
-      })
-    }
-  } else {
-    // Suggest picks based on map and counter-picks
-    if (mapId) {
-      const goodCivs = getCivsForMap(mapId).filter((m) => !unavailableCivs.includes(m.civId))
-      goodCivs.forEach((meta) => {
-        const tierScore = { S: 90, A: 75, B: 60, C: 45, D: 30 }[meta.tier] || 50
+        const tierScore = { S: 95, A: 85, B: 60, C: 45, D: 30 }[meta.tier] || 50
+        // For bans, we prioritize high tier more. For picks, we verify counters too.
         suggestions.push({
           civId: meta.civId,
-          reason: `${meta.tier}-tier pick for this map`,
-          score: tierScore,
+          reason: `${meta.tier}-tier on this map (${meta.winRate}% win rate)`,
+          score: phase === "ban" ? tierScore : (tierScore - 5), // Slightly lower priority than direct counters for picking
           type: "meta",
         })
       })
     }
+  }
 
-    // Add counter-pick suggestions
+  // Fallback to General Stats if no map specific data found or map is null
+  if (!metaAdded) {
+     CIVILIZATIONS.forEach(civ => {
+        if (unavailableCivs.includes(civ.id)) return
+        
+        const stats = getGeneralCivStats(civ.id)
+        if (stats && (stats.tier === 'S' || stats.tier === 'A' || (phase === 'pick' && stats.tier === 'B'))) {
+            const tierScore = { S: 90, A: 80, B: 60, C: 45, D: 30 }[stats.tier as any] || 50
+            suggestions.push({
+                civId: civ.id,
+                reason: `Generally strong (${stats.tier}-tier, ~${stats.winRate}% WR)`,
+                score: phase === "ban" ? tierScore : (tierScore - 5),
+                type: "meta"
+            })
+        }
+     })
+  }
+
+  // COUNTER SUGGESTIONS (Only for Picks or if we want to ban counters to our potential picks?)
+  // Currently logic suggests banning counters to opponent? No, current logic suggests picks based on counter.
+  // "phase" argument controls if we are banning or picking.
+  
+  if (phase === "pick") {
+    // Add counter-pick suggestions against opponent
     opponentCivs.forEach((oppCiv) => {
       CIV_MATCHUPS.forEach((matchup) => {
         if (matchup.opponentCivId === oppCiv) {
@@ -485,6 +530,11 @@ export function getDraftSuggestions(
         }
       })
     })
+  } else if (phase === "ban") {
+      // Suggest banning civs that counter ME? 
+      // Or suggest banning civs that are strong on map (already done in meta).
+      // Or suggest banning civs that are strong against my potential picks? (Complex)
+      // For now, simple ban suggestions (Meta) are enough.
   }
 
   // Remove duplicates and sort by score
