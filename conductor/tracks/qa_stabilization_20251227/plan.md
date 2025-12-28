@@ -22,7 +22,7 @@ Focus on the core drafting logic and synchronization.
 - [x] **Task: Test Timer and Timeout Logic** d9904a2
   - [ ] Write Tests: Simulate timeouts and late picks.
   - [ ] Implement Feature: Ensure the engine handles timeouts by auto-picking/banning correctly.
-- [ ] **Task: Verify Real-time Sync between Players**
+- [x] **Task: Verify Real-time Sync between Players** 0596c90
   - [ ] Write Tests: Simulate multiple clients and verify state consistency via Supabase Realtime.
   - [ ] Implement Feature: Optimize channel subscriptions and state reconciliation.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2: Drafting Engine Stabilization' (Protocol in workflow.md)**
