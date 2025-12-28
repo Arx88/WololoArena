@@ -27,16 +27,16 @@ Focus on the core drafting logic and synchronization.
   - [x] Implement Feature: Optimize channel subscriptions and state reconciliation.
 - [x] **Task: Conductor - User Manual Verification 'Phase 2: Drafting Engine Stabilization' (Protocol in workflow.md)**
 
-## Phase 3: Content and Database Verification
+## Phase 3: Content and Database Verification [checkpoint: 0bc3372]
 Ensure the civilization data is accurate and correctly presented.
 
-- [x] **Task: Validate Civilization Stats against civisINFO.md** 26a1ab7
-  - [ ] Write Tests: Scripts to compare database content with the source document.
-  - [ ] Implement Feature: Update any outdated or incorrect stats in the database/JSON files.
-- [x] **Task: Verify Dynamic Counter Charts** 223bd78
-  - [ ] Write Tests: Test the logic that generates counters based on stats.
-  - [ ] Implement Feature: Refine the counter display in `civilization-grid.tsx` or similar components.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3: Content and Database Verification' (Protocol in workflow.md)**
+- [x] **Task: Validate Civilization Stats against civisINFO.md** 976521d
+  - [x] Write Tests: Scripts to compare database content with the source document.
+  - [x] Implement Feature: Update any outdated or incorrect stats in the database/JSON files.
+- [x] **Task: Verify Dynamic Counter Charts** b725bc4
+  - [x] Write Tests: Test the logic that generates counters based on stats.
+  - [x] Implement Feature: Refine the counter display in `civilization-grid.tsx` or similar components.
+- [x] **Task: Conductor - User Manual Verification 'Phase 3: Content and Database Verification' (Protocol in workflow.md)**
 
 ## Phase 4: User Experience and Profiles
 Refine the user-facing parts of the application.
