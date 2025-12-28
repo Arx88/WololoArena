@@ -54,16 +54,18 @@ export function DraftInterface({
   const settings = lobby.settings as LobbySettings
   const isDemo = isDemoMode()
 
+  console.log("DEBUG: DraftInterface Render. Phase:", draft.current_phase, "CoinFlipEnabled:", settings.enable_coin_flip, "Winner:", draft.coin_flip_winner);
+
   const mapMode: MapSelectionMode = settings.map_mode || settings.map_settings?.mode || "ban_until_one"
   const mapPool = useMemo(() => {
     return settings.map_pool?.length > 0 ? MAPS.filter((m) => settings.map_pool.includes(m.id)) : MAPS
   }, [settings.map_pool]);
 
   const handleCoinFlipComplete = useCallback(async (winnerId: string) => {
-    // Calculate next phase assuming coin flip is done
-    const tempDraft = { ...draft, coin_flip_winner: winnerId }
+    if (!isHost && !isDemo) return
+
     const { nextPhase, nextTurn, newTurnNumber } = calculateNextTurn(
-      tempDraft,
+      { ...draft, coin_flip_winner: winnerId },
       settings,
       lobby,
       mapPool.length,
@@ -71,18 +73,17 @@ export function DraftInterface({
     )
 
     const updateData = {
-      coin_flip_winner: winnerId,
       current_phase: nextPhase,
       current_turn: nextTurn,
       turn_number: newTurnNumber,
     }
 
     if (isDemo) {
-        setDraft(prev => ({ ...prev, ...updateData }))
+      setDraft((prev) => ({ ...prev, ...updateData }))
     } else {
-        await supabase.from("drafts").update(updateData).eq("id", draft.id)
+      await supabase.from("drafts").update(updateData).eq("id", draft.id)
     }
-  }, [draft, settings, lobby, mapPool.length, mapMode, isDemo, supabase])
+  }, [draft, settings, lobby, mapPool.length, mapMode, isDemo, supabase, isHost])
 
   const saveDemoMatchHistory = useCallback((completedDraft: Draft) => {
     // Construct MatchHistory object
@@ -281,18 +282,9 @@ export function DraftInterface({
         const totalMapBans = hostMapBans + guestMapBans
         const mapsRemaining = mapPool.length - totalMapBans
 
-        if (mapMode === "random_with_bans") {
-          return {
-            title: "Ban de Mapa",
-            subtitle: `Ban ${totalMapBans + 1} de ${totalMapBansNeeded} (luego sorteo)`,
-            action: "ban",
-            type: "map",
-          }
-        }
-
         return {
-          title: "Ban de Mapa",
-          subtitle: `Ban ${totalMapBans + 1} de ${totalMapBansNeeded} (quedan ${mapsRemaining} mapas)`,
+          title: t("mapBanning"),
+          subtitle: t("banCount", { current: totalMapBans + 1, total: totalMapBansNeeded }),
           action: "ban",
           type: "map",
         }
@@ -302,24 +294,24 @@ export function DraftInterface({
         const guestPicks = currentDraft.guest_map_picks?.length || 0
         const totalPicks = hostPicks + guestPicks
         return {
-          title: "Elige tu Home Map",
-          subtitle: `Pick ${totalPicks + 1} de 2`,
+          title: t("mapPicking"),
+          subtitle: t("pickCount", { current: totalPicks + 1, total: 2 }),
           action: "pick",
           type: "map",
         }
       }
       if (phase === "map_random") {
         return {
-          title: "Sorteo de Mapa",
-          subtitle: "Seleccionando mapa aleatorio...",
+          title: t("mapRolling"),
+          subtitle: t("loading"),
           action: "roll",
           type: "map_random",
         }
       }
       if (phase === "civ_ban") {
         return {
-          title: "Ban de Civilización",
-          subtitle: `Ban ${Math.min(totalBansCompleted + 1, totalCivBansNeeded)} de ${totalCivBansNeeded}`,
+          title: t("civBanning"),
+          subtitle: t("banCount", { current: Math.min(totalBansCompleted + 1, totalCivBansNeeded), total: totalCivBansNeeded }),
           action: "ban",
           type: "civ",
         }
@@ -329,31 +321,31 @@ export function DraftInterface({
         const guestPicks = currentDraft.guest_civ_picks?.length || 0
         const totalPicks = hostPicks + guestPicks
         return {
-          title: "Pick de Civilización",
-          subtitle: `Pick ${totalPicks + 1} de 2`,
+          title: t("civPicking"),
+          subtitle: t("pickCount", { current: totalPicks + 1, total: 2 }),
           action: "pick",
           type: "civ",
         }
       }
       if (phase === "mode_roll") {
         return {
-          title: "Modo de Juego",
-          subtitle: "Seleccionando modo aleatorio...",
+          title: t("gameModeRoulette"),
+          subtitle: t("loading"),
           action: "roll",
           type: "mode",
         }
       }
       if (phase === "coin_flip") {
         return {
-          title: "Lanzamiento de Moneda",
-          subtitle: "Decidiendo orden...",
+          title: t("pickPriority"),
+          subtitle: t("determiningOrder"),
           action: "flip",
           type: "coin_flip",
         }
       }
       return {
-        title: "Draft Completado",
-        subtitle: "¡Buena suerte!",
+        title: t("draftCompleted"),
+        subtitle: t("fairPlay"),
         action: "done",
         type: "complete",
       }
@@ -743,6 +735,45 @@ export function DraftInterface({
     )
   }
 
+  if (draft.current_phase === "coin_flip") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <DraftHeader
+          phase="Lanzamiento de Moneda"
+          subtitle="Decidiendo quién empieza"
+          isMyTurn={isMyTurn}
+          currentTurnName={draft.current_turn === lobby.host_id ? hostProfile?.username : guestProfile?.username}
+          draftId={draft.id}
+          visibility={visibility}
+          finalMapId={null}
+          onNotificationSettingsChange={handleNotificationSettingsChange}
+          notificationPermissionGranted={permission.granted}
+          onRequestNotificationPermission={requestPermission}
+        />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <CoinFlip
+            hostName={hostProfile?.username || "Host"}
+            guestName={guestProfile?.username || "Guest"}
+            hostId={lobby.host_id}
+            guestId={lobby.guest_id || ""}
+            winnerId={draft.coin_flip_winner}
+            isHost={isHost}
+            onCoinFlipComplete={handleCoinFlipComplete}
+          />
+        </main>
+        <DraftChat
+          draftId={draft.id}
+          userId={userId}
+          username={isHost ? hostProfile?.username || "Host" : guestProfile?.username || "Guest"}
+          avatarUrl={isHost ? hostProfile?.avatar_url : guestProfile?.avatar_url}
+          isDemo={isDemo}
+          isHost={isHost}
+          isParticipant={isParticipant}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {console.log("DINT: Rendering DraftHeader. draft.final_map:", draft.final_map, "finalMapId prop:", draft.final_map)}
@@ -811,18 +842,6 @@ export function DraftInterface({
           />
 
           <div className="space-y-6">
-            {/* Coin Flip */}
-            {draft.current_phase === "coin_flip" && (
-              <CoinFlip
-                hostName={hostProfile?.username || "Host"}
-                guestName={guestProfile?.username || "Guest"}
-                hostId={lobby.host_id}
-                guestId={lobby.guest_id || ""}
-                isHost={isHost}
-                onCoinFlipComplete={handleCoinFlipComplete}
-              />
-            )}
-
             {/* Map phases */}
             {phaseInfo.type === "map" && phaseInfo.action === "ban" && (
               <div className="space-y-4">
@@ -997,6 +1016,10 @@ function calculateNextTurn(
 
   const newTurnNumber = currentCivBans + currentCivPicks + currentMapBans + currentMapPicks
 
+  // Determine picker order based on coin flip
+  const firstPickerId = draft.coin_flip_winner || lobby.host_id
+  const secondPickerId = firstPickerId === lobby.host_id ? lobby.guest_id : lobby.host_id
+
   // COIN FLIP PHASE
   if (settings.enable_coin_flip && !draft.coin_flip_winner) {
     return { nextPhase: "coin_flip", nextTurn: lobby.host_id, newTurnNumber: 0 }
@@ -1007,14 +1030,14 @@ function calculateNextTurn(
     if (mapMode === "ban_until_one") {
       const totalMapBansNeeded = mapPoolSize - 1
       if (currentMapBans < totalMapBansNeeded) {
-        const nextTurn = currentMapBans % 2 === 0 ? lobby.host_id : lobby.guest_id
+        const nextTurn = currentMapBans % 2 === 0 ? firstPickerId : secondPickerId
         return { nextPhase: "map_ban", nextTurn, newTurnNumber }
       }
     } else if (mapMode === "random_with_bans") {
       const bansPerPlayer = settings.map_bans_per_player || settings.map_settings?.bans_per_player || 2
       const totalMapBansNeeded = bansPerPlayer * 2
       if (currentMapBans < totalMapBansNeeded) {
-        const nextTurn = currentMapBans % 2 === 0 ? lobby.host_id : lobby.guest_id
+        const nextTurn = currentMapBans % 2 === 0 ? firstPickerId : secondPickerId
         return { nextPhase: "map_ban", nextTurn, newTurnNumber }
       }
       if (currentMapPicks === 0 && !draft.final_map) {
@@ -1026,7 +1049,7 @@ function calculateNextTurn(
       }
     } else if (mapMode === "home_away") {
       if (currentMapPicks < 2) {
-        const nextTurn = currentMapPicks === 0 ? lobby.host_id : lobby.guest_id
+        const nextTurn = currentMapPicks === 0 ? firstPickerId : secondPickerId
         return { nextPhase: "map_pick", nextTurn, newTurnNumber }
       }
     }
@@ -1034,13 +1057,15 @@ function calculateNextTurn(
 
   // CIV BAN PHASE
   if (civBansEnabled && currentCivBans < totalCivBansNeeded) {
-    const nextTurn = currentCivBans % 2 === 0 ? lobby.host_id : lobby.guest_id
+    const nextTurn = currentCivBans % 2 === 0 ? firstPickerId : secondPickerId
     return { nextPhase: "civ_ban", nextTurn, newTurnNumber }
   }
 
   // CIV PICK PHASE
   if (civPicksEnabled && currentCivPicks < totalCivPicksNeeded) {
-    const nextTurn = currentCivPicks === 0 ? lobby.guest_id : lobby.host_id
+    // In many draft formats, the second picker starts the picking phase if they banned last, 
+    // but here we'll follow the coin flip winner starting the pick phase for consistency unless otherwise specified.
+    const nextTurn = currentCivPicks === 0 ? firstPickerId : secondPickerId
     return { nextPhase: "civ_pick", nextTurn, newTurnNumber }
   }
 
