@@ -41,7 +41,7 @@ Ensure the civilization data is accurate and correctly presented.
 ## Phase 4: User Experience and Profiles
 Refine the user-facing parts of the application.
 
-- [ ] **Task: Audit Profile Persistence and Match History**
+- [x] **Task: Audit Profile Persistence and Match History** a367b60
   - [ ] Write Tests: Test Supabase Auth and Profile table interactions.
   - [ ] Implement Feature: Fix issues with profile updates or history tracking.
 - [ ] **Task: Responsive UI Audit (Mobile focus)**
