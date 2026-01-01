@@ -219,6 +219,134 @@ export default function TournamentPage({ params }: TournamentPageProps) {
     }
   }
 
+  const handleStartTournament = async () => {
+    if (!tournament) return
+
+    const confirmedParticipants = participants.filter((p) => p.status === "confirmed")
+
+    if (confirmedParticipants.length < 2) {
+      toast({
+        title: t("notEnoughParticipants"),
+        description: t("needAtLeast2"),
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsStarting(true)
+
+    if (isDemo) {
+      await new Promise((resolve) => setTimeout(resolve, 800))
+
+      const numParticipants = confirmedParticipants.length
+      const numRounds = Math.ceil(Math.log2(numParticipants))
+      const sortedParticipants = [...confirmedParticipants].sort((a, b) => (a.seed || 999) - (b.seed || 999))
+
+      const newMatches: TournamentMatch[] = []
+
+      // First round
+      for (let i = 0; i < Math.ceil(numParticipants / 2); i++) {
+        const player1 = sortedParticipants[i]
+        const player2 = sortedParticipants[numParticipants - 1 - i]
+        newMatches.push({
+          id: `match-${Date.now()}-${i}`,
+          tournament_id: tournament.id,
+          round: 1,
+          match_number: i + 1,
+          bracket_type: "winners",
+          player1_id: player1?.user_id || null,
+          player2_id: player2?.user_id || null,
+          player1_score: 0,
+          player2_score: 0,
+          status: player1 && player2 ? "ready" : "pending",
+        })
+      }
+
+      // Later rounds
+      for (let round = 2; round <= numRounds; round++) {
+        const matchesInRound = Math.pow(2, numRounds - round)
+        for (let m = 0; m < matchesInRound; m++) {
+          newMatches.push({
+            id: `match-${Date.now()}-${round}-${m}`,
+            tournament_id: tournament.id,
+            round,
+            match_number: m + 1,
+            bracket_type: "winners",
+            player1_id: null,
+            player2_id: null,
+            player1_score: 0,
+            player2_score: 0,
+            status: "pending",
+          })
+        }
+      }
+
+      setDemoMatches(tournament.id, newMatches)
+      updateDemoTournament(tournament.id, { status: "in_progress" })
+
+      toast({ title: t("tournamentStarted"), description: t("bracketsGenerated") })
+      fetchTournamentData(tournament.id)
+      setIsStarting(false)
+      return
+    }
+
+    // Real database
+    try {
+      const numParticipants = confirmedParticipants.length
+      const numRounds = Math.ceil(Math.log2(numParticipants))
+      const sortedParticipants = [...confirmedParticipants].sort((a, b) => (a.seed || 999) - (b.seed || 999))
+
+      const firstRoundMatches: Partial<TournamentMatch>[] = []
+      for (let i = 0; i < Math.ceil(numParticipants / 2); i++) {
+        const player1 = sortedParticipants[i]
+        const player2 = sortedParticipants[numParticipants - 1 - i]
+        firstRoundMatches.push({
+          tournament_id: tournament.id,
+          round: 1,
+          match_number: i + 1,
+          bracket_type: "winners",
+          player1_id: player1?.user_id || null,
+          player2_id: player2?.user_id || null,
+          player1_score: 0,
+          player2_score: 0,
+          status: player1 && player2 ? "ready" : "pending",
+        })
+      }
+
+      const laterMatches: Partial<TournamentMatch>[] = []
+      for (let round = 2; round <= numRounds; round++) {
+        const matchesInRound = Math.pow(2, numRounds - round)
+        for (let m = 0; m < matchesInRound; m++) {
+          laterMatches.push({
+            tournament_id: tournament.id,
+            round,
+            match_number: m + 1,
+            bracket_type: "winners",
+            player1_id: null,
+            player2_id: null,
+            player1_score: 0,
+            player2_score: 0,
+            status: "pending",
+          })
+        }
+      }
+
+      const allMatches = [...firstRoundMatches, ...laterMatches]
+      const { error: matchError } = await supabase.from("tournament_matches").insert(allMatches)
+      if (matchError) throw matchError
+
+      await supabase.from("tournaments").update({ status: "in_progress" }).eq("id", tournament.id)
+
+      toast({ title: t("tournamentStarted"), description: t("bracketsGenerated") })
+      fetchTournamentData(tournament.id)
+    } catch (err) {
+      console.error("Error starting tournament:", err)
+      toast({ title: t("errorStartingTournament"), variant: "destructive" })
+    } finally {
+      setIsStarting(false)
+    }
+  }
+
   if (isLoading) return <div className="flex min-h-screen items-center justify-center bg-[#020202]"><Loader2 className="h-12 w-12 animate-spin text-yellow-500" /></div>
 
   if (error || !tournament) return (

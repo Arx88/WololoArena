@@ -134,35 +134,35 @@ export function HeroSection() {
       <MatrixBackground />
       <div className="container relative z-30 mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
         
-        {/* LEFT COLUMN: ORIGINAL */}
-        <div className="lg:col-span-5 flex flex-col items-start text-left pt-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-[10px] font-bold tracking-widest uppercase mb-6 shadow-[0_0_15px_-3px_rgba(234,179,8,0.3)]">
+        {/* LEFT COLUMN: BALANCED UPGRADE */}
+        <div className="lg:col-span-6 flex flex-col items-start text-left pt-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-[10px] font-black tracking-[0.2em] uppercase mb-6 shadow-[0_0_15px_-3px_rgba(234,179,8,0.3)]">
             <Sparkles className="w-3 h-3" /><span>Next Gen Drafting</span>
           </motion.div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-6 font-cinzel">
+          <h1 className="text-5xl md:text-7xl lg:text-[82px] font-black text-white tracking-tighter leading-[0.9] mb-6 font-cinzel">
             <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white via-zinc-200 to-zinc-500">{t("heroTitle1")}</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-500 to-yellow-700 drop-shadow-sm pb-2">{t("heroTitle2")}</span>
           </h1>
 
-          <p className="text-lg text-zinc-400 leading-relaxed mb-8 max-w-md border-l-2 border-yellow-500/20 pl-4 font-light italic">{t("heroSubtitle")}</p>
+          <p className="text-lg md:text-xl text-zinc-400 leading-relaxed mb-8 max-w-lg border-l-2 border-yellow-500/20 pl-5 font-light italic">{t("heroSubtitle")}</p>
 
-          <div className="flex flex-wrap gap-4 w-full">
+          <div className="flex flex-wrap gap-6 w-full">
             <Link href="/lobby" className="flex-1 sm:flex-none">
-              <Button className="w-full h-14 px-8 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase tracking-widest text-xs rounded-sm shadow-[0_0_30px_-5px_rgba(234,179,8,0.5)]">
-                <Swords className="mr-2 h-4 w-4" />{t("startDrafting")}
+              <Button className="w-full h-20 px-12 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase tracking-[0.2em] text-base transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.5)] border-r-8 border-black/20 hover:scale-105 active:scale-95 group">
+                <Swords className="mr-4 h-6 w-6 transition-transform group-hover:rotate-12" />{t("startDrafting")}
               </Button>
             </Link>
             <Link href="/tournaments" className="flex-1 sm:flex-none">
-              <Button variant="outline" className="w-full h-14 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase tracking-widest text-xs rounded-sm backdrop-blur-sm transition-all hover:border-yellow-500/30 group">
-                <Trophy className="mr-2 h-4 w-4 group-hover:text-yellow-500 transition-colors" />{t("tournaments")}
+              <Button variant="outline" className="w-full h-20 px-12 rounded-none border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-base backdrop-blur-sm transition-all hover:border-yellow-500/30 border-r-8 border-white/10 hover:scale-105 active:scale-95 group">
+                <Trophy className="mr-4 h-6 w-6 transition-transform group-hover:scale-110 group-hover:text-yellow-500" />{t("tournaments")}
               </Button>
             </Link>
           </div>
         </div>
 
         {/* RIGHT COLUMN: THE BATTLE DRAFT SIMULATOR */}
-        <div className="lg:col-span-7 relative h-[750px] flex items-center justify-center perspective-2000">
+        <div className="lg:col-span-6 relative h-[700px] flex items-center justify-center perspective-2000">
            <BattleDraftSimulator />
         </div>
       </div>
