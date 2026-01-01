@@ -61,7 +61,7 @@ Ensure the app is ready for a professional release.
 - [x] **Task: Full Site E2E Verification**
   - [x] Write Tests: Create Playwright tests covering all major pages (Home, Tournaments, Team Builder, Tutorial, Profile).
   - [x] Implement Feature: Fix any navigation or functional bugs discovered during the E2E suite creation.
-- [ ] **Task: Full Localization Audit**
+- [~] **Task: Full Localization Audit**
   - [ ] Write Tests: Verify all keys in `lib/i18n` have translations and are used in the UI.
   - [ ] Implement Feature: Fill in missing translations and fix any i18n bugs.
 - [ ] **Task: Final Bug Bash and QA Report**

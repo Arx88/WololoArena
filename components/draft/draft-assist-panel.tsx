@@ -1,30 +1,17 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Button } from "@/components/ui/button"
+import { useMemo } from "react"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import {
-  Lightbulb,
-  ChevronDown,
-  ChevronUp,
-  TrendingUp,
-  Shield,
-  Target,
-  AlertTriangle,
-  Sparkles,
-  Info,
-  Zap,
-} from "lucide-react"
+import { Lightbulb, TrendingUp, Target, Sparkles, Map as MapIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useLanguage } from "@/lib/i18n/language-context"
-import { getDraftSuggestions, getCivMapTier, type CivSuggestion } from "@/lib/data/civ-meta"
+import { getDraftSuggestions } from "@/lib/data/civ-meta"
 import { CIVILIZATIONS, type Civilization } from "@/lib/data/civilizations"
+import { MAPS } from "@/lib/data/maps"
+import Image from "next/image"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface DraftAssistPanelProps {
-  currentPhase: "civ_ban" | "civ_pick" | "map_ban" | "map_pick" | string
+  currentPhase: string
   currentMap: string | null
   opponentCivs: string[]
   ownCivs: string[]
@@ -42,16 +29,10 @@ export function DraftAssistPanel({
   isMyTurn,
   onSuggestionClick,
 }: DraftAssistPanelProps) {
-  const { t } = useLanguage()
-  const [isOpen, setIsOpen] = useState(true)
-  const [showDetails, setShowDetails] = useState(false)
-
   const phase: "ban" | "pick" = currentPhase.includes("ban") ? "ban" : "pick"
 
   const suggestions = useMemo(() => {
-    if (currentPhase !== "civ_ban" && currentPhase !== "civ_pick") {
-      return []
-    }
+    if (!currentPhase.includes("civ")) return []
     return getDraftSuggestions(currentMap, opponentCivs, ownCivs, bannedCivs, phase)
   }, [currentMap, opponentCivs, ownCivs, bannedCivs, phase, currentPhase])
 
@@ -59,236 +40,93 @@ export function DraftAssistPanel({
     return CIVILIZATIONS.find((c) => c.id === civId)
   }
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case "S":
-        return "text-amber-400 bg-amber-500/10 border-amber-500/30"
-      case "A":
-        return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
-      case "B":
-        return "text-blue-400 bg-blue-500/10 border-blue-500/30"
-      case "C":
-        return "text-muted-foreground bg-muted border-border"
-      default:
-        return "text-muted-foreground bg-muted border-border"
-    }
-  }
-
-  const getTypeIcon = (type: CivSuggestion["type"]) => {
-    switch (type) {
-      case "meta":
-        return <TrendingUp className="h-3 w-3" />
-      case "counter":
-        return <Target className="h-3 w-3" />
-      case "synergy":
-        return <Sparkles className="h-3 w-3" />
-      default:
-        return <Lightbulb className="h-3 w-3" />
-    }
-  }
-
-  const getTypeColor = (type: CivSuggestion["type"]) => {
-    switch (type) {
-      case "meta":
-        return "text-primary"
-      case "counter":
-        return "text-orange-500"
-      case "synergy":
-        return "text-emerald-500"
-      default:
-        return "text-muted-foreground"
-    }
-  }
-
-  // Don't show during non-civ phases
-  if (currentPhase !== "civ_ban" && currentPhase !== "civ_pick") {
-    return null
-  }
+  const isMapPhase = currentPhase.includes("map")
+  const foundMap = currentMap ? MAPS.find(m => m.id === currentMap) : null;
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-        <CollapsibleTrigger asChild>
-          <CardHeader className="py-3 px-4 cursor-pointer hover:bg-muted/30 transition-colors">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-primary" />
-                {t("draftAssist") || "Draft Assist"}
-                {isMyTurn && (
-                  <Badge variant="outline" className="text-xs border-primary/50 text-primary animate-pulse">
-                    <Zap className="h-3 w-3 mr-1" />
-                    {t("yourTurn") || "Your Turn"}
-                  </Badge>
-                )}
-              </CardTitle>
-              {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+    <div className="w-full bg-yellow-500/5 border-y border-white/10 backdrop-blur-md overflow-hidden">
+      <div className="max-w-[1800px] mx-auto px-8 py-4 flex items-center gap-10">
+        {/* Label - Taller and more defined */}
+        <div className="flex items-center gap-3 shrink-0 border-r border-white/10 pr-10 mr-2">
+          <TooltipProvider delayDuration={0}>
+             <Tooltip>
+               <TooltipTrigger asChild>
+                 <div className="flex items-center gap-3 cursor-help group">
+                   <Lightbulb className={cn("h-6 w-6 transition-colors", isMyTurn ? "text-yellow-500 animate-pulse" : "text-white/20 group-hover:text-white/60")} />
+                   <div className="flex flex-col">
+                     <span className="text-xs font-black uppercase tracking-[0.3em] text-white/80 text-shadow-sm group-hover:text-white transition-colors">Strategic Intelligence</span>
+                     <span className="text-[10px] text-emerald-400 font-bold tracking-tight opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-4">LIVE ANALYTICS ACTIVE</span>
+                   </div>
+                 </div>
+               </TooltipTrigger>
+               <TooltipContent side="right" className="bg-black/90 border-white/10 text-xs max-w-xs p-3">
+                 <p className="font-bold text-yellow-500 mb-1">Real-Time Data Analysis</p>
+                 <p className="text-white/70">Suggestions are calculated live based on map win rates, civilization matchups, and team composition synergies.</p>
+               </TooltipContent>
+             </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        {/* Selected Map Highlight - Taller */}
+        {foundMap && (
+           <div className="flex items-center gap-4 px-4 py-2 rounded-xl border-2 border-yellow-500/30 bg-yellow-500/10 shadow-[0_0_20px_rgba(234,179,8,0.1)] animate-in fade-in slide-in-from-left-2 duration-500 shrink-0">
+              <div className="relative w-14 h-8 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                 <Image src={foundMap.image} alt={foundMap.name} fill className="object-cover" />
+              </div>
+              <div className="flex flex-col leading-none">
+                 <span className="text-[10px] font-black text-yellow-400/80 uppercase tracking-tighter mb-1 italic">Operational Area</span>
+                 <span className="text-base font-black text-white uppercase tracking-widest">{foundMap.name}</span>
+              </div>
+           </div>
+        )}
+
+        {/* Horizontal Scroll Suggestions - Taller cards */}
+        <div className="flex-1 flex items-center gap-6 overflow-x-auto scrollbar-hide py-2">
+          {isMapPhase ? (
+            <div className="flex items-center gap-4 opacity-40">
+               <MapIcon className="h-5 w-5 text-yellow-500" />
+               <span className="text-xs font-bold uppercase tracking-widest italic">Awaiting map confirmation for tactical analysis...</span>
             </div>
-          </CardHeader>
-        </CollapsibleTrigger>
+          ) : suggestions.length > 0 ? (
+            suggestions.slice(0, 3).map((suggestion, index) => {
+              const civ = getCivData(suggestion.civId)
+              if (!civ) return null
+              return (
+                <button
+                  key={suggestion.civId}
+                  onClick={() => onSuggestionClick?.(suggestion.civId)}
+                  disabled={!isMyTurn}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-300 shrink-0",
+                    isMyTurn ? "hover:bg-yellow-500/20 hover:border-yellow-500/40 border-white/10 bg-white/5 cursor-pointer" : "opacity-40 cursor-not-allowed border-transparent bg-transparent",
+                    index === 0 && isMyTurn ? "border-yellow-500/40 bg-yellow-500/10 shadow-[0_0_20px_rgba(234,179,8,0.1)]" : ""
+                  )}
+                >
+                  <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/10">
+                    <Image src={civ.icon || "/placeholder.svg"} alt={civ.name} fill className="object-cover" />
+                  </div>
+                  <div className="flex flex-col items-start leading-none">
+                    <span className="text-xs font-bold text-white leading-none">{civ.name}</span>
+                    <span className="text-[10px] text-white/40 uppercase tracking-tighter mt-1">{suggestion.type}</span>
+                  </div>
+                  <div className="ml-3 pl-3 border-l border-white/10">
+                     <span className={cn("text-xs font-black", suggestion.score >= 80 ? "text-emerald-400" : "text-yellow-500")}>{suggestion.score}%</span>
+                  </div>
+                </button>
+              )
+            })
+          ) : (
+            <span className="text-xs font-bold text-white/20 uppercase tracking-widest">Analysis complete or unavailable</span>
+          )}
+        </div>
 
-        <CollapsibleContent>
-          <CardContent className="pt-0 pb-4 px-4 space-y-4">
-            {/* Map Context */}
-            {currentMap && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Info className="h-4 w-4" />
-                <span>
-                  {t("suggestionsFor") || "Suggestions for"}: <strong className="text-foreground">{currentMap}</strong>
-                </span>
-              </div>
-            )}
-
-            {/* Opponent Warning */}
-            {opponentCivs.length > 0 && (
-              <div className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                <AlertTriangle className="h-4 w-4 text-orange-500 shrink-0" />
-                <span className="text-xs text-orange-500">
-                  {t("opponentPicked") || "Opponent picked"}:{" "}
-                  <strong>{opponentCivs.map((c) => getCivData(c)?.name).join(", ")}</strong>
-                </span>
-              </div>
-            )}
-
-            {/* Suggestions */}
-            {suggestions.length > 0 ? (
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                  {phase === "ban" ? t("suggestedBans") || "Suggested Bans" : t("suggestedPicks") || "Suggested Picks"}
-                </p>
-
-                <div className="grid gap-2">
-                  {suggestions.slice(0, showDetails ? 6 : 3).map((suggestion, index) => {
-                    const civ = getCivData(suggestion.civId)
-                    const mapMeta = currentMap ? getCivMapTier(suggestion.civId, currentMap) : null
-
-                    if (!civ) return null
-
-                    return (
-                      <TooltipProvider key={suggestion.civId}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => onSuggestionClick?.(suggestion.civId)}
-                              disabled={!isMyTurn}
-                              className={cn(
-                                "flex items-center gap-3 p-2.5 rounded-lg border transition-all duration-200 text-left w-full",
-                                isMyTurn
-                                  ? "hover:bg-primary/10 hover:border-primary/50 cursor-pointer"
-                                  : "opacity-60 cursor-not-allowed",
-                                index === 0 && isMyTurn
-                                  ? "border-primary/30 bg-primary/5"
-                                  : "border-border/50 bg-card/50",
-                              )}
-                            >
-                              {/* Rank indicator */}
-                              <div
-                                className={cn(
-                                  "flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0",
-                                  index === 0 ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground",
-                                )}
-                              >
-                                {index + 1}
-                              </div>
-
-                              {/* Civ icon */}
-                              <div className="w-8 h-8 rounded bg-muted flex items-center justify-center shrink-0">
-                                <Shield className="h-4 w-4 text-muted-foreground" />
-                              </div>
-
-                              {/* Info */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium text-sm truncate">{civ.name}</span>
-                                  {mapMeta && (
-                                    <Badge
-                                      variant="outline"
-                                      className={cn("text-[10px] px-1.5", getTierColor(mapMeta.tier))}
-                                    >
-                                      {mapMeta.tier}
-                                    </Badge>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                  <span className={getTypeColor(suggestion.type)}>{getTypeIcon(suggestion.type)}</span>
-                                  <span className="truncate">{suggestion.reason}</span>
-                                </div>
-                              </div>
-
-                              {/* Score */}
-                              <div
-                                className={cn(
-                                  "text-xs font-semibold px-2 py-0.5 rounded shrink-0",
-                                  suggestion.score >= 80
-                                    ? "bg-emerald-500/10 text-emerald-500"
-                                    : suggestion.score >= 60
-                                      ? "bg-blue-500/10 text-blue-500"
-                                      : "bg-muted text-muted-foreground",
-                                )}
-                              >
-                                {suggestion.score}%
-                              </div>
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-xs">
-                            <div className="space-y-2">
-                              <p className="font-semibold">{civ.name}</p>
-                              <p className="text-xs text-muted-foreground">{civ.specialty}</p>
-                              {mapMeta && (
-                                <div className="text-xs">
-                                  <p>
-                                    Win Rate: <strong>{mapMeta.winRate}%</strong>
-                                  </p>
-                                  <p>
-                                    Pick Rate: <strong>{mapMeta.pickRate}%</strong>
-                                  </p>
-                                  {mapMeta.notes && <p className="text-muted-foreground mt-1">{mapMeta.notes}</p>}
-                                </div>
-                              )}
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )
-                  })}
-                </div>
-
-                {suggestions.length > 3 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => setShowDetails(!showDetails)}
-                  >
-                    {showDetails
-                      ? t("showLess") || "Show Less"
-                      : `${t("showMore") || "Show"} ${suggestions.length - 3} ${t("more") || "more"}`}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                {t("noSuggestions") || "No suggestions available for this phase"}
-              </p>
-            )}
-
-            {/* Legend */}
-            <div className="flex flex-wrap gap-3 pt-2 border-t border-border/50">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <TrendingUp className="h-3 w-3 text-primary" />
-                <span>{t("metaPick") || "Meta"}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Target className="h-3 w-3 text-orange-500" />
-                <span>{t("counterPick") || "Counter"}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Sparkles className="h-3 w-3 text-emerald-500" />
-                <span>{t("synergy") || "Synergy"}</span>
-              </div>
-            </div>
-          </CardContent>
-        </CollapsibleContent>
-      </Card>
-    </Collapsible>
+        {/* Small Legend */}
+        <div className="hidden lg:flex items-center gap-6 shrink-0 border-l border-white/10 pl-10 ml-2">
+           <div className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-yellow-500" /><span className="text-[10px] font-bold text-white/40 uppercase">Meta</span></div>
+           <div className="flex items-center gap-2"><Target className="h-4 w-4 text-red-500" /><span className="text-[10px] font-bold text-white/40 uppercase">Counter</span></div>
+           <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-emerald-400" /><span className="text-[10px] font-bold text-white/40 uppercase">Synergy</span></div>
+        </div>
+      </div>
+    </div>
   )
 }

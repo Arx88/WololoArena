@@ -98,5 +98,10 @@ describe('DraftInterface - Coin Flip Flow', () => {
     
     // Check component
     expect(screen.getByTestId('coin-flip-component')).toBeInTheDocument()
+
+    // Check that draft interface elements are NOT present (dedicated view)
+    expect(screen.queryByTestId('player-panel')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('civ-grid')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('draft-progress')).not.toBeInTheDocument()
   })
 })

@@ -1,0 +1,347 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.985 0.005 200);
+  --foreground: oklch(0.12 0.01 220);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.12 0.01 220);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.01 220);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+  --accent: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.7 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.92 0 0);
+  --sidebar-ring: oklch(0.7 0 0);
+}
+
+.dark {
+  /* Premium Medieval Dark Mode: Deep Warm Stone/Wood */
+  /* Background: Dark warm grey/brown (Hue 40, minimal saturation) */
+  --background: oklch(0.14 0.02 40); 
+  --foreground: oklch(0.95 0.02 40);
+  
+  /* Card: Slightly lighter warm grey */
+  --card: oklch(0.17 0.02 40);
+  --card-foreground: oklch(0.95 0.02 40);
+  
+  --popover: oklch(0.16 0.02 40);
+  --popover-foreground: oklch(0.95 0.02 40);
+  
+  /* Primary: Age of Empires Gold/Crimson mix */
+  /* Gold for primary actions */
+  --primary: oklch(0.75 0.16 75); 
+  --primary-foreground: oklch(0.14 0.02 40);
+  
+  /* Secondary: Deep Royal Red/Burgundy (Hue 20) */
+  --secondary: oklch(0.35 0.10 25);
+  --secondary-foreground: oklch(0.95 0.02 40);
+  
+  --muted: oklch(0.25 0.02 40);
+  --muted-foreground: oklch(0.70 0.02 40);
+  
+  --accent: oklch(0.25 0.03 40);
+  --accent-foreground: oklch(0.95 0.02 40);
+  
+  --destructive: oklch(0.45 0.18 25);
+  --destructive-foreground: oklch(0.95 0.02 40);
+  
+  /* Border: Antique Metal/Stone */
+  --border: oklch(0.30 0.02 40);
+  --input: oklch(0.25 0.02 40);
+  --ring: oklch(0.75 0.16 75);
+  
+  --chart-1: oklch(0.65 0.18 30); /* Red */
+  --chart-2: oklch(0.70 0.16 85); /* Gold */
+  --chart-3: oklch(0.50 0.12 140); /* Green */
+  --chart-4: oklch(0.55 0.10 250); /* Blue */
+  --chart-5: oklch(0.60 0.08 300); /* Purple */
+  
+  --sidebar: oklch(0.13 0.02 40);
+  --sidebar-foreground: oklch(0.95 0.02 40);
+  --sidebar-primary: oklch(0.75 0.16 75);
+  --sidebar-primary-foreground: oklch(0.14 0.02 40);
+  --sidebar-accent: oklch(0.22 0.03 40);
+  --sidebar-accent-foreground: oklch(0.95 0.02 40);
+  --sidebar-border: oklch(0.30 0.02 40);
+  --sidebar-ring: oklch(0.75 0.16 75);
+}
+
+@theme inline {
+  /* Bind Cinzel to serif and make it available as font-serif */
+  --font-serif: var(--font-cinzel), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  
+  /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  a, button, [role="button"] {
+  }
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Apply subtle texture to the whole body */
+    background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+    background-blend-mode: overlay;
+  }
+  /* Apply medieval font to headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cinzel), serif;
+    letter-spacing: 0.02em;
+  }
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes pulse-gold {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0.2);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotateX(0deg); }
+  50% { transform: translateY(-15px) rotateX(2deg); }
+}
+
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0px) rotateX(0deg); }
+  50% { transform: translateY(-12px) rotateX(-2deg); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse-slow {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes medieval-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+  50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); border-color: rgba(212, 175, 55, 0.6); }
+}
+
+/* Replaces .glitch-hover with a Golden Glow effect */
+.glitch-hover {
+  transition: all 0.3s ease;
+}
+
+.glitch-hover:hover {
+  transform: translateY(-2px);
+  animation: medieval-glow 2s infinite;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+}
+
+.glitch-hover:hover::before {
+  content: none;
+}
+
+/* Replaces hologram grid with a subtle parchment grid overlay */
+.hologram-grid {
+  background-image: 
+    linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(circle, black, transparent 90%);
+  opacity: 0.5;
+}
+
+.animate-scan {
+  /* Disabled scanline or replaced with subtle fade */
+  animation: none;
+}
+
+.gold-text-gradient {
+  background: linear-gradient(to right, #e6c200 0%, #ffd700 25%, #b8860b 50%, #ffd700 75%, #e6c200 100%);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shine 6s linear infinite;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.2); /* Added shadow for readability on stone */
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.subtle-grid {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Custom Scrollbar Styling */
+@layer base {
+  :root {
+    --scrollbar-track: #050505;
+    --scrollbar-thumb: #ca8a04; /* yellow-600 */
+    --scrollbar-thumb-hover: #eab308; /* yellow-500 */
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  /* Chrome, Edge, and Safari */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 20px;
+    border: 2px solid var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  /* Specific class for extra-slim scrollbars if needed */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    border: 1px solid var(--scrollbar-track);
+  }
+}
+

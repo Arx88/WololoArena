@@ -5,7 +5,7 @@ import path from 'path'
 
 describe('Data Validation', () => {
   it('should have correct number of civilizations', () => {
-    expect(CIVILIZATIONS.length).toBe(45)
+    expect(CIVILIZATIONS.length).toBe(50)
   })
 
   it('should match names from civisINFO.md', () => {

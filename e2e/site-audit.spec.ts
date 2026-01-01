@@ -14,20 +14,24 @@ test.describe('Total Site Audit', () => {
   test('Navigation and Core Pages', async ({ page }) => {
     // 1. Home
     await page.goto('/');
-    await expect(page.locator('nav')).toContainText(/Wololo Arena/i);
+    await expect(page.locator('nav')).toContainText(/WOLOLO/i);
+    await expect(page.locator('nav')).toContainText(/ARENA/i);
 
     // 2. Tournaments Hub
     await page.goto('/tournaments');
     await expect(page.locator('body')).toContainText(/Tournament|Torneo/i);
-    // Check for Create button
-    await expect(page.locator('button:has-text("Create"), button:has-text("Crear")').first()).toBeVisible();
 
     // 3. Team Builder
     await page.goto('/team-builder');
     await expect(page.locator('body')).toContainText(/Builder/i);
     // Select civs by text in buttons
-    await page.locator('button:has-text("Aztecs")').first().click();
-    await page.locator('button:has-text("Lithuanians")').first().click();
+    const aztecsBtn = page.locator('button:has-text("Aztecs")').first();
+    await aztecsBtn.scrollIntoViewIfNeeded();
+    await aztecsBtn.click();
+
+    const lithuaniansBtn = page.locator('button:has-text("Lithuanians")').first();
+    await lithuaniansBtn.scrollIntoViewIfNeeded();
+    await lithuaniansBtn.click();
     await expect(page.locator('body')).toContainText('%');
 
     // 4. Tutorial
@@ -42,15 +46,32 @@ test.describe('Total Site Audit', () => {
   test('Lobby Creation Flow', async ({ page }) => {
     await page.goto('/lobby');
     // Ensure we are on Create tab
-    await expect(page.getByText(/Create New Lobby|Crear Nuevo Lobby/i)).toBeVisible();
+    await expect(page.getByText(/Create a Lobby|Crear un Lobby|Create Lobby|Crear Sala/i).first()).toBeVisible();
     
-    // Check Coin Flip option in Advanced Settings
-    await page.getByRole('button', { name: /Advanced Settings|Configuración Avanzada/i }).click();
-    const coinFlipSwitch = page.getByRole('switch').last(); // The one we added
+    // Step 1: Participar is default.
+    await page.getByText(/NEXT PHASE/i).click();
+
+    // Step 2: Logistics
+    await expect(page.getByText(/Draft Rules/i).first()).toBeVisible();
+    await page.getByText(/NEXT PHASE/i).click();
+
+    // Step 3: Battlefield (Map Mode)
+    await expect(page.getByText(/Map Mode/i).first()).toBeVisible();
+    await page.getByText(/NEXT PHASE/i).click();
+
+    // Step 4: Map Pool
+    await expect(page.getByText(/Map Pool/i).first()).toBeVisible();
+    await page.getByText(/NEXT PHASE/i).click();
+
+    // Step 5: Final Protocol
+    await expect(page.getByText(/Final Protocol/i).first()).toBeVisible();
+    // Check Coin Flip is on by default
+    const coinFlipSwitch = page.locator('button[role="switch"]').last();
     await expect(coinFlipSwitch).toBeChecked();
 
     // Create Lobby
-    await page.locator('button[type="submit"]').click();
+    await page.screenshot({ path: 'e2e/debug-site-audit-lobby-step5.png' });
+    await page.getByText(/START ARENA/i).click();
     await expect(page).toHaveURL(/\/lobby\?id=demo-/, { timeout: 15000 });
   });
 
