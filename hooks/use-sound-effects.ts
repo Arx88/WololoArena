@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 
 export function useSoundEffects() {
-  const playSound = useCallback((type: "click" | "hover" | "turn_start" | "lock" | "tick" | "coin_land") => {
+  const playSound = useCallback((type: "click" | "hover" | "turn_start" | "lock" | "tick" | "coin_land" | "success" | "error") => {
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext
     if (!AudioContext) return
 
@@ -17,6 +17,37 @@ export function useSoundEffects() {
     }
 
     switch (type) {
+      case "success": {
+        // Bright Ascending Chord (Maj7 style)
+        [523.25, 659.25, 783.99, 987.77].forEach((freq, i) => {
+          const osc = ctx.createOscillator()
+          const g = ctx.createGain()
+          osc.type = "sine"
+          osc.frequency.setValueAtTime(freq, now + (i * 0.05))
+          createEnvelope(g, 0.6, 0.05)
+          osc.connect(g).connect(ctx.destination)
+          osc.start(now + (i * 0.05))
+          osc.stop(now + 0.6 + (i * 0.05))
+        })
+        break
+      }
+
+      case "error": {
+        // Low Dissonant Growl
+        [110, 115, 123].forEach((freq) => {
+          const osc = ctx.createOscillator()
+          const g = ctx.createGain()
+          osc.type = "sawtooth"
+          osc.frequency.setValueAtTime(freq, now)
+          osc.frequency.linearRampToValueAtTime(freq - 20, now + 0.3)
+          createEnvelope(g, 0.4, 0.05)
+          osc.connect(g).connect(ctx.destination)
+          osc.start(now)
+          osc.stop(now + 0.4)
+        })
+        break
+      }
+
       case "click": {
         // Organic Wood/Parchment Snap
         const osc = ctx.createOscillator()

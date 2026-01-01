@@ -1,16 +1,19 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Swords, User, Home, RotateCcw, MapPin, Share2, History } from "lucide-react"
+import { Swords, User, Home, RotateCcw, MapPin, Share2, History, Ban, ShieldAlert, Zap, Trophy, TrendingUp, X } from "lucide-react"
 import { getCivilizationById } from "@/lib/data/civilizations"
 import { getMapById } from "@/lib/data/maps"
 import { getGameModeById } from "@/lib/data/game-modes"
 import type { Draft, Lobby, Profile, MapSelectionMode } from "@/lib/types/draft"
 import { useToast } from "@/hooks/use-toast"
 import { useLanguage } from "@/lib/i18n/language-context"
+import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 interface DraftCompleteProps {
   draft: Draft
@@ -25,188 +28,320 @@ interface DraftCompleteProps {
 export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapMode }: DraftCompleteProps) {
   const { toast } = useToast()
   const { t } = useLanguage()
+  const [showBans, setShowBans] = useState(false)
+
   const hostCiv = getCivilizationById(draft.host_civ_picks?.[0])
   const guestCiv = getCivilizationById(draft.guest_civ_picks?.[0])
-  const selectedMap = getMapById(finalMap || draft.host_map_picks?.[0] || draft.guest_map_picks?.[0])
+  const selectedMap = getMapById(finalMap || draft.final_map || draft.host_map_picks?.[0] || draft.guest_map_picks?.[0])
   const gameMode = getGameModeById(draft.selected_game_mode || "")
 
-  // For home/away mode, get both maps
-  const hostHomeMap = mapMode === "home_away" ? getMapById(draft.host_map_picks?.[0]) : null
-  const guestHomeMap = mapMode === "home_away" ? getMapById(draft.guest_map_picks?.[0]) : null
+  const hostCivBans = (draft.host_civ_bans || []).map(id => getCivilizationById(id)).filter(Boolean)
+  const guestCivBans = (draft.guest_civ_bans || []).map(id => getCivilizationById(id)).filter(Boolean)
+  const hostMapBans = (draft.host_map_bans || []).map(id => getMapById(id)).filter(Boolean)
+  const guestMapBans = (draft.guest_map_bans || []).map(id => getMapById(id)).filter(Boolean)
 
   const shareCode = (draft as any).share_code || draft.id
 
   const copyShareLink = async () => {
     const url = `${window.location.origin}/draft/replay/${shareCode}`
     await navigator.clipboard.writeText(url)
-    toast({
-      title: t("linkCopied"),
-      description: t("shareDraftDesc"),
-    })
+    toast({ title: t("linkCopied"), description: t("shareDraftDesc") })
+  }
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } }
   }
 
   return (
-    <div className="h-screen bg-[#020202] text-foreground flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(20,20,30,0.4)_0%,#020202_100%)] pointer-events-none" />
+    <div className="min-h-screen bg-[#020202] text-white flex flex-col relative overflow-x-hidden">
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.05)_0%,transparent_70%)] animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.03] mix-blend-overlay" />
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#0a0a0b] via-transparent to-[#020202]" />
+      </div>
       
-      {/* Header */}
-      <header className="relative z-30 w-full bg-[#0a0a0b]/95 border-b border-white/10 transition-all duration-500 backdrop-blur-2xl shrink-0 shadow-2xl px-6 py-2 space-y-2">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/images/logo-mini.png"
-              alt="AOE2 Wololo Arena"
-              width={32}
-              height={32}
-              className="h-8 w-auto"
-            />
-            <span className="font-semibold text-white">AOE2 Wololo Arena</span>
+      {/* Epic Header */}
+      <header className="relative z-50 w-full border-b border-white/5 backdrop-blur-md bg-black/40">
+        <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-primary/20 bg-primary/5 p-2 transition-all group-hover:border-primary/50">
+              <Image src="/images/logo-mini.png" alt="Logo" width={40} height={40} className="object-contain" />
+            </div>
+            <span className="font-black uppercase tracking-[0.2em] text-sm text-white/90 group-hover:text-primary transition-colors">Wololo Arena</span>
           </Link>
+          
+          <div className="flex items-center gap-4">
+             <Badge variant="outline" className="border-primary/20 text-primary font-mono text-[10px] px-4 py-1 uppercase tracking-widest">
+               Draft Archived // {new Date().toLocaleTimeString()}
+             </Badge>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 relative z-10 overflow-y-auto px-4 py-12 custom-scrollbar">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-12 text-center">
-            <h1 className="mb-2 text-5xl font-black italic uppercase tracking-tighter text-white drop-shadow-lg">
-              {t("draftComplete")}
+      <main className="relative z-10 flex-1 overflow-y-auto custom-scrollbar pt-12 pb-24">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="max-w-6xl mx-auto px-6"
+        >
+          {/* Main Title Section */}
+          <motion.div variants={itemVariants} className="text-center mb-16">
+            <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-none mb-4">
+              Draft <span className="gold-text-gradient pr-4 -mr-4">Complete</span>
             </h1>
-            <p className="text-lg text-yellow-200/60 font-medium uppercase tracking-widest">{t("goodLuckHaveFun")}</p>
-          </div>
+            <div className="flex items-center justify-center gap-4">
+               <div className="h-px w-12 bg-primary/20" />
+               <p className="text-sm font-bold text-primary uppercase tracking-[0.4em] italic">{t("goodLuckHaveFun")}</p>
+               <div className="h-px w-12 bg-primary/20" />
+            </div>
+          </motion.div>
 
-          {/* Matchup Card */}
-          <div className="relative rounded-3xl bg-[#0a0a0b]/80 border border-white/10 backdrop-blur-xl overflow-hidden shadow-[0_0_100px_-20px_rgba(0,0,0,0.8)] mb-12 group">
-            {/* Background Effects */}
-            <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-20 mix-blend-overlay" />
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-transparent to-red-500/10 opacity-50" />
+          <div className="grid lg:grid-cols-12 gap-8 items-start">
             
-            <div className="relative z-10 grid md:grid-cols-[1fr_auto_1fr] items-stretch min-h-[400px]">
-              {/* Host Side */}
-              <div className="flex flex-col items-center justify-between p-8 border-b md:border-b-0 md:border-r border-white/5 relative bg-gradient-to-b from-blue-900/5 to-transparent">
-                <div className="flex flex-col items-center w-full">
-                   <div className="mb-6 relative">
-                     <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-20 rounded-full" />
-                     <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-blue-500/10 border-2 border-blue-500/50 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-                       {hostProfile?.avatar_url ? (
-                         <Image src={hostProfile.avatar_url} alt={hostProfile.username} width={112} height={112} className="rounded-full object-cover" />
-                       ) : <User className="h-12 w-12 text-blue-400" />}
-                     </div>
-                     <div className="absolute -top-3 -right-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border border-blue-400 shadow-lg rotate-12">Host</div>
-                   </div>
-                   <h2 className="text-3xl font-black italic text-white mb-1 tracking-tight text-center">{hostProfile?.username || t("host")}</h2>
-                   {hostHomeMap && <div className="flex items-center gap-1 text-xs font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1 rounded-full"><MapPin className="h-3 w-3" /> Home: {hostHomeMap.name}</div>}
-                </div>
+            {/* LEFT: Combatant Info */}
+            <div className="lg:col-span-8 space-y-8">
+              
+              {/* The Battle Card */}
+              <motion.div variants={itemVariants} className="relative rounded-[2.5rem] bg-[#0a0a0b] border border-white/5 overflow-hidden shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
+                
+                <div className="relative grid md:grid-cols-2">
+                  
+                  {/* Player 1 / Host */}
+                  <div className="p-10 border-b md:border-b-0 md:border-r border-white/5 relative group">
+                    <div className="flex flex-col items-center mb-10">
+                      <div className="relative mb-6">
+                        <div className="absolute -inset-4 bg-blue-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative h-32 w-32 rounded-3xl overflow-hidden border-2 border-blue-500/30 bg-blue-500/5 p-1 shadow-2xl">
+                          {hostProfile?.avatar_url ? (
+                            <Image src={hostProfile.avatar_url} alt="Host" fill className="object-cover" />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-blue-500/10 text-blue-400">
+                              <User className="h-12 w-12" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute -top-3 -right-3 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-blue-400 shadow-xl">Host</div>
+                      </div>
+                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{hostProfile?.username || "Commander 1"}</h2>
+                      <div className="flex items-center gap-2 text-blue-400/60 font-mono text-[10px] uppercase tracking-widest">
+                        <Zap className="h-3 w-3" /> Ready for Deployment
+                      </div>
+                    </div>
 
-                {hostCiv ? (
-                  <div className="w-full mt-8 relative group/civ">
-                    <div className="aspect-[16/9] w-full relative rounded-xl overflow-hidden border border-blue-500/30 shadow-2xl">
-                      <Image src={hostCiv.icon || "/placeholder.svg"} alt={hostCiv.name} fill className="object-cover transition-transform duration-700 group-hover/civ:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-transparent to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <p className="text-xs font-bold text-blue-300 uppercase tracking-widest mb-1">Civilization</p>
-                        <p className="text-3xl font-black text-white uppercase tracking-tighter leading-none">{hostCiv.name}</p>
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-blue-500/20 group/pick">
+                      <Image src={hostCiv?.icon || "/placeholder.svg"} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/20 to-transparent" />
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 block">Active Selection</span>
+                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{hostCiv?.name || "No Pick"}</h3>
                       </div>
                     </div>
                   </div>
-                ) : <div className="w-full mt-8 h-32 rounded-xl border border-white/10 flex items-center justify-center bg-white/5"><span className="text-white/20 font-mono">NO CIV PICKED</span></div>}
-              </div>
 
-              {/* VS Center */}
-              <div className="relative flex flex-col items-center justify-center py-8 px-4 md:w-32 bg-black/40 border-y md:border-y-0 border-white/5 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)] animate-pulse-slow" />
-                <div className="relative z-10 flex flex-col items-center">
-                  <Swords className="h-12 w-12 text-white/40 mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                  <span className="inline-block text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 italic tracking-tighter pr-4">VS</span>
-                </div>
-              </div>
+                  {/* Player 2 / Guest */}
+                  <div className="p-10 relative group bg-white/[0.01]">
+                    <div className="flex flex-col items-center mb-10">
+                      <div className="relative mb-6">
+                        <div className="absolute -inset-4 bg-red-500/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative h-32 w-32 rounded-3xl overflow-hidden border-2 border-red-500/30 bg-red-500/5 p-1 shadow-2xl">
+                          {guestProfile?.avatar_url ? (
+                            <Image src={guestProfile.avatar_url} alt="Guest" fill className="object-cover" />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center bg-red-500/10 text-red-400">
+                              <User className="h-12 w-12" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute -top-3 -left-3 bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-red-400 shadow-xl italic">Opponent</div>
+                      </div>
+                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{guestProfile?.username || "Commander 2"}</h2>
+                      <div className="flex items-center gap-2 text-red-400/60 font-mono text-[10px] uppercase tracking-widest">
+                        <Zap className="h-3 w-3" /> Combat Initialized
+                      </div>
+                    </div>
 
-              {/* Guest Side */}
-              <div className="flex flex-col items-center justify-between p-8 border-t md:border-t-0 md:border-l border-white/5 relative bg-gradient-to-b from-red-900/5 to-transparent">
-                <div className="flex flex-col items-center w-full">
-                   <div className="mb-6 relative">
-                     <div className="absolute inset-0 bg-red-500 blur-2xl opacity-20 rounded-full" />
-                     <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-red-500/10 border-2 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                       {guestProfile?.avatar_url ? (
-                         <Image src={guestProfile.avatar_url} alt={guestProfile.username} width={112} height={112} className="rounded-full object-cover" />
-                       ) : <User className="h-12 w-12 text-red-400" />}
-                     </div>
-                     <div className="absolute -top-3 -left-3 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border border-red-400 shadow-lg -rotate-12">Guest</div>
-                   </div>
-                   <h2 className="text-3xl font-black italic text-white mb-1 tracking-tight text-center">{guestProfile?.username || t("opponent")}</h2>
-                   {guestHomeMap && <div className="flex items-center gap-1 text-xs font-bold text-red-400 uppercase tracking-widest bg-red-500/10 px-3 py-1 rounded-full"><MapPin className="h-3 w-3" /> Home: {guestHomeMap.name}</div>}
-                </div>
-
-                {guestCiv ? (
-                  <div className="w-full mt-8 relative group/civ">
-                    <div className="aspect-[16/9] w-full relative rounded-xl overflow-hidden border border-red-500/30 shadow-2xl">
-                      <Image src={guestCiv.icon || "/placeholder.svg"} alt={guestCiv.name} fill className="object-cover transition-transform duration-700 group-hover/civ:scale-110" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-red-900/90 via-transparent to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <p className="text-xs font-bold text-red-300 uppercase tracking-widest mb-1">Civilization</p>
-                        <p className="text-3xl font-black text-white uppercase tracking-tighter leading-none">{guestCiv.name}</p>
+                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-red-500/20 group/pick">
+                      <Image src={guestCiv?.icon || "/placeholder.svg"} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-red-950 via-red-950/20 to-transparent" />
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <span className="text-[10px] font-black text-red-400 uppercase tracking-[0.3em] mb-1 block">Active Selection</span>
+                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{guestCiv?.name || "No Pick"}</h3>
                       </div>
                     </div>
                   </div>
-                ) : <div className="w-full mt-8 h-32 rounded-xl border border-white/10 flex items-center justify-center bg-white/5"><span className="text-white/20 font-mono">NO CIV PICKED</span></div>}
-              </div>
+
+                  {/* VS Middle Badge */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden md:block">
+                    <div className="h-16 w-16 rounded-full bg-primary border-4 border-black flex items-center justify-center shadow-[0_0_30px_rgba(var(--primary),0.5)]">
+                      <span className="text-black font-black italic text-xl">VS</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* BANS SECTION (AESTHETIC) */}
+              <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-6">
+                
+                {/* Host Bans */}
+                <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20"><ShieldAlert className="h-4 w-4 text-blue-400" /></div>
+                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-blue-400/80">Host Containment</h4>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-4 gap-2">
+                      {hostCivBans.map((civ, i) => (
+                        <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-red-500/30 grayscale hover:grayscale-0 transition-all group/ban cursor-help">
+                          <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-red-900/40"><X className="h-6 w-6 text-red-500 drop-shadow-md" /></div>
+                        </div>
+                      ))}
+                    </div>
+                    {hostMapBans.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {hostMapBans.map((m, i) => (
+                          <Badge key={i} variant="outline" className="bg-red-500/5 text-red-400 border-red-500/20 text-[9px] uppercase font-black px-3 py-1">
+                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Guest Bans */}
+                <div className="p-8 rounded-[2rem] bg-white/[0.02] border border-white/5 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20"><ShieldAlert className="h-4 w-4 text-red-400" /></div>
+                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-red-400/80">Opponent Containment</h4>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-4 gap-2">
+                      {guestCivBans.map((civ, i) => (
+                        <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-red-500/30 grayscale hover:grayscale-0 transition-all group/ban cursor-help">
+                          <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-red-900/40"><X className="h-6 w-6 text-red-500 drop-shadow-md" /></div>
+                        </div>
+                      ))}
+                    </div>
+                    {guestMapBans.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {guestMapBans.map((m, i) => (
+                          <Badge key={i} variant="outline" className="bg-red-500/5 text-red-400 border-red-500/20 text-[9px] uppercase font-black px-3 py-1">
+                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
             </div>
 
-            {/* Battle Context Footer */}
-            <div className="border-t border-white/10 bg-[#020202]/80 p-6 backdrop-blur-xl">
-               <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
-                  {selectedMap && mapMode !== "home_away" && (
-                    <div className="flex items-center gap-4 group cursor-help">
-                       <div className="h-12 w-12 rounded-lg bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40 group-hover:bg-emerald-500/30 transition-colors">
-                          <MapPin className="h-6 w-6 text-emerald-400" />
-                       </div>
-                       <div className="flex flex-col">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/60">Battlefield</span>
-                          <span className="text-xl font-black text-white uppercase tracking-tighter">{selectedMap.name}</span>
-                       </div>
+            {/* RIGHT: Battlefield Analytics */}
+            <div className="lg:col-span-4 space-y-6">
+              
+              {/* Map Card */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-[#0a0a0b] border border-white/5 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-primary/5 blur-[80px] -right-20 -top-20 opacity-30" />
+                <div className="relative z-10 flex flex-col items-center text-center">
+                  <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
+                    <MapPin className="h-8 w-8 text-emerald-400" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/60 mb-2">Battleground</span>
+                  <h4 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-6 leading-none">
+                    {selectedMap?.name || "TBD"}
+                  </h4>
+                  
+                  {selectedMap?.image && (
+                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden border border-white/10 mb-6 shadow-inner">
+                      <Image src={selectedMap.image} alt={selectedMap.name} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                     </div>
                   )}
-                  {gameMode && (
-                    <div className="flex items-center gap-4 group cursor-help">
-                       <div className="h-12 w-12 rounded-lg bg-yellow-500/20 flex items-center justify-center border border-yellow-500/40 group-hover:bg-yellow-500/30 transition-colors">
-                          <Swords className="h-6 w-6 text-yellow-400" />
-                       </div>
-                       <div className="flex flex-col">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-yellow-500/60">Game Mode</span>
-                          <span className="text-xl font-black text-white uppercase tracking-tighter">{gameMode.name}</span>
-                       </div>
+
+                  <div className="grid grid-cols-2 gap-4 w-full pt-6 border-t border-white/5">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[8px] font-mono text-white/20 uppercase">Environment</span>
+                      <span className="text-[10px] font-bold text-white uppercase tracking-widest">{selectedMap?.type || "Land"}</span>
                     </div>
-                  )}
-               </div>
+                    <div className="flex flex-col gap-1 border-l border-white/5">
+                      <span className="text-[8px] font-mono text-white/20 uppercase">Tactical Node</span>
+                      <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Match Rules Card */}
+              <motion.div variants={itemVariants} className="p-8 rounded-[2.5rem] bg-[#0a0a0b] border border-white/5 relative group overflow-hidden">
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20"><TrendingUp className="h-4 w-4 text-yellow-400" /></div>
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-yellow-500/80">Ruleset</h4>
+                    </div>
+                    <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] uppercase font-black tracking-widest">Official</Badge>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Game Mode</span>
+                      <span className="text-xs font-black text-white uppercase italic">{gameMode?.name || "Standard RM"}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Draft Phase</span>
+                      <span className="text-xs font-black text-white uppercase italic">Synchronized</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Main Actions */}
+              <motion.div variants={itemVariants} className="flex flex-col gap-3 pt-4">
+                <Button className="h-16 rounded-2xl bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase italic tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95" onClick={copyShareLink}>
+                  <Share2 className="mr-3 h-5 w-5" /> Copy Share Protocol
+                </Button>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase text-[10px] tracking-widest" asChild>
+                    <Link href="/lobby"><RotateCcw className="mr-2 h-4 w-4" /> New Draft</Link>
+                  </Button>
+                  <Button variant="outline" className="h-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold uppercase text-[10px] tracking-widest" asChild>
+                    <Link href="/"><Home className="mr-2 h-4 w-4" /> Exit Hub</Link>
+                  </Button>
+                </div>
+              </motion.div>
+
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex flex-col justify-center gap-4 sm:flex-row sm:flex-wrap">
-            <Button variant="outline" className="h-12 border-white/10 bg-white/5 hover:bg-white/10 text-white gap-2 hover:border-yellow-500/50 transition-all" onClick={copyShareLink}>
-              <Share2 className="h-4 w-4" />
-              {t("shareDraft")}
-            </Button>
-            <Link href={`/draft/replay/${shareCode}`}>
-              <Button variant="outline" className="h-12 w-full sm:w-auto border-white/10 bg-white/5 hover:bg-white/10 text-white gap-2 hover:border-yellow-500/50 transition-all">
-                <History className="h-4 w-4" />
-                {t("viewReplay")}
-              </Button>
-            </Link>
-            <Link href="/lobby">
-              <Button variant="outline" className="h-12 w-full sm:w-auto border-white/10 bg-white/5 hover:bg-white/10 text-white gap-2 hover:border-yellow-500/50 transition-all">
-                <RotateCcw className="h-4 w-4" />
-                {t("newDraft")}
-              </Button>
-            </Link>
-            <Link href="/">
-              <Button className="h-12 w-full sm:w-auto bg-yellow-600 hover:bg-yellow-500 text-black font-bold gap-2 border-0 shadow-[0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] transition-all">
-                <Home className="h-4 w-4" />
-                {t("backToHome")}
-              </Button>
-            </Link>
-          </div>
-        </div>
+        </motion.div>
       </main>
+
+      <style jsx global>{`
+        .gold-text-gradient {
+          background: linear-gradient(to right, #facc15, #eab308, #ca8a04);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.3));
+        }
+        .animate-pulse-slow {
+          animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.1; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(1.1); }
+        }
+      `}</style>
     </div>
   )
 }

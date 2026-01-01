@@ -148,9 +148,9 @@ export default function CreateTournamentPage() {
   if (isCheckingAuth) return <div className="flex min-h-screen items-center justify-center bg-[#020202]"><Loader2 className="h-12 w-12 animate-spin text-yellow-500" /></div>
 
   return (
-    <div className="h-screen w-full bg-[#020202] text-white overflow-hidden flex flex-col relative">
+    <div className="min-h-screen w-full bg-[#020202] text-white flex flex-col relative">
       <Navbar />
-      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-32 pb-10">
+      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-32 pb-20 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-3xl">
           <Card className="border-white/10 bg-[#0a0a0b]/80 backdrop-blur-xl shadow-2xl overflow-hidden rounded-3xl">
             <div className="h-1.5 w-full bg-white/5 flex">
@@ -175,7 +175,7 @@ export default function CreateTournamentPage() {
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="px-8 pb-10 pt-6 min-h-[450px] flex flex-col">
+            <CardContent className="px-8 pb-10 pt-6 max-h-[65vh] overflow-y-auto custom-scrollbar flex flex-col">
               <form onSubmit={handleFinalSubmit} className="flex-1 flex flex-col">
                 <div className="flex-1 space-y-8">
                   

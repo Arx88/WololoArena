@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { User, LogOut, Trophy, Menu, X, Settings, Swords, Users, Shield } from "lucide-react"
+import { User, LogOut, Trophy, Menu, X, Settings, Swords, Users, Shield, GraduationCap } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useEffect, useState } from "react"
 import { isDemoMode, getDemoUser, setDemoMode } from "@/lib/demo/auth"
@@ -155,6 +155,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/lobby", label: t("draft"), icon: Swords },
     { href: "/civilizations/units", label: "Unique Units", icon: Shield },
+    { href: "/university", label: "University", icon: GraduationCap },
     { href: "/tournaments", label: t("tournaments"), icon: Trophy },
     { href: "/team-builder", label: t("tgBuilder"), icon: Users },
   ]

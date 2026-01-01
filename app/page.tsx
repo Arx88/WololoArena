@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/landing/hero-section"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { CivilizationsShowcase } from "@/components/landing/civilizations-showcase"
 import { UniqueUnitsPromo } from "@/components/landing/unique-units-promo"
+import { AcademyPromo } from "@/components/landing/academy-promo"
 import { TournamentsHubSection } from "@/components/landing/tournaments-hub-section"
 import { LeaderboardCompactSection } from "@/components/landing/leaderboard-compact-section"
 import { TeamGameSection } from "@/components/landing/team-game-section"
@@ -26,6 +27,9 @@ export default function HomePage() {
 
         {/* 4. Unique Units Promo - Enciclopedia táctica */}
         <UniqueUnitsPromo />
+
+        {/* 4.5 Academy Promo - New University feature */}
+        <AcademyPromo />
 
         {/* 5. Tournaments Hub - Consolidado: Hot + Live + All */}
         <TournamentsHubSection />

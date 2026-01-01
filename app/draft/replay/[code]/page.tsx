@@ -29,6 +29,7 @@ import type { Draft, Lobby, Profile } from "@/lib/types/draft"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { DraftComplete } from "@/components/draft/draft-complete"
 
 interface DraftAction {
   type: "ban" | "pick"
@@ -249,6 +250,35 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
 
   const hostCiv = getCivilizationById(visibleHostCivPicks[0])
   const guestCiv = getCivilizationById(visibleGuestCivPicks[0])
+
+  // If replay is complete, show the epic summary component
+  if (currentStep >= actions.length && actions.length > 0) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <DraftComplete 
+          draft={draft} 
+          lobby={lobby} 
+          hostProfile={hostProfile} 
+          guestProfile={guestProfile} 
+          isHost={false} 
+          finalMap={draft.final_map}
+          mapMode={lobby.settings?.map_settings?.mode}
+        />
+        {/* Playback Control Bar at the bottom to allow going back */}
+        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-black/80 backdrop-blur-xl border-t border-white/10 p-4">
+           <div className="max-w-xl mx-auto flex items-center gap-4">
+              <Button variant="outline" size="sm" onClick={() => setCurrentStep(currentStep - 1)} className="text-[10px] font-bold uppercase tracking-widest border-white/10 bg-white/5">
+                <SkipBack className="h-3 w-3 mr-2" /> Back to Replay
+              </Button>
+              <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                 <div className="h-full bg-primary" style={{ width: '100%' }} />
+              </div>
+              <span className="text-[10px] font-mono text-white/40 uppercase">Archived Review</span>
+           </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#020202] text-white">

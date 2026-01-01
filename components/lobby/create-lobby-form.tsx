@@ -160,7 +160,7 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="px-8 pb-8 pt-4 min-h-[500px] flex flex-col">
+      <CardContent className="px-8 pb-8 pt-4 max-h-[60vh] overflow-y-auto custom-scrollbar flex flex-col">
         <form onSubmit={handleCreateLobby} className="flex-1 flex flex-col">
           <div className="flex-1 space-y-8">
             {step === 1 && (
