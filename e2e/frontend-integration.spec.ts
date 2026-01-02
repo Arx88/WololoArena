@@ -26,7 +26,7 @@ test('Frontend Player Search Integration Test', async ({ page }) => {
   // 5. Verificar ELO en la lista (ahora es visible en el item)
   const eloText = await resultItem.innerText();
   console.log(`FOUND_PLAYER_ITEM: ${eloText}`);
-  expect(eloText).toContain('ELO:');
+  expect(eloText).toMatch(/\d{3,4}/);
   
   // 6. Seleccionar y ver ficha HUD (esto NO dispara profile fetch en Spotlight v1, muestra datos directo del search result)
   // Pero si implementamos el "Selected Player Card", aparecerá abajo.

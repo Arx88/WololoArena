@@ -20,7 +20,7 @@ export default function HomePage() {
         {/* 1. Hero - Logo + CTAs principales */}
         <HeroSection />
 
-        {/* 1.5 Spotlight Search - Integrated Player Search */}
+        {/* 1.5 Spotlight Search - Standalone Section */}
         <PlayerSpotlight />
 
         {/* 2. How It Works - Usuario entiende inmediatamente qué es */}

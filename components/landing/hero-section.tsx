@@ -123,13 +123,13 @@ export function HeroSection() {
           <p className="text-lg md:text-xl text-zinc-400 leading-relaxed mb-8 max-w-lg border-l-2 border-yellow-500/20 pl-5 font-light italic">{t("heroSubtitle")}</p>
           <div className="flex flex-wrap gap-6 w-full">
             <Link href="/lobby" className="flex-1 sm:flex-none">
-              <Button className="w-full h-20 px-12 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase tracking-[0.2em] text-base transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.5)] border-r-8 border-black/20 hover:scale-105 active:scale-95 group">
-                <Swords className="mr-4 h-6 w-6 transition-transform group-hover:rotate-12" />{t("startDrafting")}
+              <Button className="w-full h-16 px-8 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase tracking-[0.2em] text-sm transition-all shadow-[0_0_30px_rgba(234,179,8,0.2)] border-r-4 border-black/20 hover:scale-105 active:scale-95 group">
+                <Swords className="mr-3 h-5 w-5 transition-transform group-hover:rotate-12" />{t("startDrafting")}
               </Button>
             </Link>
             <Link href="/tournaments" className="flex-1 sm:flex-none">
-              <Button variant="outline" className="w-full h-20 px-12 rounded-none border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-base backdrop-blur-sm transition-all hover:border-yellow-500/30 border-r-8 border-white/10 hover:scale-105 active:scale-95 group">
-                <Trophy className="mr-4 h-6 w-6 transition-transform group-hover:scale-110 group-hover:text-yellow-500" />{t("tournaments")}
+              <Button variant="outline" className="w-full h-16 px-8 rounded-none border-2 border-white/10 bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-[0.2em] text-sm backdrop-blur-sm transition-all hover:border-yellow-500/30 border-r-4 border-white/10 hover:scale-105 active:scale-95 group">
+                <Trophy className="mr-3 h-5 w-5 transition-transform group-hover:scale-110 group-hover:text-yellow-500" />{t("tournaments")}
               </Button>
             </Link>
           </div>
