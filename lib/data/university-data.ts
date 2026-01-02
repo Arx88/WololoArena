@@ -86,7 +86,6 @@ export const MOCK_QUESTIONS: Record<string, Question[]> = {
       id: "da4",
       text: "How much extra food do Lithuanians start with in Definitive Edition?",
       options: ["+100 Food", "+150 Food", "+200 Food", "No extra food"],
-      after: "Update: In current DE meta, Lithuanians start with +150 food.",
       correctAnswer: 1,
       explanation: "Lithuanians receive +150 food at the start, allowing for faster villager production or earlier scouting tech.",
       category: "civilizations"

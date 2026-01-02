@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Swords, User, Home, RotateCcw, MapPin, Share2, History, Ban, ShieldAlert, Zap, Trophy, TrendingUp, X } from "lucide-react"
 import { getCivilizationById } from "@/lib/data/civilizations"
@@ -28,8 +28,7 @@ interface DraftCompleteProps {
 export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapMode }: DraftCompleteProps) {
   const { toast } = useToast()
   const { t } = useLanguage()
-  const [showBans, setShowBans] = useState(false)
-
+  
   const hostCiv = getCivilizationById(draft.host_civ_picks?.[0])
   const guestCiv = getCivilizationById(draft.guest_civ_picks?.[0])
   const selectedMap = getMapById(finalMap || draft.final_map || draft.host_map_picks?.[0] || draft.guest_map_picks?.[0])
@@ -45,16 +44,15 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
   const copyShareLink = async () => {
     const url = `${window.location.origin}/draft/replay/${shareCode}`
     await navigator.clipboard.writeText(url)
-    toast({ title: t("linkCopied"), description: t("shareDraftDesc") })
+    toast({ title: t("linkCopied") || "Link Copied", description: "Share protocol initialized." })
   }
 
-  // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
   }
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } }
   }
@@ -63,7 +61,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
     <div className="min-h-screen bg-[#020202] text-white flex flex-col relative overflow-x-hidden">
       {/* Dynamic Background */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.05)_0%,transparent_70%)] animate-pulse-slow" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.05)_0%,transparent_70%)]" />
         <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.03] mix-blend-overlay" />
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#0a0a0b] via-transparent to-[#020202]" />
       </div>
@@ -95,12 +93,12 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
         >
           {/* Main Title Section */}
           <motion.div variants={itemVariants} className="text-center mb-16">
-            <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-none mb-4">
+            <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-none mb-4 font-cinzel">
               Draft <span className="gold-text-gradient pr-4 -mr-4">Complete</span>
             </h1>
             <div className="flex items-center justify-center gap-4">
                <div className="h-px w-12 bg-primary/20" />
-               <p className="text-sm font-bold text-primary uppercase tracking-[0.4em] italic">{t("goodLuckHaveFun")}</p>
+               <p className="text-sm font-bold text-primary uppercase tracking-[0.4em] italic">Good Luck & Have Fun</p>
                <div className="h-px w-12 bg-primary/20" />
             </div>
           </motion.div>
@@ -132,18 +130,18 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                         </div>
                         <div className="absolute -top-3 -right-3 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-blue-400 shadow-xl">Host</div>
                       </div>
-                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{hostProfile?.username || "Commander 1"}</h2>
+                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2 font-cinzel">{hostProfile?.username || "Commander 1"}</h2>
                       <div className="flex items-center gap-2 text-blue-400/60 font-mono text-[10px] uppercase tracking-widest">
                         <Zap className="h-3 w-3" /> Ready for Deployment
                       </div>
                     </div>
 
                     <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-blue-500/20 group/pick">
-                      <Image src={hostCiv?.icon || "/placeholder.svg"} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />
+                      {hostCiv && <Image src={hostCiv.icon} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />}
                       <div className="absolute inset-0 bg-gradient-to-t from-blue-950 via-blue-950/20 to-transparent" />
                       <div className="absolute bottom-6 left-6 right-6">
                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 block">Active Selection</span>
-                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{hostCiv?.name || "No Pick"}</h3>
+                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none font-cinzel">{hostCiv?.name || "No Pick"}</h3>
                       </div>
                     </div>
                   </div>
@@ -164,25 +162,25 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                         </div>
                         <div className="absolute -top-3 -left-3 bg-red-600 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-red-400 shadow-xl italic">Opponent</div>
                       </div>
-                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2">{guestProfile?.username || "Commander 2"}</h2>
+                      <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-2 font-cinzel">{guestProfile?.username || "Commander 2"}</h2>
                       <div className="flex items-center gap-2 text-red-400/60 font-mono text-[10px] uppercase tracking-widest">
                         <Zap className="h-3 w-3" /> Combat Initialized
                       </div>
                     </div>
 
                     <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-red-500/20 group/pick">
-                      <Image src={guestCiv?.icon || "/placeholder.svg"} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />
+                      {guestCiv && <Image src={guestCiv.icon} alt="Civ" fill className="object-cover transition-transform duration-1000 group-hover/pick:scale-110" />}
                       <div className="absolute inset-0 bg-gradient-to-t from-red-950 via-red-950/20 to-transparent" />
                       <div className="absolute bottom-6 left-6 right-6">
                         <span className="text-[10px] font-black text-red-400 uppercase tracking-[0.3em] mb-1 block">Active Selection</span>
-                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">{guestCiv?.name || "No Pick"}</h3>
+                        <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none font-cinzel">{guestCiv?.name || "No Pick"}</h3>
                       </div>
                     </div>
                   </div>
 
                   {/* VS Middle Badge */}
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 hidden md:block">
-                    <div className="h-16 w-16 rounded-full bg-primary border-4 border-black flex items-center justify-center shadow-[0_0_30px_rgba(var(--primary),0.5)]">
+                    <div className="h-16 w-16 rounded-full bg-primary border-4 border-black flex items-center justify-center shadow-[0_0_30px_rgba(234,179,8,0.5)]">
                       <span className="text-black font-black italic text-xl">VS</span>
                     </div>
                   </div>
@@ -202,7 +200,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                     <div className="grid grid-cols-4 gap-2">
                       {hostCivBans.map((civ, i) => (
                         <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-red-500/30 grayscale hover:grayscale-0 transition-all group/ban cursor-help">
-                          <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />
+                          {civ && <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />}
                           <div className="absolute inset-0 flex items-center justify-center bg-red-900/40"><X className="h-6 w-6 text-red-500 drop-shadow-md" /></div>
                         </div>
                       ))}
@@ -211,7 +209,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                       <div className="flex flex-wrap gap-2">
                         {hostMapBans.map((m, i) => (
                           <Badge key={i} variant="outline" className="bg-red-500/5 text-red-400 border-red-500/20 text-[9px] uppercase font-black px-3 py-1">
-                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m.name}
+                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m?.name}
                           </Badge>
                         ))}
                       </div>
@@ -229,7 +227,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                     <div className="grid grid-cols-4 gap-2">
                       {guestCivBans.map((civ, i) => (
                         <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-red-500/30 grayscale hover:grayscale-0 transition-all group/ban cursor-help">
-                          <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />
+                          {civ && <Image src={civ.icon} alt={civ.name} fill className="object-cover opacity-40 group-hover/ban:opacity-100" />}
                           <div className="absolute inset-0 flex items-center justify-center bg-red-900/40"><X className="h-6 w-6 text-red-500 drop-shadow-md" /></div>
                         </div>
                       ))}
@@ -238,7 +236,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                       <div className="flex flex-wrap gap-2">
                         {guestMapBans.map((m, i) => (
                           <Badge key={i} variant="outline" className="bg-red-500/5 text-red-400 border-red-500/20 text-[9px] uppercase font-black px-3 py-1">
-                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m.name}
+                            <Ban className="h-2.5 w-2.5 mr-1.5" /> Map: {m?.name}
                           </Badge>
                         ))}
                       </div>
@@ -259,7 +257,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
                     <MapPin className="h-8 w-8 text-emerald-400" />
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/60 mb-2">Battleground</span>
-                  <h4 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-6 leading-none">
+                  <h4 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-6 leading-none font-cinzel">
                     {selectedMap?.name || "TBD"}
                   </h4>
                   
@@ -341,6 +339,7 @@ export function DraftComplete({ draft, hostProfile, guestProfile, finalMap, mapM
           0%, 100% { opacity: 0.1; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(1.1); }
         }
+        .font-cinzel { font-family: var(--font-cinzel), serif; }
       `}</style>
     </div>
   )

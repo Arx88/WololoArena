@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, Edit2, Eye, EyeOff, ExternalLink, Radio, Info, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle } from "lucide-react"
+import { Plus, Trash2, Edit2, Eye, EyeOff, ExternalLink, Radio, Info, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle, GripVertical } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, Reorder } from "framer-motion"
 import { useNews, NewsItem } from "@/lib/news-context"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,21 +25,18 @@ interface NewsTickerProps {
 }
 
 export function NewsTicker({ isAdmin }: NewsTickerProps) {
-  const { news, addNews, removeNews, updateNews, toggleActive } = useNews()
+  const { news, addNews, removeNews, updateNews, toggleActive, setNews } = useNews()
   
   const [editingId, setEditingId] = useState<string | null>(null)
   const [newMsg, setNewMsg] = useState("")
   const [newLink, setNewLink] = useState("")
   const [newDesc, setNewDesc] = useState("")
   const [newImg, setNewImg] = useState("")
-  const [newPriority, setNewPriority] = useState(0)
   
   const [hoveredNews, setHoveredNews] = useState<NewsItem | null>(null)
   const [isTickerHovered, setIsTickerHovered] = useState(false)
 
-  const activeNews = [...news]
-    .filter((n) => n.active)
-    .sort((a, b) => (b.priority || 0) - (a.priority || 0))
+  const activeNews = news.filter((n) => n.active)
 
   const handleAddOrUpdate = (e: React.FormEvent) => {
     e.preventDefault()
@@ -51,11 +48,10 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
         link: newLink,
         description: newDesc,
         imageUrl: newImg,
-        priority: newPriority
       })
       setEditingId(null)
     } else {
-      addNews(newMsg, newLink, newDesc, newImg, newPriority)
+      addNews(newMsg, newLink, newDesc, newImg)
     }
     resetForm()
   }
@@ -66,7 +62,6 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
     setNewLink(item.link || "")
     setNewDesc(item.description || "")
     setNewImg(item.imageUrl || "")
-    setNewPriority(item.priority || 0)
   }
 
   const resetForm = () => {
@@ -75,7 +70,6 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
     setNewLink("")
     setNewDesc("")
     setNewImg("")
-    setNewPriority(0)
   }
 
   if (activeNews.length === 0 && !isAdmin) return null
@@ -138,73 +132,160 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                     <Settings2 className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-6xl bg-[#0a0a0b] border-white/10 text-white p-0 overflow-hidden shadow-2xl">
-                  <div className="flex flex-col h-[80vh]">
-                    <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Megaphone className="h-5 w-5 text-primary" />
-                        <DialogTitle className="text-base font-black uppercase tracking-widest text-white/90">
-                          News Management
-                        </DialogTitle>
+                <DialogContent className="max-w-[1400px] sm:max-w-[1400px] w-[95vw] bg-[#0a0a0b] border-white/10 text-white p-0 overflow-hidden shadow-2xl">
+                  <div className="flex flex-col h-[85vh]">
+                    {/* Header */}
+                    <div className="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
+                          <Megaphone className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <DialogTitle className="text-xl font-black uppercase tracking-widest text-white/90">
+                            News Management
+                          </DialogTitle>
+                          <p className="text-xs text-white/30 font-mono uppercase tracking-widest mt-1">Control Console // Drag & Drop Protocol</p>
+                        </div>
                       </div>
+                      <Badge variant="outline" className="border-primary/30 text-primary font-mono px-4 py-1.5 uppercase">Manual Order Active</Badge>
                     </div>
                     
-                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 overflow-hidden">
-                      <div className="p-10 border-r border-white/5 overflow-y-auto custom-scrollbar bg-black/20">
-                        <h4 className="text-[11px] font-black uppercase text-primary tracking-widest mb-10">
-                          {editingId ? "Edit News Item" : "Create New News Item"}
-                        </h4>
+                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 overflow-hidden">
+                      {/* --- FORM PANEL --- */}
+                      <div className="lg:col-span-2 p-10 border-r border-white/5 overflow-y-auto custom-scrollbar bg-black/40">
+                        <div className="flex items-center justify-between mb-10">
+                          <h4 className="text-sm font-black uppercase text-primary tracking-[0.2em] flex items-center gap-3">
+                            {editingId ? <Edit2 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                            {editingId ? "Update News Item" : "Create New Item"}
+                          </h4>
+                          {editingId && (
+                            <Button variant="ghost" size="sm" onClick={resetForm} className="text-[10px] uppercase font-black text-white/40 hover:text-white">
+                              Cancel
+                            </Button>
+                          )}
+                        </div>
+                        
                         <form onSubmit={handleAddOrUpdate} className="space-y-8">
                           <div className="space-y-3">
-                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-wider">Headline</Label>
-                            <Input placeholder="Title..." value={newMsg} onChange={(e) => setNewMsg(e.target.value)} className="bg-white/[0.03] border-white/10 h-14 text-base focus:border-primary/50 rounded-xl" />
+                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Main Headline</Label>
+                            <Input 
+                              placeholder="Title of the news..." 
+                              value={newMsg}
+                              onChange={(e) => setNewMsg(e.target.value)}
+                              className="bg-white/[0.03] border-white/10 h-14 text-base focus:border-primary/50 rounded-2xl px-6"
+                            />
                           </div>
+
                           <div className="space-y-3">
-                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-wider">Description</Label>
-                            <Textarea placeholder="Full briefing text..." value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="bg-white/[0.03] border-white/10 min-h-[180px] text-sm focus:border-primary/50 rounded-xl resize-none p-4" />
+                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Full Intelligence Briefing</Label>
+                            <Textarea 
+                              placeholder="Detailed information for expanded view..." 
+                              value={newDesc}
+                              onChange={(e) => setNewDesc(e.target.value)}
+                              className="bg-white/[0.03] border-white/10 min-h-[200px] text-sm focus:border-primary/50 rounded-2xl resize-none p-6 leading-relaxed"
+                            />
                           </div>
+
                           <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-wider">Image URL</Label>
-                              <Input placeholder="https://..." value={newImg} onChange={(e) => setNewImg(e.target.value)} className="bg-white/[0.03] border-white/10 h-12 text-xs font-mono rounded-xl" />
+                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Asset URL (IMG)</Label>
+                              <Input 
+                                placeholder="https://..." 
+                                value={newImg}
+                                onChange={(e) => setNewImg(e.target.value)}
+                                className="bg-white/[0.03] border-white/10 h-12 text-xs font-mono rounded-xl px-4"
+                              />
                             </div>
                             <div className="space-y-3">
-                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-wider">Link</Label>
-                              <Input placeholder="/page..." value={newLink} onChange={(e) => setNewLink(e.target.value)} className="bg-white/[0.03] border-white/10 h-12 text-xs rounded-xl" />
+                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Action Link</Label>
+                              <Input 
+                                placeholder="/page or URL" 
+                                value={newLink}
+                                onChange={(e) => setNewLink(e.target.value)}
+                                className="bg-white/[0.03] border-white/10 h-12 text-xs rounded-xl px-4"
+                              />
                             </div>
                           </div>
-                          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-                            <div className="flex justify-between items-center mb-4">
-                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-wider">Priority (0-100)</Label>
-                              <span className="text-sm font-mono text-primary font-bold bg-primary/10 px-3 py-1 rounded-lg">{newPriority}</span>
-                            </div>
-                            <input type="range" min="0" max="100" value={newPriority} onChange={(e) => setNewPriority(parseInt(e.target.value))} className="w-full accent-primary h-2 bg-white/5 rounded-lg appearance-none" />
-                          </div>
-                          <div className="flex gap-4 pt-4">
-                            <Button type="submit" className="flex-1 bg-primary text-black font-black uppercase text-xs tracking-[0.2em] h-14 hover:bg-white transition-all rounded-xl shadow-lg shadow-primary/10">
-                              {editingId ? "Update News" : "Publish News"}
-                            </Button>
-                            {editingId && <Button type="button" variant="outline" onClick={resetForm} className="border-white/10 text-white h-14 px-8 rounded-xl uppercase text-xs font-bold">Cancel</Button>}
-                          </div>
+
+                          <Button type="submit" className="w-full bg-primary text-black font-black uppercase text-xs tracking-[0.3em] h-16 hover:bg-white transition-all rounded-2xl shadow-xl shadow-primary/10">
+                            {editingId ? <Save className="mr-3 h-5 w-5" /> : <Radio className="mr-3 h-5 w-5" />}
+                            {editingId ? "Update Database" : "Initialize Broadcast"}
+                          </Button>
                         </form>
                       </div>
-                      <div className="p-10 overflow-hidden flex flex-col">
-                        <h4 className="text-[11px] font-black uppercase text-white/40 tracking-widest mb-10">News Registry</h4>
-                        <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                          {news.map((item) => (
-                            <div key={item.id} className={cn("group relative flex items-center gap-5 p-5 rounded-2xl border transition-all", editingId === item.id ? "bg-primary/5 border-primary/40 shadow-inner" : "bg-white/[0.01] border-white/5 hover:border-white/20")}>
-                              <Button variant="ghost" size="icon" className={cn("h-12 w-12 shrink-0 rounded-xl transition-all", item.active ? "text-green-400 bg-green-400/5" : "text-white/10")} onClick={() => toggleActive(item.id)}>{item.active ? <Bell className="h-6 w-6" /> : <EyeOff className="h-6 w-6" />}</Button>
-                              <div className="flex-1 min-w-0">
-                                <p className={cn("text-base font-bold truncate mb-1", !item.active && "opacity-20 line-through")}>{item.message}</p>
-                                <Badge variant="outline" className="text-[9px] font-mono text-white/20 border-white/5">PRIORITY: {item.priority}</Badge>
-                              </div>
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                <Button variant="ghost" size="icon" onClick={() => startEditing(item)} className="h-10 w-10 text-white/40 hover:text-primary bg-white/5"><Edit2 className="h-4 w-4" /></Button>
-                                <Button variant="ghost" size="icon" onClick={() => removeNews(item.id)} className="h-10 w-10 text-white/10 hover:text-red-400 bg-white/5"><Trash2 className="h-4 w-4" /></Button>
-                              </div>
-                            </div>
-                          ))}
+
+                      {/* --- REGISTRY PANEL (DRAG & DROP) --- */}
+                      <div className="lg:col-span-3 p-10 overflow-hidden flex flex-col bg-black/20">
+                        <div className="flex items-center justify-between mb-10">
+                          <h4 className="text-sm font-black uppercase text-white/40 tracking-[0.2em] flex items-center gap-3">
+                            <History className="h-4 w-4" />
+                            Transmission Priority
+                          </h4>
+                          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Hold & Drag to Reorder</span>
                         </div>
+                        
+                        <Reorder.Group 
+                          axis="y" 
+                          values={news} 
+                          onReorder={setNews}
+                          className="flex-1 space-y-4 overflow-y-auto pr-4 custom-scrollbar"
+                        >
+                          {news.map((item) => (
+                            <Reorder.Item 
+                              key={item.id} 
+                              value={item}
+                              className={cn(
+                                "group relative flex items-center gap-6 p-6 rounded-3xl border transition-all duration-500 cursor-grab active:cursor-grabbing",
+                                editingId === item.id ? "bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(var(--primary),0.1)]" : "bg-white/[0.01] border-white/5 hover:border-white/20"
+                              )}
+                            >
+                              {/* Drag Handle */}
+                              <div className="text-white/10 group-hover:text-primary/40 transition-colors">
+                                <GripVertical className="h-6 w-6" />
+                              </div>
+
+                              <Button
+                                variant="ghost" size="icon"
+                                className={cn("h-14 w-14 shrink-0 rounded-2xl transition-all border", item.active ? "text-green-400 bg-green-400/5 border-green-400/20" : "text-white/10 bg-white/5 border-transparent")}
+                                onClick={(e) => { e.stopPropagation(); toggleActive(item.id); }}
+                              >
+                                {item.active ? <Bell className="h-7 w-7" /> : <EyeOff className="h-7 w-7" />}
+                              </Button>
+                              
+                              <div className="flex-1 min-w-0">
+                                <p className={cn("text-lg font-black truncate leading-none mb-2", !item.active && "opacity-20 line-through")}>{item.message}</p>
+                                <div className="flex items-center gap-4">
+                                  <span className="text-[9px] text-white/20 font-mono tracking-tighter uppercase">ID: {item.id.slice(-8)}</span>
+                                  {item.description && <span className="text-[10px] text-primary/40 font-black uppercase tracking-tighter">• Content</span>}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                <Button 
+                                  variant="ghost" size="icon" 
+                                  onClick={(e) => { e.stopPropagation(); startEditing(item); }} 
+                                  className="h-11 w-11 text-white/40 hover:text-primary bg-white/5 rounded-xl border border-transparent hover:border-primary/30"
+                                >
+                                  <Edit2 className="h-5 w-5" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" size="icon" 
+                                  onClick={(e) => { e.stopPropagation(); removeNews(item.id); }} 
+                                  className="h-11 w-11 text-white/10 hover:text-red-400 bg-white/5 rounded-xl border border-transparent hover:border-red-400/30"
+                                >
+                                  <Trash2 className="h-5 w-5" />
+                                </Button>
+                              </div>
+                            </Reorder.Item>
+                          ))}
+                          
+                          {news.length === 0 && (
+                            <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.01]">
+                               <AlertCircle className="h-16 w-16 text-white/5 mb-6" />
+                               <p className="text-xs font-black text-white/20 uppercase tracking-[0.4em]">No transmissions in registry</p>
+                            </div>
+                          )}
+                        </Reorder.Group>
                       </div>
                     </div>
                   </div>
@@ -251,7 +332,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                   <div className="h-px flex-1 bg-white/5" />
                 </div>
 
-                <h3 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic leading-[0.9] mb-6 max-w-3xl">
+                <h3 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase italic leading-[0.9] mb-6 max-w-3xl font-cinzel">
                   {hoveredNews.message}
                 </h3>
 
@@ -290,9 +371,10 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
         .animate-marquee { animation: marquee 60s linear infinite; }
         .paused { animation-play-state: paused !important; }
         .mask-linear-fade { mask-image: linear-gradient(to right, transparent, black 100px, black calc(100% - 100px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 100px, black calc(100% - 100px), transparent); }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--primary), 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(var(--primary), 0.4); }
       `}</style>
     </div>
   )

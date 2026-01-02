@@ -1,0 +1,53 @@
+export interface AOE2Player {
+  rank: number
+  rating: number
+  highRating?: number
+  name: string
+  profileId: number
+  games: number
+  wins: number
+  losses: number
+  lastMatch?: number
+}
+
+export interface AOE2Match {
+  matchId: string
+  mapType: number
+  civ: number
+  result: number // 1 win, 2 loss
+  started: number
+}
+
+export const CIV_ID_MAP: Record<number, string> = {
+  1: "britons", 2: "franks", 3: "goths", 4: "teutons", 5: "japanese", 6: "chinese", 
+  7: "byzantines", 8: "persians", 9: "saracens", 10: "turks", 11: "vikings", 
+  12: "mongols", 13: "celts", 14: "spanish", 15: "aztecs", 16: "mayans", 
+  17: "huns", 18: "koreans", 19: "italians", 20: "hindustanis", 21: "incas", 
+  22: "magyars", 23: "slavs", 24: "portuguese", 25: "ethiopians", 26: "malians", 
+  27: "berbers", 28: "khmer", 29: "malay", 30: "burmese", 31: "vietnamese", 
+  32: "bulgarians", 33: "tatars", 34: "cumans", 35: "lithuanians", 36: "burgundians", 
+  37: "sicilians", 38: "poles", 39: "bohemians", 40: "dravidians", 41: "bengalis", 
+  42: "gurjaras", 43: "romans", 44: "armenians", 45: "georgians"
+}
+
+export async function searchPlayers(name: string): Promise<AOE2Player[]> {
+  try {
+    const response = await fetch(`/api/aoe2/search?name=${encodeURIComponent(name)}`)
+    if (!response.ok) return [] // Return empty instead of throwing
+    return await response.json()
+  } catch (error) {
+    console.error("Error searching players:", error)
+    return []
+  }
+}
+
+export async function getPlayerStats(profileId: string): Promise<any> {
+  try {
+    const response = await fetch(`/api/aoe2/profile/${profileId}`)
+    if (!response.ok) return null
+    return await response.json()
+  } catch (error) {
+    console.error("Error fetching player stats:", error)
+    return null
+  }
+}

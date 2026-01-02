@@ -18,6 +18,8 @@ interface NewsContextType {
   removeNews: (id: string) => void
   updateNews: (id: string, updates: Partial<NewsItem>) => void
   toggleActive: (id: string) => void
+  moveNews: (id: string, direction: "up" | "down") => void
+  setNews: (news: NewsItem[]) => void
 }
 
 const NewsContext = createContext<NewsContextType | undefined>(undefined)
@@ -104,8 +106,28 @@ export function NewsProvider({ children }: { children: React.ReactNode }) {
     )
   }
 
+  const moveNews = (id: string, direction: "up" | "down") => {
+    setNews((prev) => {
+      const index = prev.findIndex((item) => item.id === id)
+      if (index === -1) return prev
+      if (direction === "up" && index === 0) return prev
+      if (direction === "down" && index === prev.length - 1) return prev
+
+      const newNews = [...prev]
+      const targetIndex = direction === "up" ? index - 1 : index + 1
+      const temp = newNews[index]
+      newNews[index] = newNews[targetIndex]
+      newNews[targetIndex] = temp
+      return newNews
+    })
+  }
+
+  const setNewsData = (newNews: NewsItem[]) => {
+    setNews(newNews)
+  }
+
   return (
-    <NewsContext.Provider value={{ news, addNews, removeNews, updateNews, toggleActive }}>
+    <NewsContext.Provider value={{ news, addNews, removeNews, updateNews, toggleActive, moveNews, setNews: setNewsData }}>
       {children}
     </NewsContext.Provider>
   )

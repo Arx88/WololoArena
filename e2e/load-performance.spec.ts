@@ -29,8 +29,8 @@ test('Site Load Performance Check', async ({ page, context }) => {
   await page.goto('http://localhost:3000/lobby');
   
   // Should NOT see infinite spinner
-  // "Draft Lobby" header should appear
-  await expect(page.getByText('Draft Lobby')).toBeVisible({ timeout: 10000 });
+  // "Creation Mode" header should appear (was "Draft Lobby")
+  await expect(page.getByText('Creation Mode')).toBeVisible({ timeout: 10000 });
   console.log('Lobby loaded.');
 
   // 3. Create a Demo Lobby and Check Draft Load

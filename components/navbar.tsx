@@ -153,11 +153,11 @@ export function Navbar() {
   if (isAuthPage) return null
 
   const navLinks = [
-    { href: "/lobby", label: t("draft"), icon: Swords },
-    { href: "/civilizations/units", label: "Unique Units", icon: Shield },
-    { href: "/university", label: "University", icon: GraduationCap },
     { href: "/tournaments", label: t("tournaments"), icon: Trophy },
+    { href: "/lobby", label: t("draft"), icon: Swords },
     { href: "/team-builder", label: t("tgBuilder"), icon: Users },
+    { href: "/civilizations/units", label: "Unique Units", icon: Shield },
+    { href: "/university", label: "Wololo University", icon: GraduationCap },
   ]
 
   return (
@@ -173,21 +173,20 @@ export function Navbar() {
         {/* Top Decorative Line */}
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent" />
         
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 relative">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-8 px-6 relative">
           
           {/* Logo Section */}
-          <Link href="/" className="flex items-center gap-4 group relative py-2">
+          <Link href="/" className="flex items-center gap-4 group relative py-2 shrink-0">
             <div className="absolute -inset-4 bg-yellow-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
-            <div className="relative">
+            <div className="relative shrink-0 w-12 h-12">
                <Image 
                  src="/images/logo-mini.png" 
                  alt="AOE2 Wololo Arena" 
-                 width={48} 
-                 height={48} 
-                 className="h-12 w-auto drop-shadow-[0_2px_10px_rgba(234,179,8,0.4)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" 
+                 fill
+                 className="object-contain drop-shadow-[0_2px_10px_rgba(234,179,8,0.4)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" 
                />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col shrink-0">
               <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600 font-cinzel drop-shadow-sm group-hover:to-yellow-400 transition-all">
                 WOLOLO
               </span>
@@ -226,16 +225,16 @@ export function Navbar() {
                }) : (
                  // Guest Links
                   <>
-                    <Link href="/lobby">
-                      <Button variant="ghost" className="h-8 text-xs font-bold tracking-wider uppercase text-zinc-400 hover:text-yellow-400 hover:bg-white/5 rounded-full">
-                        <Swords className="h-3.5 w-3.5 mr-2" />
-                        {t("draft")}
-                      </Button>
-                    </Link>
                     <Link href="/tournaments">
-                      <Button variant="ghost" className="h-8 text-xs font-bold tracking-wider uppercase text-zinc-400 hover:text-yellow-400 hover:bg-white/5 rounded-full">
+                      <Button variant="ghost" className="h-8 px-4 text-xs font-bold tracking-wider uppercase text-zinc-400 hover:text-yellow-400 hover:bg-white/5 rounded-full mx-1">
                         <Trophy className="h-3.5 w-3.5 mr-2" />
                         {t("tournaments")}
+                      </Button>
+                    </Link>
+                    <Link href="/lobby">
+                      <Button variant="ghost" className="h-8 px-4 text-xs font-bold tracking-wider uppercase text-zinc-400 hover:text-yellow-400 hover:bg-white/5 rounded-full mx-1">
+                        <Swords className="h-3.5 w-3.5 mr-2" />
+                        {t("draft")}
                       </Button>
                     </Link>
                   </>

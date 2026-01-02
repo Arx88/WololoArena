@@ -28,10 +28,7 @@ import {
   Star,
   Clock,
   AlertTriangle,
-  CheckCircle2,
-  BarChart3,
-  Swords,
-  Sparkles
+  ArrowRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 

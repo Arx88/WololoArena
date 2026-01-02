@@ -72,7 +72,8 @@ test('verify full draft stability', async ({ page }) => {
     const isMyTurn = await page.getByText(/YOUR TURN/i).first().isVisible();
     if (isMyTurn) {
       console.log(`Step ${i}: Selecting item...`);
-      const item = page.locator('button.group.relative.aspect-square, button.relative.overflow-hidden.rounded-lg.border-2').first();
+      // Updated selector to match both CivGrid (aspect-square) and MapGrid (rounded-xl)
+      const item = page.locator('button.group.relative.aspect-square, button.group.relative.overflow-hidden.rounded-xl').first();
       await item.waitFor({ state: 'visible', timeout: 10000 }).catch(async () => {
         await page.screenshot({ path: `e2e/debug-draft-step-${i}.png` });
         console.log("Draft item button not found/visible.");
