@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { HeroSection } from "@/components/landing/hero-section"
-import { PlayerSpotlight } from "@/components/landing/player-spotlight"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { CivilizationsShowcase } from "@/components/landing/civilizations-showcase"
 import { UniqueUnitsPromo } from "@/components/landing/unique-units-promo"
@@ -11,6 +10,7 @@ import { LeaderboardCompactSection } from "@/components/landing/leaderboard-comp
 import { TeamGameSection } from "@/components/landing/team-game-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { CTASection } from "@/components/landing/cta-section"
+import { PlayerSearchWidget } from "@/components/player-search-widget"
 
 export default function HomePage() {
   return (
@@ -19,9 +19,6 @@ export default function HomePage() {
       <main className="flex-1 pt-16">
         {/* 1. Hero - Logo + CTAs principales */}
         <HeroSection />
-
-        {/* 1.5 Spotlight Search - Standalone Section */}
-        <PlayerSpotlight />
 
         {/* 2. How It Works - Usuario entiende inmediatamente qué es */}
         <HowItWorksSection />
@@ -51,6 +48,9 @@ export default function HomePage() {
         <CTASection />
       </main>
       <Footer />
+
+      {/* FLOATING PLAYER SEARCH */}
+      <PlayerSearchWidget />
     </div>
   )
 }

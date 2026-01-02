@@ -3,11 +3,13 @@ import { test, expect } from '@playwright/test';
 test('Official API Search Verification', async ({ page }) => {
   await page.goto('http://localhost:3000');
   
-  const searchInput = page.getByPlaceholder('Search Champion');
-  await expect(searchInput).toBeVisible({ timeout: 15000 });
+  // Abrir widget
+  await page.click('text=Player Search');
+  
+  const searchInput = page.getByPlaceholder('Search player...');
+  await expect(searchInput).toBeVisible();
 
   console.log('Searching for official data...');
-  await searchInput.click();
   await searchInput.fill('TheViper');
   
   // Esperar respuesta de API (debounce)
@@ -16,8 +18,8 @@ test('Official API Search Verification', async ({ page }) => {
   );
   await responsePromise;
 
-  // Esperamos a que el resultado se renderice en la lista de comandos
-  const result = page.getByRole('option', { name: /TheViper/i }).first();
+  // Esperamos a que el resultado aparezca en la lista
+  const result = page.locator('button:has-text("TheViper")').first();
   await expect(result).toBeVisible({ timeout: 30000 });
   
   const eloText = await result.innerText();
