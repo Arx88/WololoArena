@@ -3,25 +3,24 @@ import { test, expect } from '@playwright/test';
 test('Official API Search Verification', async ({ page }) => {
   await page.goto('http://localhost:3000');
   
-  const searchInput = page.locator('input[placeholder*="Search by Player Name"]');
+  const searchInput = page.getByPlaceholder('Search Champion');
   await expect(searchInput).toBeVisible({ timeout: 15000 });
 
   console.log('Searching for official data...');
+  await searchInput.click();
   await searchInput.fill('TheViper');
   
-  // Esperar específicamente a que la respuesta de nuestra API llegue
+  // Esperar respuesta de API (debounce)
   const responsePromise = page.waitForResponse(response => 
     response.url().includes('/api/aoe2/search') && response.status() === 200
   );
-  
-  await page.click('button:has-text("Identify")');
   await responsePromise;
 
-  // Esperamos a que el resultado se renderice
-  const result = page.locator('button:has-text("TheViper")').first();
+  // Esperamos a que el resultado se renderice en la lista de comandos
+  const result = page.getByRole('option', { name: /TheViper/i }).first();
   await expect(result).toBeVisible({ timeout: 30000 });
   
-  const eloText = await result.locator('p.font-mono').innerText();
+  const eloText = await result.innerText();
   console.log('OFFICIAL_ELO_FOUND:', eloText);
   
   // El ELO de TheViper siempre es > 2000

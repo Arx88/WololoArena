@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { HeroSection } from "@/components/landing/hero-section"
-import { PlayerSearchSection } from "@/components/landing/player-search-section"
+import { PlayerSpotlight } from "@/components/landing/player-spotlight"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { CivilizationsShowcase } from "@/components/landing/civilizations-showcase"
 import { UniqueUnitsPromo } from "@/components/landing/unique-units-promo"
@@ -20,8 +20,8 @@ export default function HomePage() {
         {/* 1. Hero - Logo + CTAs principales */}
         <HeroSection />
 
-        {/* 1.5 Player Insights - Database Search */}
-        <PlayerSearchSection />
+        {/* 1.5 Spotlight Search - Integrated Player Search */}
+        <PlayerSpotlight />
 
         {/* 2. How It Works - Usuario entiende inmediatamente qué es */}
         <HowItWorksSection />
