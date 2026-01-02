@@ -4,9 +4,9 @@ test('Official API Search Verification', async ({ page }) => {
   await page.goto('http://localhost:3000');
   
   // Abrir widget
-  await page.click('text=Player Search');
+  await page.click('text=PLAYER SEARCH');
   
-  const searchInput = page.getByPlaceholder('Search player...');
+  const searchInput = page.getByPlaceholder('IDENTIFY PLAYER...');
   await expect(searchInput).toBeVisible();
 
   console.log('Searching for official data...');

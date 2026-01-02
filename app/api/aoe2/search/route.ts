@@ -11,16 +11,27 @@ export async function GET(request: Request) {
     const searchUrl = `https://data.aoe2companion.com/api/profiles?search=${encodeURIComponent(name)}&page=1`;
     console.log(`[AOE2 API] Fetching Search: ${searchUrl}`);
 
-    const searchResponse = await fetch(searchUrl, {
+    const response = await fetch(searchUrl, {
       headers: { "User-Agent": "WololoArena/1.0" }
     })
 
-    if (!searchResponse.ok) return NextResponse.json([])
-    const searchData = await searchResponse.json()
+    if (!response.ok) return NextResponse.json([])
+    
+    const text = await response.text();
+    if (!text) return NextResponse.json([]);
+    
+    let searchData;
+    try {
+        searchData = JSON.parse(text);
+    } catch (e) {
+        console.error("Failed to parse search data", e);
+        return NextResponse.json([]);
+    }
+
     if (!searchData.profiles) return NextResponse.json([])
 
-    // 2. Obtener detalles completos (ELO) para cada resultado (limitado a top 5 para velocidad)
-    const topProfiles = searchData.profiles.slice(0, 5);
+    // 2. Obtener detalles completos (ELO) para cada resultado (limitado a top 15 para velocidad)
+    const topProfiles = searchData.profiles.slice(0, 15);
     
     const detailedPlayers = await Promise.all(topProfiles.map(async (p: any) => {
         try {
@@ -37,6 +48,7 @@ export async function GET(request: Request) {
                 profileId: p.profileId?.toString(),
                 name: p.name,
                 country: p.country,
+                clan: p.clan,
                 rating: rm1v1.rating || 0,
                 rank: rm1v1.rank || 0,
                 games: rm1v1.games || p.games || 0,

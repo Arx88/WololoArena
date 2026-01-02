@@ -17,6 +17,8 @@ export interface Civilization {
   expansion: "base" | "conquerors" | "forgotten" | "african" | "rajas" | "dlc" | "dynasties"
   specialty: string
   icon: string
+  uniqueUnit: string
+  uniqueUnitImage: string
   teamBonus: string
   bonuses: CivilizationBonus[]
   synergyTags: string[]
@@ -28,6 +30,7 @@ export interface Civilization {
 }
 
 const WIKI_BASE = "https://static.wikia.nocookie.net/ageofempires/images"
+const UNIT_BASE = "/images/units"
 
 export const CIVILIZATIONS: Civilization[] = [
   {
@@ -36,6 +39,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Infantry & Naval",
     icon: `${WIKI_BASE}/e/e3/Armenians_AoE2.png`,
+    uniqueUnit: "Composite Bowman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Composite_Bowman.png`,
     teamBonus: "Infantry +2 Line of Sight",
     bonuses: [
       { type: "economy", description: "Mule Carts cost -25%" },
@@ -55,6 +60,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "conquerors",
     specialty: "Infantry & Monks",
     icon: `${WIKI_BASE}/6/6e/Aztecs_AoE2.png`,
+    uniqueUnit: "Jaguar Warrior",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Jaguar_Warrior.png`,
     teamBonus: "Relics generate +33% gold",
     bonuses: [
       { type: "economy", description: "Villagers carry +3 extra resources" },
@@ -73,6 +80,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Elephants & Navy",
     icon: `${WIKI_BASE}/0/09/Bengalis_AoE2.png`,
+    uniqueUnit: "Ratha",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Ratha.png`,
     teamBonus: "Trade units yield 10% food",
     bonuses: [
       { type: "economy", description: "Town Centers spawn 2 Villagers when advancing" }
@@ -90,6 +99,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "african",
     specialty: "Cavalry & Navy",
     icon: `${WIKI_BASE}/8/8d/Berbers_AoE2.png`,
+    uniqueUnit: "Camel Archer",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Camel_Archer.png`,
     teamBonus: "Genitours available",
     bonuses: [
       { type: "economy", description: "Villagers move 10% faster" },
@@ -108,6 +119,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Monks & Gunpowder",
     icon: `${WIKI_BASE}/3/35/Bohemians_AoE2.png`,
+    uniqueUnit: "Hussite Wagon",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Hussite_Wagon.png`,
     teamBonus: "Markets work 80% faster",
     bonuses: [
       { type: "military", description: "Chemistry available in Castle Age" },
@@ -126,6 +139,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Archers",
     icon: `${WIKI_BASE}/3/3b/Britons_AoE2.png`,
+    uniqueUnit: "Longbowman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Longbowman.png`,
     teamBonus: "Archery Ranges work 10% faster",
     bonuses: [
       { type: "military", description: "Foot archers +1/+2 range" },
@@ -144,6 +159,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Infantry & Cavalry",
     icon: `${WIKI_BASE}/e/e6/Bulgarians_AoE2.png`,
+    uniqueUnit: "Konnik",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Konnik.png`,
     teamBonus: "Blacksmiths work 80% faster",
     bonuses: [
       { type: "military", description: "Militia-line upgrades free" },
@@ -162,6 +179,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/a/a2/Burgundians_AoE2.png`,
+    uniqueUnit: "Coustillier",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Coustillier.png`,
     teamBonus: "Relics generate food",
     bonuses: [
       { type: "economy", description: "Economic upgrades available one age earlier" },
@@ -180,6 +199,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "rajas",
     specialty: "Monks & Elephants",
     icon: `${WIKI_BASE}/3/30/Burmese_AoE2.png`,
+    uniqueUnit: "Arambai",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Arambai.png`,
     teamBonus: "Relics visible on map",
     bonuses: [
       { type: "economy", description: "Free Lumber Camp upgrades" },
@@ -198,6 +219,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Defense",
     icon: `${WIKI_BASE}/2/2a/Byzantines_AoE2.png`,
+    uniqueUnit: "Cataphract",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Cataphract.png`,
     teamBonus: "Monks heal 100% faster",
     bonuses: [
       { type: "defense", description: "Buildings +10-40% HP" },
@@ -216,6 +239,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Infantry & Siege",
     icon: `${WIKI_BASE}/8/88/Celts_AoE2.png`,
+    uniqueUnit: "Woad Raider",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Woad_Raider.png`,
     teamBonus: "Siege Workshops work 20% faster",
     bonuses: [
       { type: "economy", description: "Lumberjacks work 15% faster" },
@@ -234,6 +259,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Archers",
     icon: `${WIKI_BASE}/1/18/Chinese_AoE2.png`,
+    uniqueUnit: "Chu Ko Nu",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Chu_Ko_Nu.png`,
     teamBonus: "Farms contain +10% food",
     bonuses: [
       { type: "economy", description: "Start with +3 Villagers, -200 food" },
@@ -252,6 +279,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/b/be/Cumans_AoE2.png`,
+    uniqueUnit: "Kipchak",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Kipchak.png`,
     teamBonus: "Palisade Walls +33% HP",
     bonuses: [
       { type: "military", description: "Second TC in Feudal Age" },
@@ -270,6 +299,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Infantry & Navy",
     icon: `${WIKI_BASE}/d/d1/Dravidians_AoE2.png`,
+    uniqueUnit: "Urumi Swordsman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Urumi_Swordsman.png`,
     teamBonus: "Docks provide +5 pop",
     bonuses: [
       { type: "economy", description: "Fishermen carry +15" },
@@ -288,6 +319,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "african",
     specialty: "Archers & Siege",
     icon: `${WIKI_BASE}/0/0b/Ethiopians_AoE2.png`,
+    uniqueUnit: "Shotel Warrior",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Shotel_Warrior.png`,
     teamBonus: "Outposts +3 LOS",
     bonuses: [
       { type: "economy", description: "+100 gold/food on age up" },
@@ -306,6 +339,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/b/bc/Franks_AoE2.png`,
+    uniqueUnit: "Throwing Axeman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Throwing_Axeman.png`,
     teamBonus: "Knights +2 Line of Sight",
     bonuses: [
       { type: "economy", description: "Free farm upgrades" },
@@ -324,6 +359,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry & Defense",
     icon: `${WIKI_BASE}/4/4c/Georgians_AoE2.png`,
+    uniqueUnit: "Monaspa",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Monaspa.png`,
     teamBonus: "Buildings repair -25% cost",
     bonuses: [
       { type: "defense", description: "Receive -20% damage on elevation" },
@@ -342,6 +379,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/9/9e/Goths_AoE2.png`,
+    uniqueUnit: "Huskarl",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Huskarl.png`,
     teamBonus: "Barracks work 20% faster",
     bonuses: [
       { type: "military", description: "Infantry cost -20-35%" },
@@ -360,6 +399,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Cavalry & Camels",
     icon: `${WIKI_BASE}/2/2c/Gurjaras_AoE2.png`,
+    uniqueUnit: "Chakram Thrower",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Chakram_Thrower.png`,
     teamBonus: "Camel/Elephants created 25% faster",
     bonuses: [
       { type: "economy", description: "Garrison livestock in Mills" },
@@ -378,6 +419,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Gunpowder & Camels",
     icon: `${WIKI_BASE}/e/ef/Hindustanis_AoE2.png`,
+    uniqueUnit: "Ghulam",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Ghulam.png`,
     teamBonus: "Camels +2 attack vs buildings",
     bonuses: [
       { type: "economy", description: "Villagers cost -10-25%" },
@@ -396,6 +439,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "conquerors",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/c/cc/Huns_AoE2.png`,
+    uniqueUnit: "Tarkan",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Tarkan.png`,
     teamBonus: "Stables work 20% faster",
     bonuses: [
       { type: "economy", description: "No houses needed" },
@@ -414,6 +459,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "forgotten",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/3/37/Incas_AoE2.png`,
+    uniqueUnit: "Kamayuk",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Kamayuk.png`,
     teamBonus: "Free Llama",
     bonuses: [
       { type: "economy", description: "Houses support 10 pop" },
@@ -432,6 +479,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "forgotten",
     specialty: "Archers & Navy",
     icon: `${WIKI_BASE}/4/49/Italians_AoE2.png`,
+    uniqueUnit: "Genoese Crossbowman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Genoese_Crossbowman.png`,
     teamBonus: "Condottieri available",
     bonuses: [
       { type: "economy", description: "Age up cost -15%" },
@@ -450,6 +499,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/d/d5/Japanese_AoE2.png`,
+    uniqueUnit: "Samurai",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Samurai.png`,
     teamBonus: "Galleys +4 Line of Sight",
     bonuses: [
       { type: "economy", description: "Eco buildings cost -50% wood" },
@@ -468,6 +519,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "rajas",
     specialty: "Elephants & Siege",
     icon: `${WIKI_BASE}/4/47/Khmer_AoE2.png`,
+    uniqueUnit: "Ballista Elephant",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Ballista_Elephant.png`,
     teamBonus: "Scorpions +1 range",
     bonuses: [
       { type: "economy", description: "No buildings needed to age up" },
@@ -486,6 +539,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "conquerors",
     specialty: "Towers & Navy",
     icon: `${WIKI_BASE}/3/3e/Koreans_AoE2.png`,
+    uniqueUnit: "War Wagon",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_War_Wagon.png`,
     teamBonus: "Villagers +3 Line of Sight",
     bonuses: [
       { type: "defense", description: "Tower upgrades free" },
@@ -504,6 +559,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry & Monks",
     icon: `${WIKI_BASE}/9/94/Lithuanians_AoE2.png`,
+    uniqueUnit: "Leitis",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Leitis.png`,
     teamBonus: "Monasteries work 20% faster",
     bonuses: [
       { type: "economy", description: "Start with +150 food" },
@@ -522,6 +579,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "forgotten",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/e/e6/Magyars_AoE2.png`,
+    uniqueUnit: "Magyar Huszar",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Magyar_Huszar.png`,
     teamBonus: "CA trained 25% faster",
     bonuses: [
       { type: "military", description: "Forging line free" },
@@ -540,6 +599,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "rajas",
     specialty: "Navy & Elephants",
     icon: `${WIKI_BASE}/e/ec/Malay_AoE2.png`,
+    uniqueUnit: "Karambit Warrior",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Karambit_Warrior.png`,
     teamBonus: "Docks +6 Line of Sight",
     bonuses: [
       { type: "economy", description: "Advance Age 66% faster" },
@@ -558,6 +619,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "african",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/e/e9/Malians_AoE2.png`,
+    uniqueUnit: "Gbeto",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Gbeto.png`,
     teamBonus: "Universities work 80% faster",
     bonuses: [
       { type: "economy", description: "Gold Mining upgrades free" },
@@ -576,6 +639,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "conquerors",
     specialty: "Archers",
     icon: `${WIKI_BASE}/2/2b/Mayans_AoE2.png`,
+    uniqueUnit: "Plumed Archer",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Plumed_Archer.png`,
     teamBonus: "Walls/Gates -50% cost",
     bonuses: [
       { type: "economy", description: "Resources last 15% longer" },
@@ -594,6 +659,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Cavalry Archers",
     icon: `${WIKI_BASE}/8/80/Mongols_AoE2.png`,
+    uniqueUnit: "Mangudai",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Mangudai.png`,
     teamBonus: "Scout line +2 Line of Sight",
     bonuses: [
       { type: "economy", description: "Hunters work 40% faster" },
@@ -612,6 +679,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/7/72/Persians_AoE2.png`,
+    uniqueUnit: "War Elephant",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_War_Elephant.png`,
     teamBonus: "Knights +2 attack vs archers",
     bonuses: [
       { type: "economy", description: "TCs and Docks double HP" },
@@ -630,6 +699,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/6/61/Poles_AoE2.png`,
+    uniqueUnit: "Obuch",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Obuch.png`,
     teamBonus: "Stone miners generate gold",
     bonuses: [
       { type: "economy", description: "Folwark generates food" },
@@ -648,6 +719,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "african",
     specialty: "Navy & Gunpowder",
     icon: `${WIKI_BASE}/f/f1/Portuguese_AoE2.png`,
+    uniqueUnit: "Organ Gun",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Organ_Gun.png`,
     teamBonus: "Techs research 25% faster",
     bonuses: [
       { type: "economy", description: "Units cost -20% gold" },
@@ -666,6 +739,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/f/ff/Romans_AoE2.png`,
+    uniqueUnit: "Centurion",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Centurion.png`,
     teamBonus: "Scorpion min range 1",
     bonuses: [
       { type: "military", description: "Infantry +5 attack vs buildings" },
@@ -684,6 +759,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Camels & Navy",
     icon: `${WIKI_BASE}/3/3e/Saracens_AoE2.png`,
+    uniqueUnit: "Mameluke",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Mameluke.png`,
     teamBonus: "Foot archers +3 vs buildings",
     bonuses: [
       { type: "economy", description: "Market fee only 5%" },
@@ -702,6 +779,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry",
     icon: `${WIKI_BASE}/7/78/Sicilians_AoE2.png`,
+    uniqueUnit: "Serjeant",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Serjeant.png`,
     teamBonus: "Transport Ships -50% cost",
     bonuses: [
       { type: "military", description: "Units take -50% bonus damage" },
@@ -720,6 +799,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "forgotten",
     specialty: "Infantry & Siege",
     icon: `${WIKI_BASE}/4/41/Slavs_AoE2.png`,
+    uniqueUnit: "Boyar",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Boyar.png`,
     teamBonus: "Military buildings +5 pop",
     bonuses: [
       { type: "economy", description: "Farmers work 10% faster" },
@@ -738,6 +819,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "conquerors",
     specialty: "Gunpowder & Monks",
     icon: `${WIKI_BASE}/8/82/Spanish_AoE2.png`,
+    uniqueUnit: "Conquistador",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Conquistador.png`,
     teamBonus: "Trade units +33% gold",
     bonuses: [
       { type: "economy", description: "Builders work 30% faster" },
@@ -756,6 +839,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dlc",
     specialty: "Cavalry Archers",
     icon: `${WIKI_BASE}/8/88/Tatars_AoE2.png`,
+    uniqueUnit: "Keshik",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Keshik.png`,
     teamBonus: "CA +2 Line of Sight",
     bonuses: [
       { type: "military", description: "Mounted archers bonus from elevation" },
@@ -774,6 +859,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Infantry",
     icon: `${WIKI_BASE}/c/c9/Teutons_AoE2.png`,
+    uniqueUnit: "Teutonic Knight",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Teutonic_Knight.png`,
     teamBonus: "Resist conversion",
     bonuses: [
       { type: "economy", description: "Farms cost -40%" },
@@ -792,6 +879,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Gunpowder",
     icon: `${WIKI_BASE}/7/78/Turks_AoE2.png`,
+    uniqueUnit: "Janissary",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Janissary.png`,
     teamBonus: "Gunpowder units train 25% faster",
     bonuses: [
       { type: "economy", description: "Gold miners work 20% faster" },
@@ -810,6 +899,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "rajas",
     specialty: "Archers",
     icon: `${WIKI_BASE}/2/27/Vietnamese_AoE2.png`,
+    uniqueUnit: "Rattan Archer",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Rattan_Archer.png`,
     teamBonus: "Imperial Skirmisher available",
     bonuses: [
       { type: "utility", description: "Reveal enemy TC" },
@@ -828,6 +919,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "base",
     specialty: "Infantry & Navy",
     icon: `${WIKI_BASE}/a/a2/Vikings_AoE2.png`,
+    uniqueUnit: "Berserk",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Berserk.png`,
     teamBonus: "Docks 15% cheaper",
     bonuses: [
       { type: "economy", description: "Free Wheelbarrow/Hand Cart" },
@@ -846,6 +939,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Archers & Siege",
     icon: "/images/civs/shu_shield.png",
+    uniqueUnit: "White Feather Guard",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_White_Feather.png`,
     teamBonus: "Foot archers +2 LOS",
     bonuses: [
       { type: "economy", description: "Lumberjacks generate food" },
@@ -861,9 +956,11 @@ export const CIVILIZATIONS: Civilization[] = [
   {
     id: "wei",
     name: "Wei",
-    expansion: "dynasties",
+    expansion: "dyn dynasties",
     specialty: "Cavalry",
     icon: "/images/civs/wei_shield.png",
+    uniqueUnit: "Tiger Cavalry",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Tiger_Cav.png`,
     teamBonus: "Cavalry +2 vs siege",
     bonuses: [
       { type: "economy", description: "Free villager per eco tech" },
@@ -882,6 +979,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Infantry & Naval",
     icon: "/images/civs/wu_shield.png",
+    uniqueUnit: "Jian Swordsman",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Jian.png`,
     teamBonus: "Houses built 100% faster",
     bonuses: [
       { type: "economy", description: "Buildings provide +65 food" },
@@ -900,6 +999,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Cavalry & Gunpowder",
     icon: "/images/civs/jurchens_shield.png",
+    uniqueUnit: "Iron Pagoda",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Iron_Pagoda.png`,
     teamBonus: "Gunpowder +2 LOS",
     bonuses: [
       { type: "economy", description: "Meat does not decay" },
@@ -918,6 +1019,8 @@ export const CIVILIZATIONS: Civilization[] = [
     expansion: "dynasties",
     specialty: "Infantry & Cavalry",
     icon: "/images/civs/khitans_shield.png",
+    uniqueUnit: "Liao Dao",
+    uniqueUnitImage: `${UNIT_BASE}/unidad_Liao_Dao.png`,
     teamBonus: "Infantry +2 vs ranged",
     bonuses: [
       { type: "economy", description: "Pastures replace farms" },
