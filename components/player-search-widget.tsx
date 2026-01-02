@@ -68,29 +68,57 @@ export function PlayerSearchWidget() {
   if (!mounted) return null;
 
   const handleSelect = async (player: PlayerData) => {
-    setIsLoadingProfile(true)
+    // 1. Set basic info immediately from search results (INSTANT UI TRANSITION)
+    setSelectedProfile({
+        profileId: player.profileId,
+        name: player.name,
+        country: player.country,
+        clan: player.clan,
+        modes: {
+            [activeTab]: { 
+                rating: player.rating, 
+                rank: player.rank,
+                wins: 0, losses: 0, games: player.games,
+                topCivs: [], topMaps: [], recentMatches: []
+            }
+        }
+    });
+    
+    setIsLoadingProfile(true);
+    setExpandedMatchId(null);
+
     try {
       const res = await fetch(`/api/aoe2/profile/${player.profileId}`)
       if (res.ok) {
         const data = await res.json()
         setSelectedProfile(data)
-        
-        // Always default to 1v1 Ranked as requested
-        setActiveTab("rm_1v1");
+        // Reset loading after full data is in
+        setIsLoadingProfile(false);
       }
     } catch (e) {
       console.error("Profile fetch failed", e)
-    } finally {
-      setIsLoadingProfile(false)
+      setIsLoadingProfile(false);
     }
   }
 
   const renderDashboardContent = (mode: string) => {
     const modeStats = selectedProfile?.modes?.[mode] || {
-        rating: 0, maxRating: 0, wins: 0, losses: 0, games: 0, rank: 0, topCivs: [], topMaps: []
+        rating: 0, maxRating: 0, wins: 0, losses: 0, games: 0, rank: 0, topCivs: [], topMaps: [], recentMatches: []
     };
 
+    // If we are loading and have no match data, show skeleton/loading for the stats part
+    const isFetchingStats = isLoadingProfile && (!modeStats.recentMatches || modeStats.recentMatches.length === 0);
+
     const winRate = modeStats.games > 0 ? Math.round((modeStats.wins / modeStats.games) * 100) : 0;
+
+    if (isFetchingStats) {
+        return (
+            <div className="h-96 flex flex-col items-center justify-center space-y-4 animate-in fade-in duration-500">
+                <Loader2 className="w-10 h-10 animate-spin text-yellow-500/40" />
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Cargando estadísticas</p>
+            </div>
+        )
+    }
 
     // Filter and format rating history
     const history = selectedProfile?.ratingHistory?.find((r: any) => r.leaderboardId === mode)?.ratings || [];
@@ -360,13 +388,15 @@ export function PlayerSearchWidget() {
                     {modeStats.recentMatches?.length > 0 ? modeStats.recentMatches.map((match: any, idx: number) => {
                         const matchId = match.matchId || `match-${idx}`;
                         const isExpanded = expandedMatchId === matchId;
+                        const isTG = match.myTeam?.length > 1 || match.opponentTeam?.length > 1;
                         
                         return (
                             <div 
                                 key={matchId} 
-                                onClick={() => setExpandedMatchId(isExpanded ? null : matchId)}
+                                onClick={() => isTG && setExpandedMatchId(isExpanded ? null : matchId)}
                                 className={cn(
-                                    "relative group overflow-hidden bg-white/[0.02] border rounded-2xl transition-all cursor-pointer",
+                                    "relative group overflow-hidden bg-white/[0.02] border rounded-2xl transition-all",
+                                    isTG ? "cursor-pointer" : "cursor-default",
                                     isExpanded ? "border-yellow-500/40 bg-white/[0.05]" : "border-white/5 hover:bg-white/[0.04]"
                                 )}
                             >
@@ -384,8 +414,10 @@ export function PlayerSearchWidget() {
                                             })}
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-[7px] font-black text-white/30 uppercase tracking-widest leading-none mb-1">YOUR TEAM</p>
-                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate">
+                                            <p className="text-[7px] font-black text-yellow-500/50 uppercase tracking-widest leading-none mb-1">
+                                                {isTG ? "TU EQUIPO" : match.myTeam[0]?.name || "TÚ"}
+                                            </p>
+                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate italic">
                                                 {match.myTeam.map((p: any) => getCivilizationById(p.civ)?.name || "Civ").join(" / ")}
                                             </p>
                                         </div>
@@ -399,7 +431,7 @@ export function PlayerSearchWidget() {
                                                 "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg border",
                                                 match.won ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"
                                             )}>
-                                                {match.won ? "Victory" : "Defeat"}
+                                                {match.won ? "Victoria" : "Derrota"}
                                             </div>
                                         </div>
                                         <p className="text-[9px] font-black text-white/30 uppercase italic tracking-tighter mt-1">{match.map}</p>
@@ -408,8 +440,10 @@ export function PlayerSearchWidget() {
                                     {/* Opponent Team Side */}
                                     <div className="flex items-center gap-3 justify-end w-[40%] text-right">
                                         <div className="min-w-0">
-                                            <p className="text-[7px] font-black text-white/30 uppercase tracking-widest leading-none mb-1">OPPONENTS</p>
-                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate">
+                                            <p className="text-[7px] font-black text-white/30 uppercase tracking-widest leading-none mb-1">
+                                                {isTG ? "OPONENTES" : match.opponentTeam[0]?.name || "RIVAL"}
+                                            </p>
+                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate italic">
                                                 {match.opponentTeam.map((p: any) => getCivilizationById(p.civ)?.name || "Civ").join(" / ")}
                                             </p>
                                         </div>
@@ -428,7 +462,7 @@ export function PlayerSearchWidget() {
 
                                 {/* Expanded Roster Details */}
                                 <AnimatePresence>
-                                    {isExpanded && (
+                                    {isExpanded && isTG && (
                                         <motion.div 
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
@@ -445,7 +479,7 @@ export function PlayerSearchWidget() {
                                                                 {p.name}
                                                             </span>
                                                             <span className="text-[10px] font-black text-white/20 italic">({getCivilizationById(p.civ)?.name})</span>
-                                                            {match.myTeamMvpName === p.name && (
+                                                            {isTG && match.myTeamMvpName === p.name && (
                                                                 <div className="flex items-center gap-1 bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">
                                                                     <Crown className="w-2.5 h-2.5 text-yellow-500" />
                                                                     <span className="text-[8px] font-black text-yellow-500 uppercase">MVP</span>
@@ -458,7 +492,7 @@ export function PlayerSearchWidget() {
                                                 <div className="space-y-3 text-right">
                                                     {match.opponentTeam.map((p: any, pIdx: number) => (
                                                         <div key={pIdx} className="flex items-center gap-3 justify-end">
-                                                            {match.opponentTeamMvpName === p.name && (
+                                                            {isTG && match.opponentTeamMvpName === p.name && (
                                                                 <div className="flex items-center gap-1 bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">
                                                                     <span className="text-[8px] font-black text-yellow-500 uppercase">MVP</span>
                                                                     <Crown className="w-2.5 h-2.5 text-yellow-500" />
@@ -577,12 +611,7 @@ export function PlayerSearchWidget() {
 
                 {/* Right: Dashboard */}
                 <div className="flex-1 relative bg-[#0c0c0e] overflow-hidden flex flex-col">
-                    {isLoadingProfile ? (
-                        <div className="h-full flex flex-col items-center justify-center space-y-4">
-                            <Loader2 className="w-12 h-12 animate-spin text-yellow-500" />
-                            <p className="text-xs font-black uppercase tracking-[0.4em] text-white/20">Loading Profile Data</p>
-                        </div>
-                    ) : selectedProfile ? (
+                    {selectedProfile ? (
                         <div className="h-full flex flex-col">
                             <div className="p-8 border-b border-white/5 bg-gradient-to-b from-black/40 to-transparent">
                                 <div className="flex justify-between items-end">

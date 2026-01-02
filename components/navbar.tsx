@@ -265,13 +265,16 @@ export function Navbar() {
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border border-yellow-500/20 text-zinc-300 shadow-[0_10px_40px_-10px_rgba(0,0,0,1)] rounded-xl p-2">
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="w-56 bg-zinc-950/95 backdrop-blur-md border border-yellow-500/20 text-zinc-300 shadow-[0_10px_40px_-10px_rgba(0,0,0,1)] rounded-xl p-2"
+                  >
                       <DropdownMenuItem asChild className="focus:bg-yellow-950/30 focus:text-yellow-400 rounded-lg cursor-pointer my-1">
                         <Link href="/profile" className="flex items-center gap-3 py-2">
                           <User className="h-4 w-4" />
                           <div className="flex flex-col">
                              <span className="font-bold text-xs uppercase tracking-wide">{t("myProfile")}</span>
-                             <span className="text-[9px] text-zinc-500">View stats & settings</span>
+                             <span className="text-[9px] text-zinc-500">Configuración y estadísticas</span>
                           </div>
                         </Link>
                       </DropdownMenuItem>

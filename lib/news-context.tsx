@@ -29,7 +29,7 @@ const DEFAULT_NEWS: NewsItem[] = [
     id: "1", 
     message: "Master the Draft: New Strategy Engine", 
     description: "Our core drafting engine has been refined to offer better counter-pick suggestions and historical matchup data. Analyze civilizations like never before and dominate the ranked ladder with precision intel.",
-    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=1000",
+    imageUrl: "/images/news/1as.png",
     active: true, 
     priority: 10 
   },
@@ -37,7 +37,7 @@ const DEFAULT_NEWS: NewsItem[] = [
     id: "2", 
     message: "Team Builder 2.0: Pocket & Flank Sinergies", 
     description: "The Team Game section now features an advanced calculator for 2v2, 3v3, and 4v4 matches. Find the ultimate balance between heavy cavalry in the pocket and archer power on the flanks to crush your opponents.",
-    imageUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1000",
+    imageUrl: "/images/news/2as.png",
     active: true, 
     priority: 5, 
     link: "/team-builder" 
@@ -46,10 +46,19 @@ const DEFAULT_NEWS: NewsItem[] = [
     id: "3", 
     message: "Official Tournament Hub is Live", 
     description: "Wololo Arena is now the central hub for competitive AoE2 drafting events. Create your own tournaments, manage brackets, and use our synchronized drafting system to ensure a fair and exciting competitive experience.",
-    imageUrl: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000",
+    imageUrl: "/images/news/3as.png",
     active: true, 
     priority: 8, 
     link: "/tournaments" 
+  },
+  { 
+    id: "4", 
+    message: "Global Academy: Learn from the Best", 
+    description: "New tutorials and guides from top-tier players are being added weekly. Master the art of the perfect build order and tactical decision-making to reach the top of the leaderboards.",
+    imageUrl: "/images/news/4as.png",
+    active: true, 
+    priority: 7, 
+    link: "/university" 
   },
 ]
 
@@ -59,7 +68,7 @@ export function NewsProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage on client mount
   useEffect(() => {
-    const saved = localStorage.getItem("wololo-news-v8")
+    const saved = localStorage.getItem("wololo-news-v9")
     if (saved) {
       try {
         setNews(JSON.parse(saved))
@@ -75,7 +84,7 @@ export function NewsProvider({ children }: { children: React.ReactNode }) {
   // Save to localStorage on change
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem("wololo-news-v8", JSON.stringify(news))
+      localStorage.setItem("wololo-news-v9", JSON.stringify(news))
     }
   }, [news, isLoaded])
 

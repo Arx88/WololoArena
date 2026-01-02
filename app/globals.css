@@ -148,10 +148,24 @@
     image-rendering: crisp-edges;
   }
   body {
-    @apply bg-background text-foreground;
-    /* Apply subtle texture to the whole body */
+    @apply bg-background text-foreground relative;
+    cursor: none !important;
+  }
+
+  /* Faster texture implementation without blend-mode overhead */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
     background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
-    background-blend-mode: overlay;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  /* Ensure interactive elements also don't show the cursor */
+  a, button, [role="button"], input, textarea, select {
+    cursor: none !important;
   }
   /* Apply medieval font to headings */
   h1, h2, h3, h4, h5, h6 {

@@ -2,11 +2,26 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { History, Trophy, Swords, Calendar, ChevronRight } from "lucide-react"
+import { History } from "lucide-react"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { cn } from "@/lib/utils"
 
-export function MatchHistoryList({ matchHistory, userId }: { matchHistory: any[], userId: string }) {
+function SkeletonRow() {
+    return (
+        <div className="flex items-center justify-between p-4 rounded-2xl border-2 border-white/5 bg-white/5 animate-pulse">
+            <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-xl bg-white/10" />
+                <div className="space-y-2">
+                    <div className="h-4 w-32 bg-white/10 rounded" />
+                    <div className="h-3 w-20 bg-white/10 rounded" />
+                </div>
+            </div>
+            <div className="h-5 w-12 bg-white/10 rounded-full" />
+        </div>
+    )
+}
+
+export function MatchHistoryList({ matches, userId, isLoading = false }: { matches: any[], userId: string, isLoading?: boolean }) {
   const { t } = useLanguage()
 
   return (
@@ -23,13 +38,17 @@ export function MatchHistoryList({ matchHistory, userId }: { matchHistory: any[]
         </div>
       </CardHeader>
       <CardContent className="p-8">
-        {matchHistory.length === 0 ? (
+        {isLoading ? (
+            <div className="space-y-3">
+                {[...Array(5)].map((_, i) => <SkeletonRow key={i} />)}
+            </div>
+        ) : matches.length === 0 ? (
           <div className="py-12 text-center border-2 border-dashed border-white/5 rounded-2xl opacity-20 italic text-sm">
             No historical data found in the cloud.
           </div>
         ) : (
           <div className="space-y-3">
-            {matchHistory.map((match) => {
+            {matches.map((match) => {
               const isWinner = match.winner_id === userId
               return (
                 <div key={match.id} className={cn(

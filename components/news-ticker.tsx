@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, Edit2, Eye, EyeOff, ExternalLink, Radio, Info, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle, GripVertical } from "lucide-react"
+import { Plus, Trash2, Edit2, EyeOff, ExternalLink, Radio, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle, GripVertical } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence, Reorder } from "framer-motion"
@@ -75,7 +75,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
   if (activeNews.length === 0 && !isAdmin) return null
 
   const marqueeItems = activeNews.length > 0 
-    ? [...activeNews, ...activeNews, ...activeNews, ...activeNews].slice(0, 40)
+    ? [...activeNews, ...activeNews].slice(0, 20)
     : []
 
   return (
@@ -86,34 +86,33 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
         setHoveredNews(null)
       }}
     >
-      {/* --- Main Ticker Bar --- */}
       <div 
-        className="relative bg-black/95 backdrop-blur-xl border-b border-white/10 h-10 overflow-hidden"
+        className="relative bg-[#050505] border-b border-white/10 h-10 overflow-hidden"
         onMouseEnter={() => setIsTickerHovered(true)}
       >
         <div className="max-w-[1920px] mx-auto flex items-center h-full px-4">
           
-          <div className="relative z-30 flex items-center gap-2 pr-6 bg-black h-full shrink-0 border-r border-white/10 shadow-[20px_0_30px_-5px_rgba(0,0,0,1)]">
-            <div className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+          <div className="relative z-30 flex items-center gap-2 pr-6 bg-[#050505] h-full shrink-0 border-r border-white/10">
+            <div className="relative flex h-2 w-2">
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">
-              Live Feed
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/90">
+              Noticias
             </span>
           </div>
 
-          <div className="flex-1 overflow-hidden relative h-full flex items-center mask-linear-fade">
+          <div className="flex-1 overflow-hidden relative h-full flex items-center">
              {activeNews.length > 0 ? (
-               <div className={cn("flex animate-marquee items-center whitespace-nowrap", isTickerHovered && "paused")}>
+               <div 
+                className={cn("flex animate-marquee items-center whitespace-nowrap", isTickerHovered && "paused")}
+                style={{ willChange: "transform" }}
+               >
                  {marqueeItems.map((item, i) => (
                    <div key={`${item.id}-${i}`} onMouseEnter={() => setHoveredNews(item)} className="flex items-center gap-6 px-12 h-10 cursor-default">
-                     <span className="text-[11px] font-black text-white/40 group-hover/item:text-white transition-all duration-300 uppercase tracking-widest">
+                     <span className="text-[10px] font-black text-white/40 uppercase tracking-widest transition-colors hover:text-white">
                        {item.message}
                      </span>
-                     <div className="flex gap-1.5 opacity-10 mx-2">
-                        <div className="w-1 h-3 bg-primary/50" />
-                     </div>
+                     <div className="w-1 h-3 bg-primary/20" />
                    </div>
                  ))}
                </div>
@@ -125,7 +124,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
           </div>
 
           {isAdmin && (
-            <div className="relative z-30 pl-4 bg-black h-full flex items-center border-l border-white/10">
+            <div className="relative z-30 pl-4 bg-[#050505] h-full flex items-center border-l border-white/10">
               <Dialog>
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-white/20 hover:text-primary hover:bg-white/5 rounded-full transition-all">
@@ -134,7 +133,6 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                 </DialogTrigger>
                 <DialogContent className="max-w-[1400px] sm:max-w-[1400px] w-[95vw] bg-[#0a0a0b] border-white/10 text-white p-0 overflow-hidden shadow-2xl">
                   <div className="flex flex-col h-[85vh]">
-                    {/* Header */}
                     <div className="p-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="p-3 rounded-2xl bg-primary/10 border border-primary/20">
@@ -142,16 +140,14 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                         </div>
                         <div>
                           <DialogTitle className="text-xl font-black uppercase tracking-widest text-white/90">
-                            News Management
+                            Administración
                           </DialogTitle>
-                          <p className="text-xs text-white/30 font-mono uppercase tracking-widest mt-1">Control Console // Drag & Drop Protocol</p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="border-primary/30 text-primary font-mono px-4 py-1.5 uppercase">Manual Order Active</Badge>
+                      <Badge variant="outline" className="border-primary/30 text-primary font-mono px-4 py-1.5 uppercase">Manual</Badge>
                     </div>
                     
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 overflow-hidden">
-                      {/* --- FORM PANEL --- */}
                       <div className="lg:col-span-2 p-10 border-r border-white/5 overflow-y-auto custom-scrollbar bg-black/40">
                         <div className="flex items-center justify-between mb-10">
                           <h4 className="text-sm font-black uppercase text-primary tracking-[0.2em] flex items-center gap-3">
@@ -214,14 +210,13 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                         </form>
                       </div>
 
-                      {/* --- REGISTRY PANEL (DRAG & DROP) --- */}
                       <div className="lg:col-span-3 p-10 overflow-hidden flex flex-col bg-black/20">
                         <div className="flex items-center justify-between mb-10">
                           <h4 className="text-sm font-black uppercase text-white/40 tracking-[0.2em] flex items-center gap-3">
                             <History className="h-4 w-4" />
-                            Transmission Priority
+                            Orden
                           </h4>
-                          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Hold & Drag to Reorder</span>
+                          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Arrastra para reordenar</span>
                         </div>
                         
                         <Reorder.Group 
@@ -239,7 +234,6 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                                 editingId === item.id ? "bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(var(--primary),0.1)]" : "bg-white/[0.01] border-white/5 hover:border-white/20"
                               )}
                             >
-                              {/* Drag Handle */}
                               <div className="text-white/10 group-hover:text-primary/40 transition-colors">
                                 <GripVertical className="h-6 w-6" />
                               </div>
@@ -296,34 +290,27 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
         </div>
       </div>
 
-      {/* --- Hover Expansion Panel (Fixed 450px | NO SCROLL) --- */}
       <AnimatePresence>
         {isTickerHovered && hoveredNews && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 450, opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute top-10 left-0 right-0 overflow-hidden bg-[#020202]/98 backdrop-blur-3xl border-b border-primary/30 shadow-[0_40px_80px_-12px_rgba(0,0,0,0.9)]"
+            transition={{ duration: 0.2 }}
+            className="absolute top-10 left-0 right-0 overflow-hidden bg-[#020202] border-b border-primary/30 shadow-2xl"
           >
             <div className="max-w-[1920px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-0 relative h-[450px]">
-              
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none opacity-20" />
-
-              {/* Image Section */}
-              <div className="md:col-span-5 lg:col-span-4 relative h-full overflow-hidden border-r border-white/5 bg-zinc-900/50">
+              <div className="md:col-span-5 lg:col-span-4 relative h-full overflow-hidden border-r border-white/5 bg-zinc-900">
                 {hoveredNews.imageUrl ? (
                   <>
-                    <Image src={hoveredNews.imageUrl} alt={hoveredNews.message} fill className="object-cover opacity-80 transition-all duration-1000 scale-105" />
+                    <Image src={hoveredNews.imageUrl} alt={hoveredNews.message} fill className="object-cover opacity-80" />
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#020202]" />
                   </>
                 ) : (
                   <div className="flex items-center justify-center h-full text-white/5"><Megaphone className="h-24 w-24 opacity-10" /></div>
                 )}
-                <div className="absolute bottom-10 left-10"><div className="h-1 w-12 bg-primary animate-pulse" /></div>
               </div>
 
-              {/* Text Content (Optimized to fit without scroll) */}
               <div className="md:col-span-7 lg:col-span-8 p-10 md:p-16 relative flex flex-col justify-center h-full overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 text-[100px] font-black text-white/5 italic select-none pointer-events-none uppercase">News</div>
 
@@ -370,7 +357,6 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .animate-marquee { animation: marquee 60s linear infinite; }
         .paused { animation-play-state: paused !important; }
-        .mask-linear-fade { mask-image: linear-gradient(to right, transparent, black 100px, black calc(100% - 100px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, black 100px, black calc(100% - 100px), transparent); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(var(--primary), 0.2); border-radius: 10px; }

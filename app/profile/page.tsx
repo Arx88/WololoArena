@@ -8,7 +8,7 @@ import { Footer } from "@/components/footer"
 import { ProfileView } from "@/components/profile/profile-view"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Loader2, AlertCircle, UserX, User } from "lucide-react"
+import { AlertCircle, UserX } from "lucide-react"
 import type { Profile, MatchHistory } from "@/lib/types/draft"
 import { isDemoMode, getDemoUser } from "@/lib/demo/auth"
 import { getDemoProfile } from "@/lib/demo/demo-data"
@@ -19,8 +19,10 @@ import { Badge } from "@/components/ui/badge"
 export default function ProfilePage() {
   const router = useRouter()
   const { t } = useLanguage()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
   const [pageData, setPageData] = useState<{
     userId: string
     profile: Profile | null
@@ -29,7 +31,7 @@ export default function ProfilePage() {
   } | null>(null)
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadProfile = async () => {
       if (isDemoMode()) {
         const demoUser = getDemoUser()
         if (demoUser) {
@@ -40,7 +42,8 @@ export default function ProfilePage() {
             matchHistory: [],
             isDemo: true,
           })
-          setIsLoading(false)
+          setIsLoadingProfile(false)
+          setIsLoadingHistory(false)
           return
         }
       }
@@ -48,20 +51,19 @@ export default function ProfilePage() {
       const supabase = getSupabaseClient()
       if (!supabase) {
         setError(t("databaseConnectionError"))
-        setIsLoading(false)
+        setIsLoadingProfile(false)
         return
       }
 
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser()
+        const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
           router.push("/auth/login?redirect=/profile")
           return
         }
 
+        // STEP 1: LOAD BASIC PROFILE (FAST)
         let { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("*")
@@ -77,11 +79,19 @@ export default function ProfilePage() {
               favorite_civs: [],
               favorite_maps: [],
             })
-            .select()
-            .single()
+            .select().single()
           profile = newProfile
         }
 
+        setPageData({
+          userId: user.id,
+          profile,
+          matchHistory: [],
+          isDemo: false,
+        })
+        setIsLoadingProfile(false)
+
+        // STEP 2: LOAD HISTORY (BACKGROUND)
         const { data: matchHistory } = await supabase
           .from("match_history")
           .select("*")
@@ -89,37 +99,21 @@ export default function ProfilePage() {
           .order("created_at", { ascending: false })
           .limit(20)
 
-        setPageData({
-          userId: user.id,
-          profile,
-          matchHistory: matchHistory || [],
-          isDemo: false,
-        })
+        setPageData(prev => prev ? ({
+            ...prev,
+            matchHistory: matchHistory || []
+        }) : null)
+        setIsLoadingHistory(false)
+
       } catch (err) {
         console.error("Profile load error:", err)
         setError(t("errorLoadingProfile"))
-      } finally {
-        setIsLoading(false)
+        setIsLoadingProfile(false)
       }
     }
 
-    loadData()
+    loadProfile()
   }, [router, t])
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen flex-col bg-[#020202]">
-        <Navbar />
-        <main className="flex-1 pt-32 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-10 w-10 animate-spin text-yellow-500" />
-            <p className="text-white/40 uppercase font-black text-xs tracking-widest">{t("loadingProfile")}...</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    )
-  }
 
   if (error) {
     return (
@@ -132,9 +126,7 @@ export default function ProfilePage() {
               <p className="text-lg font-medium text-destructive">{error}</p>
               <p className="text-sm text-muted-foreground mb-4 text-center">{t("tryReloading")}</p>
               <div className="flex gap-2">
-                <Button onClick={() => window.location.reload()} variant="outline">
-                  {t("reload")}
-                </Button>
+                <Button onClick={() => window.location.reload()} variant="outline">{t("reload")}</Button>
                 <Button onClick={() => router.push("/")}>{t("goHome")}</Button>
               </div>
             </CardContent>
@@ -145,7 +137,7 @@ export default function ProfilePage() {
     )
   }
 
-  if (!pageData) {
+  if (!isLoadingProfile && !pageData) {
     return (
       <div className="flex min-h-screen flex-col bg-[#020202]">
         <Navbar />
@@ -176,25 +168,27 @@ export default function ProfilePage() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.15)_0%,#020202_100%)]" />
           </div>
           <div className="relative z-10 text-center px-6 max-w-4xl mt-10">
-            <Badge variant="outline" className="mb-6 border-yellow-500/30 bg-yellow-500/5 text-yellow-500 px-6 py-2 uppercase tracking-[0.3em] text-[10px] font-black">Commander Records</Badge>
+            <Badge variant="outline" className="mb-6 border-yellow-500/30 bg-yellow-500/5 text-yellow-500 px-6 py-2 uppercase tracking-[0.3em] text-[10px] font-black">Perfil</Badge>
             <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white drop-shadow-[0_10px_30px_rgba(0,0,0,1)] leading-tight mb-4">
-              Tactical <span className="gold-text-gradient pr-6 -mr-6">Profile</span>
+              Estadísticas de <span className="gold-text-gradient pr-6 -mr-6">Usuario</span>
             </h1>
-            <p className="text-yellow-100/40 font-medium uppercase tracking-[0.3em] text-sm md:text-lg italic max-w-2xl mx-auto">Review your legacy. Analyze your mastery. Prepare for the next draft.</p>
+            <p className="text-yellow-100/40 font-medium uppercase tracking-[0.3em] text-sm md:text-lg italic max-w-2xl mx-auto">Revisa tu progreso y prepárate para el siguiente draft.</p>
           </div>
         </section>
 
         <div className="py-12">
-          <ProfileView
-            userId={pageData.userId}
-            profile={pageData.profile}
-            matchHistory={pageData.matchHistory}
-            isDemo={pageData.isDemo}
-          />
+          {pageData && (
+            <ProfileView
+                userId={pageData.userId}
+                profile={pageData.profile}
+                matchHistory={pageData.matchHistory}
+                isDemo={pageData.isDemo}
+                loadingHistory={isLoadingHistory}
+            />
+          )}
         </div>
       </main>
       <Footer />
     </div>
   )
 }
-

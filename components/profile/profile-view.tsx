@@ -15,9 +15,10 @@ interface ProfileViewProps {
   profile: Profile | null
   matchHistory: MatchHistory[]
   isDemo?: boolean
+  loadingHistory?: boolean
 }
 
-export function ProfileView({ userId, profile, matchHistory, isDemo = false }: ProfileViewProps) {
+export function ProfileView({ userId, profile, matchHistory, isDemo = false, loadingHistory = false }: ProfileViewProps) {
   const [currentProfile, setCurrentProfile] = useState(profile)
   const { t } = useLanguage()
 
@@ -60,7 +61,7 @@ export function ProfileView({ userId, profile, matchHistory, isDemo = false }: P
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
-            <MatchHistoryList userId={userId} matches={matchHistory} />
+            <MatchHistoryList userId={userId} matches={matchHistory} isLoading={loadingHistory} />
           </TabsContent>
         </Tabs>
       </div>
