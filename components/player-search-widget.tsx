@@ -35,6 +35,7 @@ export function PlayerSearchWidget() {
   const [selectedProfile, setSelectedProfile] = React.useState<any | null>(null)
   const [activeTab, setActiveTab] = React.useState("rm_1v1")
   const [isLoadingProfile, setIsLoadingProfile] = React.useState(false)
+  const [expandedMatchId, setExpandedMatchId] = React.useState<string | null>(null)
 
   // Hydration fix
   React.useEffect(() => {
@@ -347,6 +348,145 @@ export function PlayerSearchWidget() {
                             </div>
                         )) : <p className="text-[10px] text-white/20 italic uppercase tracking-widest text-center py-10 border border-white/5 rounded-2xl">No terrain intel available</p>}
                     </div>
+                </div>
+            </div>
+
+            {/* Recent Matchups Section */}
+            <div className="space-y-6">
+                <h4 className="text-[10px] font-black text-yellow-500 uppercase tracking-[0.4em] flex items-center gap-3">
+                    <div className="h-px w-8 bg-yellow-500/30" /> Recent Engagements
+                </h4>
+                <div className="grid grid-cols-1 gap-4">
+                    {modeStats.recentMatches?.length > 0 ? modeStats.recentMatches.map((match: any, idx: number) => {
+                        const matchId = match.matchId || `match-${idx}`;
+                        const isExpanded = expandedMatchId === matchId;
+                        
+                        return (
+                            <div 
+                                key={matchId} 
+                                onClick={() => setExpandedMatchId(isExpanded ? null : matchId)}
+                                className={cn(
+                                    "relative group overflow-hidden bg-white/[0.02] border rounded-2xl transition-all cursor-pointer",
+                                    isExpanded ? "border-yellow-500/40 bg-white/[0.05]" : "border-white/5 hover:bg-white/[0.04]"
+                                )}
+                            >
+                                <div className="relative z-10 flex items-center justify-between gap-4 p-6">
+                                    {/* My Team Side */}
+                                    <div className="flex items-center gap-3 w-[40%]">
+                                        <div className="flex -space-x-3 shrink-0">
+                                            {match.myTeam.map((p: any, pIdx: number) => {
+                                                const c = getCivilizationById(p.civ);
+                                                return (
+                                                    <div key={pIdx} className="relative h-9 w-9 rounded-lg overflow-hidden border-2 border-[#0c0c0e] shadow-xl z-[1]">
+                                                        {c?.icon ? <Image src={c.icon} alt="" fill className="object-cover" /> : <Shield className="w-full h-full p-2 opacity-20 bg-black" />}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[7px] font-black text-white/30 uppercase tracking-widest leading-none mb-1">YOUR TEAM</p>
+                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate">
+                                                {match.myTeam.map((p: any) => getCivilizationById(p.civ)?.name || "Civ").join(" / ")}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Versus Info */}
+                                    <div className="flex flex-col items-center gap-1 shrink-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[8px] font-black text-white/20 bg-white/5 px-1.5 py-0.5 rounded border border-white/5">{match.modeLabel}</span>
+                                            <div className={cn(
+                                                "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest shadow-lg border",
+                                                match.won ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"
+                                            )}>
+                                                {match.won ? "Victory" : "Defeat"}
+                                            </div>
+                                        </div>
+                                        <p className="text-[9px] font-black text-white/30 uppercase italic tracking-tighter mt-1">{match.map}</p>
+                                    </div>
+
+                                    {/* Opponent Team Side */}
+                                    <div className="flex items-center gap-3 justify-end w-[40%] text-right">
+                                        <div className="min-w-0">
+                                            <p className="text-[7px] font-black text-white/30 uppercase tracking-widest leading-none mb-1">OPPONENTS</p>
+                                            <p className="text-[10px] font-bold text-white/60 uppercase truncate">
+                                                {match.opponentTeam.map((p: any) => getCivilizationById(p.civ)?.name || "Civ").join(" / ")}
+                                            </p>
+                                        </div>
+                                        <div className="flex -space-x-3 shrink-0">
+                                            {match.opponentTeam.map((p: any, pIdx: number) => {
+                                                const c = getCivilizationById(p.civ);
+                                                return (
+                                                    <div key={pIdx} className="relative h-9 w-9 rounded-lg overflow-hidden border-2 border-[#0c0c0e] shadow-xl z-[1]">
+                                                        {c?.icon ? <Image src={c.icon} alt="" fill className="object-cover" /> : <Shield className="w-full h-full p-2 opacity-20 bg-black" />}
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Expanded Roster Details */}
+                                <AnimatePresence>
+                                    {isExpanded && (
+                                        <motion.div 
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden border-t border-white/5 bg-black/20"
+                                        >
+                                            <div className="p-6 grid grid-cols-2 gap-12">
+                                                {/* Left Team Names */}
+                                                <div className="space-y-3">
+                                                    {match.myTeam.map((p: any, pIdx: number) => (
+                                                        <div key={pIdx} className="flex items-center gap-3">
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                                            <span className={cn("text-xs font-bold uppercase tracking-tight", p.name === selectedProfile.name ? "text-yellow-500" : "text-white/60")}>
+                                                                {p.name}
+                                                            </span>
+                                                            <span className="text-[10px] font-black text-white/20 italic">({getCivilizationById(p.civ)?.name})</span>
+                                                            {match.myTeamMvpName === p.name && (
+                                                                <div className="flex items-center gap-1 bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">
+                                                                    <Crown className="w-2.5 h-2.5 text-yellow-500" />
+                                                                    <span className="text-[8px] font-black text-yellow-500 uppercase">MVP</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                {/* Right Team Names */}
+                                                <div className="space-y-3 text-right">
+                                                    {match.opponentTeam.map((p: any, pIdx: number) => (
+                                                        <div key={pIdx} className="flex items-center gap-3 justify-end">
+                                                            {match.opponentTeamMvpName === p.name && (
+                                                                <div className="flex items-center gap-1 bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">
+                                                                    <span className="text-[8px] font-black text-yellow-500 uppercase">MVP</span>
+                                                                    <Crown className="w-2.5 h-2.5 text-yellow-500" />
+                                                                </div>
+                                                            )}
+                                                            <span className="text-[10px] font-black text-white/20 italic">({getCivilizationById(p.civ)?.name})</span>
+                                                            <span className="text-xs font-bold text-white/60 uppercase tracking-tight">{p.name}</span>
+                                                            <div className="h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                {/* Progress bar representation of the win/loss */}
+                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5">
+                                    <div className={cn("h-full transition-all duration-1000", match.won ? "bg-emerald-500 w-full" : "bg-red-500 w-full opacity-20")} />
+                                </div>
+                            </div>
+                        );
+                    }) : (
+                        <div className="py-12 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center opacity-20">
+                            <Activity className="w-8 h-8 mb-3" />
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em]">No recent combat logs</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

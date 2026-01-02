@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 
 const profileCache = new Map();
 
-function calculateStats(matches: any[], playerId: string) {
+function calculateStats(matches: any[], playerId: string, targetMode: string) {
   const stats = {
     wins: 0,
     losses: 0,
@@ -10,10 +10,15 @@ function calculateStats(matches: any[], playerId: string) {
     civs: {} as Record<string, { wins: number, games: number }>,
     maps: {} as Record<string, { wins: number, games: number }>,
     opponents: {} as Record<string, number>,
-    names: new Set<string>()
+    names: new Set<string>(),
+    recentMatches: [] as any[]
   };
 
-  matches.forEach(m => {
+  matches.forEach((m) => {
+    if (targetMode === "rm_1v1" && m.leaderboardId !== "rm_1v1") return;
+    if (targetMode === "rm_team" && m.leaderboardId !== "rm_team") return;
+    if (targetMode === "unranked" && m.leaderboardId !== "unranked") return;
+
     let p = m.players?.find((pl: any) => (pl.profile_id || pl.profileId)?.toString() === playerId);
     
     if (!p && m.teams) {
@@ -31,26 +36,63 @@ function calculateStats(matches: any[], playerId: string) {
     const won = p.won === true || p.won === "true" || p.outcome === 1;
     if (won) stats.wins++; else stats.losses++;
 
-    // Track opponents in losses (ensure we check team properly)
+    const myTeamId = p.team?.toString() || p.team_id?.toString();
+    const myTeam: any[] = [];
+    const opponentTeam: any[] = [];
+    
+    if (m.teams) {
+        m.teams.forEach((t: any) => {
+            const teamId = t.teamId?.toString() || t.team_id?.toString() || t.team?.toString();
+            const players = t.players?.map((pl: any) => ({
+                name: pl.name,
+                civ: pl.civ || pl.civilization_id || pl.civilizationId,
+                rating: pl.rating || 0
+            })) || [];
+            if (teamId === myTeamId) {
+                myTeam.push(...players);
+            } else {
+                opponentTeam.push(...players);
+            }
+        });
+    } else if (m.players) {
+        m.players.forEach((pl: any) => {
+            const teamId = pl.team?.toString() || pl.team_id?.toString();
+            const playerInfo = {
+                name: pl.name,
+                civ: pl.civ || pl.civilization_id || pl.civilizationId,
+                rating: pl.rating || 0
+            };
+            if (teamId === myTeamId) {
+                myTeam.push(playerInfo);
+            } else {
+                opponentTeam.push(playerInfo);
+            }
+        });
+    }
+
+    // Determine MVP for each side (Highest rating)
+    const myTeamMvp = [...myTeam].sort((a, b) => b.rating - a.rating)[0];
+    const opponentTeamMvp = [...opponentTeam].sort((a, b) => b.rating - a.rating)[0];
+
+    if (stats.recentMatches.length < 3) {
+        const modeLabel = (myTeam.length + opponentTeam.length) <= 2 ? "1v1" : `${myTeam.length}v${opponentTeam.length}`;
+
+        stats.recentMatches.push({
+            matchId: m.matchId || m.match_id,
+            map: m.mapName || m.mapname || m.map_type || "Unknown",
+            won,
+            date: m.started || m.finished,
+            myTeam,
+            opponentTeam,
+            modeLabel,
+            myTeamMvpName: myTeamMvp?.name || null,
+            opponentTeamMvpName: opponentTeamMvp?.name || null
+        });
+    }
+
     if (!won) {
-        const myTeamId = p.team?.toString() || p.team_id?.toString();
-        const opponents: any[] = [];
-        if (m.teams) {
-            m.teams.forEach((t: any) => {
-                const teamId = t.teamId?.toString() || t.team_id?.toString() || t.team?.toString();
-                if (teamId !== myTeamId) {
-                    t.players?.forEach((op: any) => opponents.push(op));
-                }
-            });
-        } else if (m.players) {
-            m.players.forEach((op: any) => {
-                const opId = (op.profileId || op.profile_id)?.toString();
-                if (opId !== playerId) opponents.push(op);
-            });
-        }
-        opponents.forEach(op => {
-            const opCiv = op.civ || op.civilization_id || op.civilizationId;
-            if (opCiv) stats.opponents[opCiv] = (stats.opponents[opCiv] || 0) + 1;
+        opponentTeam.forEach(op => {
+            if (op.civ) stats.opponents[op.civ] = (stats.opponents[op.civ] || 0) + 1;
         });
     }
 
@@ -72,7 +114,6 @@ function calculateStats(matches: any[], playerId: string) {
   const worstCiv = Object.entries(stats.opponents)
     .sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 
-  // Prioritize Master Score (Usage * WinRate)
   const topCivs = Object.entries(stats.civs)
     .map(([id, data]) => ({ 
         id: id, 
@@ -100,13 +141,13 @@ function calculateStats(matches: any[], playerId: string) {
     topCivs, 
     topMaps, 
     worstCiv,
+    recentMatches: stats.recentMatches,
     names: Array.from(stats.names) 
   };
 }
 
 async function fetchMatches(profileId: string, leaderboardId?: string) {
     try {
-        // Aumentamos a 100 partidas para mejor historial
         const url = `https://data.aoe2companion.com/api/matches?profile_ids=${profileId}&per_page=100${leaderboardId ? `&leaderboard_ids=${leaderboardId}` : ''}`;
         const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" } });
         if (res.ok) {
@@ -165,7 +206,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     for (const key of modes) {
       const lbData = profileData.leaderboards?.find((l: any) => l.leaderboardId === key) || {};
       const matches = modeDataMap[key];
-      const calculated = calculateStats(matches, id);
+      const calculated = calculateStats(matches, id, key);
 
       calculated.names.forEach(n => allNames.add(n));
 
@@ -174,13 +215,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         maxRating: lbData.maxRating || lbData.rating || 0,
         rank: lbData.rank || 0,
         ...calculated,
-        games: lbData.games || calculated.games, // Priorizar total oficial si existe
+        games: lbData.games || calculated.games,
         wins: lbData.wins || calculated.wins,
         losses: lbData.losses || calculated.losses
       };
     }
 
-    // Name history excluding current name
     const history = Array.from(allNames).filter(n => n.toLowerCase() !== result.name.toLowerCase()).slice(0, 3);
     result.nameHistory = history;
 
