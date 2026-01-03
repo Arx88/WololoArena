@@ -1,0 +1,18 @@
+
+1. ARMENIANS
+UNIDADES DISPONIBLES
+Alabardero, Aldeano, Arbalestero, Ariete, Ariete cubierto, Arquero, Arquero a caballo, Ballestero, Balsa de demolición, Barca mercante, Barco incendiario, Barco transporte, Buque de demolición, Buque dem. pesado, Cab. de exploración, Caballero, Caballería ligera, Campeón, Carreta de mercancías, Dromón, Escorpión, Escorpión pesado, Espad. de mandoble, Galera, Galera de guerra, Galeón, Hombre de armas, Hostigador, Hostigador de élite, Lancero, Milicia, Monje, Onagro, Pesquero, Piquero, Sacerdote guerrero
+EDIFICIOS DISPONIBLES
+Atalaya, Carro de mulas, Casa, Castillo, Centro urbano, Cuarteles, Empalizada, Galería tiro con arco, Granja, Herrería, Iglesia fortificada, Molino, Muelle, Muro de piedra, Portón de madera, Puesto de avanzada, Taller maq. de asedio, Torre de guardia, Trampa para peces
+TECNOLOGÍAS DISPONIBLES
+Acuñación, Albañilería, Alto horno, Arado pesado, Arm. acolchada arq., Arm. anillos arqueros, Arm. cota de malla, Arm. cuero arqueros, Arm. láminas caball., Arm. placas malla, Armadura de láminas, Bala roja, Balística, Banca, Brazalete, Cantería, Caravana, Carenado, Carretilla, Carr. de mano, Cota malla caball., Devoción, Dique seco, Edad Feudal, Edad Imperial, Emplumado de flechas, Escuderos, Espionaje y traición, Expiación, Fe, Flecha de punzón, Forja, Gambesones, Ganadería, Gremios, Guardia urbana, Hacha de doble filo, Hierbas medicinales, Iluminación, Incendiarismo, Ladronera, Letras de imprenta, Matacanes, Minería aurífera, Muralla fortificada, Patrulla urbana, Pozo minero aurífero, Pureza de sangre, Química, Red agallera, Redención, Santidad, Sierra de arco, Teocracia, Torre de bombardeo, Zapadores
+
+2. AZTECS
+UNIDADES DISPONIBLES
+Aldeano, Arbalestero, Ariete, Ariete cubierto, Ariete de asedio, Arquero, Ballestero, Balsa de demolición, Barco incendiario, Barco incendiario rápido, Barco transporte, Buque de demolición, Cab. de exploración, Caballero, Campeón, Carreta de mercancías, Escorpión, Espad. de mandoble, Espad. espada larga, Explorador águila, Galera, Galera incendiaria, Guerrero águila, Guerrero águila de élite, Guerrero jaguar, Guerrero jaguar de élite, Hombre de armas, Hostigador, Hostigador de élite, Lancero, Lanzapiedras, Mangan, Milicia, Monje, Onagro, Onagro de asedio, Pesquero, Petardo, Piquero, Torre de asedio
+EDIFICIOS DISPONIBLES
+Atalaya, Campamento maderero, Campamento minero, Casa, Castillo, Centro urbano, Cuarteles, Empalizada, Galería tiro con arco, Granja, Herrería, Maravilla, Mercado, Molino, Monasterio, Muelle, Muralla fortificada, Muro de piedra, Portón de madera, Puerta, Puesto de avanzada, Taller maq. de asedio, Torre de guardia, Trampa para peces, Universidad
+TECNOLOGÍAS DISPONIBLES
+Acuñación, Albañilería, Alto horno, Arado pesado, Arm. acolchada arq., Arm. cota de malla, Arm. cuero arqueros, Arm. láminas caball., Arm. placas malla, Armadura de láminas, Balística, Banca, Brazal, Cantería, Caravana, Carenado, Carretilla, Carro de mano, Collera, Cota malla caball., Devoción, Dique seco, Edad Feudal, Edad Imperial, Emplumado de flechas, Escuderos, Espionaje y traición, Expiación, Fervor, Flecha de punzón, Forja, Fundición de hierro, Gambesones, Ganadería, Gremios, Guardia urbana, Hacha de doble filo, Herejía, Hierbas medicinales, Iluminación, Incendiarismo, Ingenieros de asedio, Ladronera, Letras de imprenta, Leva, Matacanes, Minería aurífera, Muralla fortificada, Patrulla urbana, Pozo de cantera, Pozo minero aurífero, Pureza de sangre, Química, Red agallera, Redención, Rotación de cultivos, Santidad, Sierra de arco, Sierra a dos, Telar, Teocracia, Torre de guardia, Zapadores
+
+... [I will assume the script can parse the full structure if I save the full text from the user prompt]

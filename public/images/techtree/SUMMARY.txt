@@ -1,0 +1,58 @@
+============================================================
+AoE2 Tech Tree Images - Download Summary
+============================================================
+
+Armenians: 40 buildings, 231 units, 83 technologies
+Aztecs: 40 buildings, 231 units, 83 technologies
+Bengalis: 40 buildings, 231 units, 83 technologies
+Berbers: 40 buildings, 231 units, 83 technologies
+Bohemians: 40 buildings, 231 units, 83 technologies
+Britons: 40 buildings, 231 units, 83 technologies
+Bulgarians: 40 buildings, 231 units, 83 technologies
+Burgundians: 40 buildings, 231 units, 83 technologies
+Burmese: 40 buildings, 231 units, 83 technologies
+Byzantines: 40 buildings, 231 units, 83 technologies
+Celts: 40 buildings, 231 units, 83 technologies
+Chinese: 40 buildings, 231 units, 83 technologies
+Cumans: 40 buildings, 231 units, 83 technologies
+Dravidians: 40 buildings, 231 units, 83 technologies
+Ethiopians: 40 buildings, 231 units, 83 technologies
+Franks: 40 buildings, 231 units, 83 technologies
+Georgians: 40 buildings, 231 units, 83 technologies
+Goths: 40 buildings, 231 units, 83 technologies
+Gurjaras: 40 buildings, 231 units, 83 technologies
+Hindustanis: 40 buildings, 231 units, 83 technologies
+Huns: 40 buildings, 231 units, 83 technologies
+Incas: 40 buildings, 231 units, 83 technologies
+Italians: 40 buildings, 231 units, 83 technologies
+Japanese: 40 buildings, 231 units, 83 technologies
+Jurchens: 40 buildings, 231 units, 83 technologies
+Khitans: 40 buildings, 231 units, 83 technologies
+Khmer: 40 buildings, 231 units, 83 technologies
+Koreans: 40 buildings, 231 units, 83 technologies
+Lithuanians: 40 buildings, 231 units, 83 technologies
+Magyars: 40 buildings, 231 units, 83 technologies
+Malay: 40 buildings, 231 units, 83 technologies
+Malians: 40 buildings, 231 units, 83 technologies
+Mayans: 40 buildings, 231 units, 83 technologies
+Mongols: 40 buildings, 231 units, 83 technologies
+Persians: 40 buildings, 231 units, 83 technologies
+Poles: 40 buildings, 231 units, 83 technologies
+Portuguese: 40 buildings, 231 units, 83 technologies
+RECURSOS: 0 resource images
+Romans: 40 buildings, 231 units, 83 technologies
+Saracens: 40 buildings, 231 units, 83 technologies
+Shu: 40 buildings, 231 units, 83 technologies
+Sicilians: 40 buildings, 231 units, 83 technologies
+Slavs: 40 buildings, 231 units, 83 technologies
+Spanish: 40 buildings, 231 units, 83 technologies
+Tatars: 40 buildings, 231 units, 83 technologies
+Teutons: 40 buildings, 231 units, 83 technologies
+Turks: 40 buildings, 231 units, 83 technologies
+Vietnamese: 40 buildings, 231 units, 83 technologies
+Vikings: 40 buildings, 231 units, 83 technologies
+Wei: 40 buildings, 231 units, 83 technologies
+Wu: 40 buildings, 231 units, 83 technologies
+
+Total images: 17700
+============================================================
