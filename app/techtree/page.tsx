@@ -313,7 +313,13 @@ export default function TechTreePage() {
 
         <AnimatePresence>
             {hoveredNode && (
-                <div className="fixed pointer-events-none z-[200]" style={{ left: mousePos.x > windowSize.w - 450 ? mousePos.x - 420 : mousePos.x + 20, top: mousePos.y > windowSize.h - 500 ? mousePos.y - 400 : mousePos.y + 20 }}>
+                <div 
+                    className="fixed pointer-events-none z-[200]" 
+                    style={{ 
+                        left: mousePos.x > windowSize.w - 400 ? mousePos.x - 380 : mousePos.x + 20, 
+                        top: mousePos.y > windowSize.h - 450 ? mousePos.y - 420 : Math.max(20, mousePos.y - 50)
+                    }}
+                >
                     <UnitTooltip unitId={hoveredNode.id} civName={selectedCiv.name} />
                 </div>
             )}
