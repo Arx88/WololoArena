@@ -21,9 +21,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ p1: 
 
     const versusMatches = allMatches.filter(m => {
         const players = m.players || m.teams?.flatMap((t: any) => t.players) || [];
-        const hasP1 = players.some((pl: any) => (pl.profileId || pl.profile_id)?.toString() === p1);
-        const hasP2 = players.some((pl: any) => (pl.profileId || pl.profile_id)?.toString() === p2);
-        return hasP1 && hasP2;
+        
+        // 1. STRICT 1v1: Must have exactly 2 players total
+        if (players.length !== 2) return false;
+
+        const p1Data = players.find((pl: any) => (pl.profileId || pl.profile_id)?.toString() === p1);
+        const p2Data = players.find((pl: any) => (pl.profileId || pl.profile_id)?.toString() === p2);
+
+        // 2. OPPOSITE SIDES: Both must exist and have different team IDs (or typical 1v1 structure)
+        if (!p1Data || !p2Data) return false;
+        
+        const team1 = p1Data.team?.toString() || p1Data.team_id?.toString();
+        const team2 = p2Data.team?.toString() || p2Data.team_id?.toString();
+
+        return team1 !== team2;
     });
 
     const uniqueVersus = Array.from(new Map(versusMatches.map(m => [m.matchId || m.match_id, m])).values());

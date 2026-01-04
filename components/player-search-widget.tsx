@@ -144,20 +144,6 @@ export function PlayerSearchWidget() {
     return (
         <div className="mt-4 space-y-16 animate-in fade-in zoom-in-95 duration-500 pb-12">
             
-            {/* VERSUS HISTORY BUTTON */}
-            {mode === "rm_1v1" && (
-                <div className="p-1 bg-yellow-500/10 rounded-2xl border border-yellow-500/20">
-                    <Button 
-                        onClick={() => setShowVersus(true)}
-                        className="w-full h-16 bg-yellow-500 hover:bg-yellow-400 text-black font-black uppercase text-xs tracking-[0.3em] rounded-xl shadow-xl flex items-center gap-4 group"
-                    >
-                        <Sword size={20} className="group-hover:rotate-12 transition-transform" />
-                        VERSUS History
-                    </Button>
-                </div>
-            )}
-
-            {/* Master Highlights */}
             {(civMaster || mapMaster) && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {civMaster && cm && (

@@ -101,11 +101,15 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
             </span>
           </div>
 
-          <div className="flex-1 overflow-hidden relative h-full flex items-center">
+          <div className="flex-1 overflow-hidden relative h-full flex items-center translate-z-0">
              {activeNews.length > 0 ? (
                <div 
                 className={cn("flex animate-marquee items-center whitespace-nowrap", isTickerHovered && "paused")}
-                style={{ willChange: "transform" }}
+                style={{ 
+                    willChange: "transform",
+                    transform: "translateZ(0)",
+                    backfaceVisibility: "hidden"
+                }}
                >
                  {marqueeItems.map((item, i) => (
                    <div key={`${item.id}-${i}`} onMouseEnter={() => setHoveredNews(item)} className="flex items-center gap-6 px-12 h-10 cursor-default">

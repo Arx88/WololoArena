@@ -7,7 +7,6 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
     games: 0,
     civs: {} as Record<string, { wins: number, games: number }>,
     maps: {} as Record<string, { wins: number, games: number }>,
-    opponents: {} as Record<string, number>,
     names: new Set<string>(),
     recentMatches: [] as any[]
   };
@@ -17,7 +16,7 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
   for (let i = 0; i < matches.length; i++) {
     const m = matches[i];
     
-    // 1. IMPROVED MODE DETECTION
+    // Filtro estricto por modo
     const isUnrankedTabMatch = targetMode === "unranked" && (
         m.leaderboardId?.includes("unranked") || 
         m.leaderboardId?.includes("qp_") || 
@@ -28,7 +27,7 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
     const isRankedMatch = m.leaderboardId === targetMode;
     if (!isUnrankedTabMatch && !isRankedMatch) continue;
 
-    // 2. STRICT 1v1 PLAYER COUNT
+    // Conteo de jugadores
     let totalPlayers = 0;
     if (m.teams) m.teams.forEach((t: any) => totalPlayers += (t.players?.length || 0));
     else if (m.players) totalPlayers = m.players.length;
@@ -45,7 +44,7 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
 
     if (!p) continue;
 
-    // 3. ROBUST OUTCOME
+    // Resultado
     let won = p.won === true || p.won === "true" || p.outcome === 1;
     if (p.won === null || p.won === undefined) {
         if (p.ratingDiff && p.ratingDiff > 0) won = true;
@@ -60,7 +59,7 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
     stats.games++;
     if (won) stats.wins++; else stats.losses++;
 
-    // 4. RECENT MATCHES (Matches are already sorted by date outside)
+    // Partidas Recientes (Top 3)
     if (stats.recentMatches.length < 3) {
         const myTeam: any[] = [];
         const opponentTeam: any[] = [];
@@ -92,7 +91,7 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
         });
     }
 
-    // UPDATE STATS
+    // Stats de Civis y Mapas
     const civId = p.civ || p.civilization_id || p.civilizationId;
     if (civId) {
       if (!stats.civs[civId]) stats.civs[civId] = { wins: 0, games: 0 };
@@ -105,7 +104,6 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
     if (won) stats.maps[mapName].wins++;
   }
 
-  // 5. MASTER SCORE CALCULATION
   const topCivs = Object.entries(stats.civs)
     .filter(([_, data]) => data.wins > 0)
     .map(([id, data]) => ({ id, ...data, winRate: Math.round((data.wins/data.games)*100), masterScore: (data.wins * 1000) + data.games }))
@@ -119,12 +117,15 @@ function calculateStats(matches: any[], playerId: string, targetMode: string) {
   return { wins: stats.wins, losses: stats.losses, games: stats.games, topCivs, topMaps, recentMatches: stats.recentMatches, names: Array.from(stats.names) };
 }
 
-async function fetchMatches(profileId: string, leaderboardId?: string) {
+async function fetchMatchesByMode(profileId: string, leaderboardId?: string) {
     try {
         const pages = [1, 2, 3];
         const allResults = await Promise.all(pages.map(async (page) => {
             const url = `https://data.aoe2companion.com/api/matches?profile_ids=${profileId}&per_page=100&page=${page}${leaderboardId ? `&leaderboard_ids=${leaderboardId}` : ''}`;
-            const res = await fetch(url, { headers: { "User-Agent": "WololoArena/1.0" } });
+            const res = await fetch(url, { 
+                headers: { "User-Agent": "WololoArena/1.0" },
+                next: { revalidate: 1800 } 
+            });
             if (res.ok) {
                 const data = await res.json();
                 return data.matches || [];
@@ -140,35 +141,38 @@ async function fetchMatches(profileId: string, leaderboardId?: string) {
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   try {
-    const profileRes = await fetch(`https://data.aoe2companion.com/api/profiles/${id}`, { headers: { "User-Agent": "WololoArena/1.0" } });
+    const profileRes = await fetch(`https://data.aoe2companion.com/api/profiles/${id}`, { 
+        headers: { "User-Agent": "WololoArena/1.0" },
+        next: { revalidate: 1800 }
+    });
     let profileData: any = {};
     if (profileRes.ok) profileData = await profileRes.json();
 
-    const [m1, mTeam, mUn, mAll] = await Promise.all([ 
-        fetchMatches(id, "rm_1v1"), 
-        fetchMatches(id, "rm_team"), 
-        fetchMatches(id, "unranked"),
-        fetchMatches(id) 
+    // PEDIR POR MODO PARA GARANTIZAR PRECISIÓN
+    const [m1, mTeam, mUn] = await Promise.all([ 
+        fetchMatchesByMode(id, "rm_1v1"), 
+        fetchMatchesByMode(id, "rm_team"), 
+        fetchMatchesByMode(id, "unranked")
     ]);
-
-    const combined = [...m1, ...mTeam, ...mUn, ...mAll];
-    const uniqueMatches = Array.from(new Map(combined.map(m => [m.matchId || m.match_id, m])).values());
-
-    // CRITICAL FIX: SORT BY DATE DESCENDING BEFORE PROCESSING
-    uniqueMatches.sort((a, b) => {
-        const dateA = new Date(a.started || a.finished || 0).getTime();
-        const dateB = new Date(b.started || b.finished || 0).getTime();
-        return dateB - dateA;
-    });
 
     const result: any = { profileId: id, name: profileData.name || "Unknown Player", country: profileData.country, clan: profileData.clan, modes: {}, ratingHistory: profileData.ratings || [], nameHistory: [] };
     const allNames = new Set<string>();
 
+    const modesMap: Record<string, any[]> = { "rm_1v1": m1, "rm_team": mTeam, "unranked": mUn };
+
     for (const key of ["rm_1v1", "rm_team", "unranked"]) {
-      const calculated = calculateStats(uniqueMatches, id, key);
+      const calculated = calculateStats(modesMap[key], id, key);
       calculated.names.forEach(n => allNames.add(n));
       const lbData = profileData.leaderboards?.find((l: any) => l.leaderboardId === key) || {};
-      result.modes[key] = { rating: lbData.rating || 0, maxRating: lbData.maxRating || lbData.rating || 0, rank: lbData.rank || 0, ...calculated, games: lbData.games || calculated.games, wins: lbData.wins || calculated.wins, losses: lbData.losses || calculated.losses };
+      result.modes[key] = { 
+          rating: lbData.rating || 0, 
+          maxRating: lbData.maxRating || lbData.rating || 0, 
+          rank: lbData.rank || 0, 
+          ...calculated, 
+          games: lbData.games || calculated.games, 
+          wins: lbData.wins || calculated.wins, 
+          losses: lbData.losses || calculated.losses 
+      };
     }
 
     result.nameHistory = Array.from(allNames).filter(n => n.toLowerCase() !== result.name.toLowerCase()).slice(0, 3);

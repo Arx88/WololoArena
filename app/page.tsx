@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { HeroSection } from "@/components/landing/hero-section"
 import { HowItWorksSection } from "@/components/landing/how-it-works-section"
 import { CivilizationsShowcase } from "@/components/landing/civilizations-showcase"
@@ -15,7 +13,6 @@ import { PlayerSearchWidget } from "@/components/player-search-widget"
 export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
       <main className="flex-1 pt-16">
         {/* 1. Hero - Logo + CTAs principales */}
         <HeroSection />
@@ -47,7 +44,6 @@ export default function HomePage() {
         {/* 8. CTA Final - Registro */}
         <CTASection />
       </main>
-      <Footer />
 
       {/* FLOATING PLAYER SEARCH */}
       <PlayerSearchWidget />

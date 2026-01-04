@@ -36,7 +36,7 @@ export default function LoginPage() {
           title: t("demoModeActivated"),
           description: t("welcomeDemo"),
         })
-        window.location.href = "/"
+        window.location.href = "/tournaments"
       } else {
         setError(t("wrongDemoCredentials"))
         setIsLoading(false)
@@ -67,7 +67,7 @@ export default function LoginPage() {
         title: t("welcomeBack"),
         description: t("loggedInSuccess"),
       })
-      window.location.href = "/"
+      window.location.href = "/tournaments"
     } catch (err) {
       console.error("Login error:", err)
       setError(t("loginError"))

@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -169,9 +167,8 @@ export default function TournamentsPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#020202] text-white">
-      <Navbar />
-      <main className="flex-1">
+    <div className="flex min-h-screen flex-col">
+      <main className="flex-1 pt-16">
         {/* Cinematic Header */}
         <section className="relative h-[55vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
           <div className="absolute inset-0 z-0">
@@ -242,7 +239,6 @@ export default function TournamentsPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   )
 }

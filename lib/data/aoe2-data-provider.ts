@@ -68,6 +68,10 @@ export function isIdAvailable(civName: string, id: string | number, type: 'unit'
     // Strict category check to avoid ID collisions
     // The official JSON uses arrays of objects like [{ age: 1, id: 12 }, ...]
     if (type === 'building') return tree.buildings.some((b: any) => b.id === numId);
+    
+    // Check if it matches any unique unit/tech ID directly
+    if (Object.values(tree.unique).includes(numId)) return true;
+
     if (type === 'unit' || type === 'unique_unit') return tree.units.some((u: any) => u.id === numId);
     if (type === 'tech' || type === 'unique_tech') return tree.techs.some((t: any) => t.id === numId);
 
@@ -91,7 +95,7 @@ export function getEntityStats(id: string | number): EntityData | null {
  * Gets the Unique Unit ID for a civ (Castle Age or Imperial Age).
  */
 export function getUniqueUnitId(civName: string, elite: boolean = false): number | null {
-    const civKey = civName.toLowerCase();
+    const civKey = civName.charAt(0).toUpperCase() + civName.slice(1).toLowerCase();
     const tree = DATA.techtrees[civKey];
     if (!tree) return null;
     return elite ? tree.unique.imperialAgeUniqueUnit : tree.unique.castleAgeUniqueUnit;
@@ -101,7 +105,7 @@ export function getUniqueUnitId(civName: string, elite: boolean = false): number
  * Gets the Unique Tech ID for a civ (Castle or Imperial).
  */
 export function getUniqueTechId(civName: string, imperial: boolean = false): number | null {
-    const civKey = civName.toLowerCase();
+    const civKey = civName.charAt(0).toUpperCase() + civName.slice(1).toLowerCase();
     const tree = DATA.techtrees[civKey];
     if (!tree) return null;
     return imperial ? tree.unique.imperialAgeUniqueTech : tree.unique.castleAgeUniqueTech;

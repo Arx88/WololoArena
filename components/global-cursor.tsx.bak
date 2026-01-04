@@ -22,12 +22,12 @@ export function GlobalCursor() {
     }
 
     const updatePosition = () => {
-      currentX += (mouseX - currentX) * 0.8
-      currentY += (mouseY - currentY) * 0.8
+      // 0.9 for faster response, less delay
+      currentX += (mouseX - currentX) * 0.9
+      currentY += (mouseY - currentY) * 0.9
       
       if (cursorRef.current) {
-        cursorRef.current.style.setProperty('--cursor-x', `${currentX}px`)
-        cursorRef.current.style.setProperty('--cursor-y', `${currentY}px`)
+        cursorRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`
       }
       requestAnimationFrame(updatePosition)
     }
@@ -58,8 +58,8 @@ export function GlobalCursor() {
       style={{ 
         willChange: "transform",
         backfaceVisibility: "hidden",
-        pointerEvents: "none",
-        transform: "translate3d(var(--cursor-x, -100px), var(--cursor-y, -100px), 0)"
+        // This is key: ensure the cursor doesn't trigger any hover/paint calculations itself
+        pointerEvents: "none"
       }}
     >
       <motion.div
