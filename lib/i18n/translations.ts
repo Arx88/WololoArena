@@ -513,7 +513,6 @@ export const translations = {
     player2: "Player 2",
     civPicked: "Civilization picked:",
     randomlySelected: "Randomly selected",
-    randomModeSelection: "The game mode will be selected at random",
 
     // Team Builder
     tgTeamBuilder: "TG Team Builder",
@@ -575,9 +574,7 @@ export const translations = {
     competeAgainstBest: "Compete against the best players and follow live matches",
     liveNow: "LIVE NOW",
     hot: "Hot",
-    all: "All",
     live: "Live",
-    players: "Players",
     start: "Start",
     moreActiveTournaments: "More Active Tournaments",
     round: "Round",
@@ -698,7 +695,6 @@ export const translations = {
 
     // Prizes
     tournamentPrizes: "Tournament Prizes",
-    prize: "Prize",
     place1: "1st Place",
     place2: "2nd Place",
     place3: "3rd Place",
@@ -720,7 +716,6 @@ export const translations = {
     pickCivs: "Pick Civs",
     mode: "Mode",
     mapBans: "Map Bans",
-    civBans: "Civ Bans",
     mapsRemaining: "Maps",
 
     // Utils
@@ -1289,7 +1284,6 @@ export const translations = {
     player2: "Jugador 2",
     civPicked: "Civilización elegida:",
     randomlySelected: "Seleccionado aleatoriamente",
-    randomModeSelection: "El modo de juego se seleccionará al azar",
 
     // Team Builder
     tgTeamBuilder: "TG Team Builder",
@@ -1352,9 +1346,7 @@ export const translations = {
     competeAgainstBest: "Compite contra los mejores jugadores y sigue las partidas en vivo",
     liveNow: "EN VIVO AHORA",
     hot: "Hot",
-    all: "Todos",
     live: "Live",
-    players: "Jugadores",
     start: "Inicio",
     moreActiveTournaments: "Más Torneos Activos",
     round: "Ronda",
@@ -1475,7 +1467,6 @@ export const translations = {
 
     // Prizes
     tournamentPrizes: "Premios del Torneo",
-    prize: "Premio",
     place1: "1er Lugar",
     place2: "2do Lugar",
     place3: "3er Lugar",
@@ -1497,7 +1488,6 @@ export const translations = {
     pickCivs: "Pick Civs",
     mode: "Modo",
     mapBans: "Bans Mapa",
-    civBans: "Bans Civ",
     mapsRemaining: "Mapas",
 
     // Utils

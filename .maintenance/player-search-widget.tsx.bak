@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Globe, Activity, X, Loader2, Sword, Swords, Shield, Target, Crown, ChevronDown } from "lucide-react"
+import { Search, Globe, Activity, X, Loader2, Sword, Shield, Target, Crown, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { Badge } from "@/components/ui/badge"
@@ -581,7 +581,7 @@ export function PlayerSearchWidget() {
                     className="flex items-center justify-center w-16 bg-black border-2 border-yellow-600/30 text-yellow-500 transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.2)] border-l-4 border-yellow-600 group"
                 >
                     <div className="relative">
-                        <Swords className="w-6 h-6 transition-transform group-hover:rotate-12" />
+                        <Sword className="w-6 h-6 transition-transform group-hover:rotate-12" />
                         <div className="absolute inset-0 bg-yellow-500 blur-md opacity-0 group-hover:opacity-30 transition-opacity" />
                     </div>
                 </motion.button>

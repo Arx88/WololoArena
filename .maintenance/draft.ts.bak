@@ -43,16 +43,16 @@ export interface LobbySettings {
   enable_civ_picks: boolean
   enable_map_bans: boolean // Deprecado - usar map_settings.mode
   enable_game_mode_roll: boolean
-  enable_suggestions?: boolean // Toggle for Strategic Intelligence
+  enable_suggestions: boolean // Toggle for Strategic Intelligence
   is_admin_created?: boolean // True if a non-participant is creating this
   host_player_id?: string // Selected host if is_admin_created is true
   guest_player_id?: string // Selected guest if is_admin_created is true
-  map_settings?: MapSettings
+  map_settings: MapSettings
   map_mode?: MapSelectionMode
   map_bans_per_player?: number
   allow_same_home_map?: boolean
-  enable_coin_flip?: boolean
-  pre_draft_bans?: number // Number of civ bans before draft starts (configurable)
+  enable_coin_flip: boolean
+  pre_draft_bans: number // Number of civ bans before draft starts (configurable)
 }
 
 export interface Lobby {
