@@ -136,59 +136,154 @@ export default function TechTreePage() {
                 </div>
             </aside>
 
-            <main ref={mainRef} className="flex-1 overflow-auto custom-scrollbar relative bg-[#020202]">
-                <div className="p-20 min-w-fit space-y-32">
-                    {TECH_TREE_STRUCTURE.map((section) => (
-                        <div key={section.id} id={section.id} className="scroll-mt-20">
-                            <div className="flex items-center gap-8 mb-16 text-left">
-                                <h3 className="text-6xl font-black uppercase tracking-tighter text-white/10 italic leading-none">{section.category}</h3>
-                                <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
-                            </div>
-                            <div className="flex gap-24">
-                                {section.buildings.map((building) => (
-                                    <div key={building.id} className="flex flex-col gap-16 items-center">
-                                        <div className="relative group/node">
-                                            <motion.div 
-                                                className={cn(
-                                                    "w-20 h-20 rounded-2xl flex items-center justify-center p-3 transition-all duration-300 bg-zinc-900 border-2 border-white/10 shadow-xl",
-                                                    !isIdAvailable(selectedCiv.name, building.id, 'building') && "opacity-30 grayscale"
-                                                )}
-                                                onMouseEnter={(e) => { setHoveredNode({ id: building.id, name: building.name }); setMousePos({ x: e.clientX, y: e.clientY }); }}
-                                                onMouseLeave={() => setHoveredNode(null)}
-                                            >
-                                                <img src={getImagePath(selectedCiv.name, 'building', building.file, building.id)} alt="" className="w-full h-full object-contain" />
-                                                {!isIdAvailable(selectedCiv.name, building.id, 'building') && <div className="absolute inset-0 flex items-center justify-center"><X className="text-red-600/40 w-12 h-12" /></div>}
-                                            </motion.div>
-                                            <p className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[9px] font-black uppercase text-zinc-600 tracking-widest">{building.name}</p>
-                                        </div>
-                                        <div className="flex gap-8">
-                                            {building.lines.map((line, lIdx) => (
-                                                <div key={lIdx} className="flex flex-col gap-8">
-                                                    {line.nodes.map((node) => {
-                                                        const resolvedId = resolveNodeId(selectedCiv.name, node);
-                                                        return (
-                                                        <div key={node.id} className="relative group/node">
-                                                            <motion.div 
-                                                                className={cn(
-                                                                    "w-14 h-14 rounded-xl flex items-center justify-center p-2 transition-all duration-300 bg-zinc-900 border border-white/10 shadow-lg",
-                                                                    !isIdAvailable(selectedCiv.name, resolvedId, node.type) && "opacity-30 grayscale"
-                                                                )}
-                                                                onMouseEnter={(e) => { setHoveredNode({ id: resolvedId, name: node.name }); setMousePos({ x: e.clientX, y: e.clientY }); }}
-                                                                onMouseLeave={() => setHoveredNode(null)}
-                                                            >
-                                                                <img src={getImagePath(selectedCiv.name, node.type, node.file, resolvedId)} alt="" className="w-full h-full object-contain" />
-                                                                {!isIdAvailable(selectedCiv.name, resolvedId, node.type) && <div className="absolute inset-0 flex items-center justify-center"><X className="text-red-600/40 w-10 h-10" /></div>}
-                                                            </motion.div>
-                                                        </div>
-                                                    )})}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+            <main ref={mainRef} className="flex-1 overflow-auto custom-scrollbar relative bg-[#050505]">
+                <div className="min-w-[1400px] relative pb-32">
+                    
+                    {/* Sticky Age Headers */}
+                    <div className="sticky top-0 z-30 grid grid-cols-[140px_1fr_1fr_1fr_1fr] border-b border-white/10 bg-[#050505]/95 backdrop-blur-md shadow-2xl">
+                        <div className="p-4 border-r border-white/5 flex items-center justify-center">
+                            <span className="text-[10px] font-black uppercase text-zinc-500 tracking-widest">Estructura</span>
                         </div>
-                    ))}
+                        {['Alta Edad Media', 'Edad Feudal', 'Edad de los Castillos', 'Edad Imperial'].map((age, i) => (
+                            <div key={age} className="p-4 border-r border-white/5 last:border-r-0 flex items-center justify-center gap-3 relative overflow-hidden group">
+                                <div className={cn("absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20", 
+                                    i === 0 ? "bg-blue-500" : i === 1 ? "bg-green-500" : i === 2 ? "bg-yellow-500" : "bg-red-500")} />
+                                <span className={cn("text-xs font-black uppercase tracking-[0.2em] relative z-10",
+                                     i === 0 ? "text-blue-400" : i === 1 ? "text-green-400" : i === 2 ? "text-yellow-400" : "text-red-400"
+                                )}>{age}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Tech Tree Content */}
+                    <div className="p-8 space-y-24">
+                        {TECH_TREE_STRUCTURE.map((section) => (
+                            <div key={section.id} id={section.id} className="scroll-mt-32">
+                                {/* Section Header */}
+                                <div className="flex items-center gap-4 mb-8 px-4">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter text-zinc-500 italic">{section.category}</h3>
+                                    <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+                                </div>
+
+                                {/* Buildings Rows */}
+                                <div className="space-y-4">
+                                    {section.buildings.map((building) => (
+                                        <div key={building.id} className="grid grid-cols-[140px_1fr_1fr_1fr_1fr] bg-white/[0.01] border border-white/5 rounded-2xl overflow-hidden hover:bg-white/[0.02] transition-colors relative group/row">
+                                            
+                                            {/* Column 1: The Building Itself */}
+                                            <div className="p-6 border-r border-white/5 flex flex-col items-center justify-center gap-4 bg-zinc-900/30">
+                                                <div className="relative group/bld">
+                                                    <motion.div 
+                                                        className={cn(
+                                                            "w-16 h-16 rounded-xl flex items-center justify-center p-2 transition-all duration-300 bg-zinc-900 border border-white/10 shadow-xl z-20 relative",
+                                                            !isIdAvailable(selectedCiv.name, building.id, 'building') && "opacity-30 grayscale"
+                                                        )}
+                                                        onMouseEnter={(e) => { setHoveredNode({ id: building.id, name: building.name }); setMousePos({ x: e.clientX, y: e.clientY }); }}
+                                                        onMouseLeave={() => setHoveredNode(null)}
+                                                    >
+                                                        <img src={getImagePath(selectedCiv.name, 'building', building.file, building.id)} alt="" className="w-full h-full object-contain" />
+                                                        {!isIdAvailable(selectedCiv.name, building.id, 'building') && <div className="absolute inset-0 flex items-center justify-center"><X className="text-red-600/40 w-10 h-10" /></div>}
+                                                    </motion.div>
+                                                    <p className="mt-2 text-[9px] font-black uppercase text-zinc-500 text-center tracking-wider">{building.name}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Columns 2-5: The Ages & Units */}
+                                            <div className="col-span-4 relative h-full">
+                                                {/* Background Grid Lines (Absolute overlay) */}
+                                                <div className="absolute inset-0 grid grid-cols-4 pointer-events-none z-0">
+                                                    <div className="border-r border-white/5 h-full" />
+                                                    <div className="border-r border-white/5 h-full" />
+                                                    <div className="border-r border-white/5 h-full" />
+                                                    <div className="h-full" />
+                                                </div>
+
+                                                {/* Render Lines Container */}
+                                                <div className="relative w-full h-full flex flex-col justify-center py-6 gap-10 z-10">
+                                                    {building.lines.map((line, lIdx) => (
+                                                        <div key={lIdx} className="relative w-full h-14 flex items-center">
+                                                             {/* Connector Lines Background (Full width of the line) */}
+                                                            {/* We need to draw lines only between existing nodes. This is complex with absolute positioning.
+                                                                Simplified: Draw a faint guide line for the whole row? No, looks messy.
+                                                                Better: Draw lines strictly between nodes in the map loop.
+                                                            */}
+                                                            
+                                                            <div className="absolute inset-0 w-full h-full">
+                                                                {line.nodes.map((node, nIdx) => {
+                                                                    const resolvedId = resolveNodeId(selectedCiv.name, node);
+                                                                    const isAvailable = isIdAvailable(selectedCiv.name, resolvedId, node.type);
+                                                                    
+                                                                    // Age Mapping
+                                                                    const ageCol = node.age === 'dark' ? 0 : node.age === 'feudal' ? 1 : node.age === 'castle' ? 2 : 3;
+                                                                    const leftPos = ageCol * 25; // 0%, 25%, 50%, 75%
+                                                                    
+                                                                    return (
+                                                                        <div 
+                                                                            key={node.id} 
+                                                                            className="absolute top-0 h-full flex items-center justify-center"
+                                                                            style={{ 
+                                                                                left: `${leftPos}%`, 
+                                                                                width: '25%' 
+                                                                            }}
+                                                                        >
+                                                                             {/* Horizontal Connector to the LEFT (if previous node exists) */}
+                                                                             {nIdx > 0 && (
+                                                                                 <div className={cn("absolute right-[50%] top-1/2 h-0.5 -translate-y-1/2 z-0",
+                                                                                     // Calculate width based on distance to previous node? 
+                                                                                     // Assuming sequential nodes usually go to next age, width is 100% of a column (25vw approx).
+                                                                                     // But nodes might skip ages. Let's look at previous node age.
+                                                                                     "w-[100vw]", // Hacky? No.
+                                                                                     // Let's use negative margins or absolute logic relative to this cell.
+                                                                                     // Actually, simpler: Just a line extending left from this node to the edge of its cell?
+                                                                                     // No, needs to connect to previous.
+                                                                                     // Tech Tree usually has lines between specific parents.
+                                                                                     // Here we have a flat list `nodes`. We assume linear progression.
+                                                                                     // Width = (CurrentAge - PrevAge) * 100% of column width?
+                                                                                 )} 
+                                                                                 style={{
+                                                                                     width: `${(ageCol - (line.nodes[nIdx-1].age === 'dark' ? 0 : line.nodes[nIdx-1].age === 'feudal' ? 1 : line.nodes[nIdx-1].age === 'castle' ? 2 : 3)) * 100}%`,
+                                                                                     background: isAvailable ? 'linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 100%)' : 'rgba(255,255,255,0.05)'
+                                                                                 }}
+                                                                                 />
+                                                                             )}
+
+                                                                            <div className="relative group/node z-10">
+                                                                                <motion.div 
+                                                                                    className={cn(
+                                                                                        "w-12 h-12 rounded-lg flex items-center justify-center p-1.5 transition-all duration-300 bg-[#0A0A0A] border shadow-lg relative",
+                                                                                        isAvailable 
+                                                                                            ? "border-white/20 hover:border-yellow-500 hover:scale-110 hover:shadow-yellow-500/20" 
+                                                                                            : "border-white/5 opacity-40 grayscale"
+                                                                                    )}
+                                                                                    onMouseEnter={(e) => { setHoveredNode({ id: resolvedId, name: node.name }); setMousePos({ x: e.clientX, y: e.clientY }); }}
+                                                                                    onMouseLeave={() => setHoveredNode(null)}
+                                                                                >
+                                                                                    <img src={getImagePath(selectedCiv.name, node.type, node.file, resolvedId)} alt="" className="w-full h-full object-contain" />
+                                                                                    
+                                                                                    {/* Type Indicators */}
+                                                                                    {node.type.includes('tech') && <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500/20 rounded-full border border-blue-500/50" />}
+                                                                                    {node.type.includes('unique') && <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-500/20 rounded-full border border-yellow-500/50" />}
+
+                                                                                    {!isAvailable && <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg"><X className="text-red-500 w-8 h-8" /></div>}
+                                                                                </motion.div>
+                                                                                <p className={cn("absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-bold uppercase tracking-tight whitespace-nowrap px-2 py-0.5 rounded-md transition-colors", 
+                                                                                    isAvailable ? "text-zinc-400 group-hover:text-white" : "text-zinc-700"
+                                                                                )}>{node.name}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    )
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </main>
         </div>
