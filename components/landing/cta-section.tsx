@@ -14,7 +14,6 @@ function MatrixBackground() {
   
   return (
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none opacity-30">
-      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.05] z-10" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000000_85%)] z-20" />
       <div className="absolute inset-0 flex justify-between mask-gradient-vertical transform skew-x-12 scale-125">
         {[...Array(6)].map((_, i) => (
@@ -60,7 +59,7 @@ export function CTASection() {
           <div className="mb-12">
             <div className="inline-flex items-center gap-3 px-5 py-2 border border-yellow-500/20 bg-yellow-500/5 backdrop-blur-md rounded-full shadow-[0_0_20px_rgba(234,179,8,0.1)]">
               <Sparkles className="h-4 w-4 text-yellow-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-yellow-500">READY FOR BATTLE</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-yellow-500">{t("readyForBattle")}</span>
             </div>
           </div>
 
@@ -90,7 +89,7 @@ export function CTASection() {
           {/* Tactical Disclaimer */}
           <div className="mt-24 flex items-center gap-6 opacity-20">
              <div className="h-px w-24 bg-gradient-to-r from-transparent to-white" />
-             <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-white whitespace-nowrap">WOLOLO ARENA // 2025 EDITION</span>
+             <span className="text-[10px] font-mono uppercase tracking-[0.6em] text-white whitespace-nowrap">{t("edition2025")}</span>
              <div className="h-px w-24 bg-gradient-to-l from-transparent to-white" />
           </div>
         </div>

@@ -1,8 +1,6 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { Suspense } from "react"
 import { TeamBuilderInterface } from "@/components/team-builder/team-builder-interface"
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
+import { Navbar } from "@/components/navbar"
 
 export const metadata = {
   title: "TG Team Builder - AOE2 Wololo Arena",
@@ -14,10 +12,9 @@ export default function TeamBuilderPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#020202] text-white">
       <Navbar />
-      <main className="flex-1 pt-32 pb-12">
+      <main className="flex-1 pt-40 pb-12">
         <TeamBuilderInterface />
       </main>
-      <Footer />
     </div>
   )
 }

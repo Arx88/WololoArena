@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Plus, Trash2, Edit2, EyeOff, ExternalLink, Radio, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle, GripVertical } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence, Reorder } from "framer-motion"
 import { useNews, NewsItem } from "@/lib/news-context"
+import { useLanguage } from "@/lib/i18n/language-context"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -25,8 +26,20 @@ interface NewsTickerProps {
 }
 
 export function NewsTicker({ isAdmin }: NewsTickerProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(true)
+  const { t } = useLanguage()
   const { news, addNews, removeNews, updateNews, toggleActive, setNews } = useNews()
-  
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   const [editingId, setEditingId] = useState<string | null>(null)
   const [newMsg, setNewMsg] = useState("")
   const [newLink, setNewLink] = useState("")
@@ -80,6 +93,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
 
   return (
     <div 
+      ref={containerRef}
       className="relative z-[100] w-full"
       onMouseLeave={() => {
         setIsTickerHovered(false)
@@ -97,18 +111,19 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </div>
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/90">
-              Noticias
+              {t("news")}
             </span>
           </div>
 
           <div className="flex-1 overflow-hidden relative h-full flex items-center translate-z-0">
-             {activeNews.length > 0 ? (
+             {activeNews.length > 0 && isVisible ? (
                <div 
                 className={cn("flex animate-marquee items-center whitespace-nowrap", isTickerHovered && "paused")}
                 style={{ 
                     willChange: "transform",
-                    transform: "translateZ(0)",
-                    backfaceVisibility: "hidden"
+                    transform: "translate3d(0,0,0)",
+                    backfaceVisibility: "hidden",
+                    animationDuration: `${Math.max(30, marqueeItems.length * 10)}s`
                 }}
                >
                  {marqueeItems.map((item, i) => (
@@ -122,7 +137,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                </div>
              ) : (
                <div className="px-4 text-[10px] font-mono text-muted-foreground uppercase tracking-widest opacity-40 italic">
-                 Wololo Arena // Standing By
+                 {t("standingBy")}
                </div>
              )}
           </div>
@@ -144,11 +159,11 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                         </div>
                         <div>
                           <DialogTitle className="text-xl font-black uppercase tracking-widest text-white/90">
-                            Administración
+                            {t("administration")}
                           </DialogTitle>
                         </div>
                       </div>
-                      <Badge variant="outline" className="border-primary/30 text-primary font-mono px-4 py-1.5 uppercase">Manual</Badge>
+                      <Badge variant="outline" className="border-primary/30 text-primary font-mono px-4 py-1.5 uppercase">{t("manual")}</Badge>
                     </div>
                     
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-0 overflow-hidden">
@@ -156,20 +171,20 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                         <div className="flex items-center justify-between mb-10">
                           <h4 className="text-sm font-black uppercase text-primary tracking-[0.2em] flex items-center gap-3">
                             {editingId ? <Edit2 className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-                            {editingId ? "Update News Item" : "Create New Item"}
+                            {editingId ? t("updateNewsItem") : t("createNewItem")}
                           </h4>
                           {editingId && (
                             <Button variant="ghost" size="sm" onClick={resetForm} className="text-[10px] uppercase font-black text-white/40 hover:text-white">
-                              Cancel
+                              {t("cancel")}
                             </Button>
                           )}
                         </div>
                         
                         <form onSubmit={handleAddOrUpdate} className="space-y-8">
                           <div className="space-y-3">
-                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Main Headline</Label>
+                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">{t("mainHeadline")}</Label>
                             <Input 
-                              placeholder="Title of the news..." 
+                              placeholder="..." 
                               value={newMsg}
                               onChange={(e) => setNewMsg(e.target.value)}
                               className="bg-white/[0.03] border-white/10 h-14 text-base focus:border-primary/50 rounded-2xl px-6"
@@ -177,9 +192,9 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                           </div>
 
                           <div className="space-y-3">
-                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Full Intelligence Briefing</Label>
+                            <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">{t("intelligenceBriefing")}</Label>
                             <Textarea 
-                              placeholder="Detailed information for expanded view..." 
+                              placeholder="..." 
                               value={newDesc}
                               onChange={(e) => setNewDesc(e.target.value)}
                               className="bg-white/[0.03] border-white/10 min-h-[200px] text-sm focus:border-primary/50 rounded-2xl resize-none p-6 leading-relaxed"
@@ -188,7 +203,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
 
                           <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-3">
-                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Asset URL (IMG)</Label>
+                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">{t("assetUrl")}</Label>
                               <Input 
                                 placeholder="https://..." 
                                 value={newImg}
@@ -197,7 +212,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                               />
                             </div>
                             <div className="space-y-3">
-                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">Action Link</Label>
+                              <Label className="text-[11px] uppercase text-white/40 font-black tracking-widest ml-1">{t("actionLink")}</Label>
                               <Input 
                                 placeholder="/page or URL" 
                                 value={newLink}
@@ -209,7 +224,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
 
                           <Button type="submit" className="w-full bg-primary text-black font-black uppercase text-xs tracking-[0.3em] h-16 hover:bg-white transition-all rounded-2xl shadow-xl shadow-primary/10">
                             {editingId ? <Save className="mr-3 h-5 w-5" /> : <Radio className="mr-3 h-5 w-5" />}
-                            {editingId ? "Update Database" : "Initialize Broadcast"}
+                            {editingId ? t("updateDatabase") : t("initializeBroadcast")}
                           </Button>
                         </form>
                       </div>
@@ -218,9 +233,9 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                         <div className="flex items-center justify-between mb-10">
                           <h4 className="text-sm font-black uppercase text-white/40 tracking-[0.2em] flex items-center gap-3">
                             <History className="h-4 w-4" />
-                            Orden
+                            {t("order")}
                           </h4>
-                          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">Arrastra para reordenar</span>
+                          <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">{t("dragToReorder")}</span>
                         </div>
                         
                         <Reorder.Group 
@@ -280,7 +295,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                           {news.length === 0 && (
                             <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-white/5 rounded-[3rem] bg-white/[0.01]">
                                <AlertCircle className="h-16 w-16 text-white/5 mb-6" />
-                               <p className="text-xs font-black text-white/20 uppercase tracking-[0.4em]">No transmissions in registry</p>
+                               <p className="text-xs font-black text-white/20 uppercase tracking-[0.4em]">{t("noTransmissions")}</p>
                             </div>
                           )}
                         </Reorder.Group>
@@ -315,8 +330,8 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                 )}
               </div>
 
-              <div className="md:col-span-7 lg:col-span-8 p-10 md:p-16 relative flex flex-col justify-center h-full overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 text-[100px] font-black text-white/5 italic select-none pointer-events-none uppercase">News</div>
+              <div className="md:col-span-7 lg:col-span-8 p-10 md:p-16 relative flex flex-col justify-center h-full overflow-hidden bg-[#020202]">
+                <div className="absolute top-0 right-0 p-8 text-[100px] font-black text-white/5 italic select-none pointer-events-none uppercase">{t("news")}</div>
 
                 <div className="flex items-center gap-4 mb-4 text-primary/60 font-bold text-[10px] uppercase tracking-[0.4em]">
                   <span>Wololo Arena</span>
@@ -335,7 +350,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                   {hoveredNews.link && (
                     <Button asChild className="bg-primary text-black font-black uppercase text-xs tracking-widest px-12 h-14 hover:bg-white transition-all shadow-lg shadow-primary/5">
                       <Link href={hoveredNews.link} className="flex items-center gap-3">
-                        Read Full Article <ExternalLink className="h-5 w-5" />
+                        {t("readFullArticle")} <ExternalLink className="h-5 w-5" />
                       </Link>
                     </Button>
                   )}
@@ -343,11 +358,11 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
 
                 <div className="mt-8 flex items-center gap-8 text-[10px] font-mono text-white/20 uppercase tracking-[0.2em]">
                    <div className="flex flex-col gap-1">
-                      <span className="text-[8px] opacity-50 uppercase tracking-tighter">Status</span>
-                      <span className="text-green-500 font-bold">Verified</span>
+                      <span className="text-[8px] opacity-50 uppercase tracking-tighter">{t("status")}</span>
+                      <span className="text-green-500 font-bold">{t("verified")}</span>
                    </div>
                    <div className="flex flex-col gap-1 border-l border-white/10 pl-8">
-                      <span className="text-[8px] opacity-50 uppercase tracking-tighter">Posted</span>
+                      <span className="text-[8px] opacity-50 uppercase tracking-tighter">{t("posted")}</span>
                       <span className="text-white/60 font-bold">{new Date(parseInt(hoveredNews.id)).toLocaleDateString()}</span>
                    </div>
                 </div>
@@ -358,7 +373,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
       </AnimatePresence>
 
       <style jsx global>{`
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
         .animate-marquee { animation: marquee 60s linear infinite; }
         .paused { animation-play-state: paused !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

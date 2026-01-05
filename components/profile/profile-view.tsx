@@ -21,11 +21,12 @@ interface ProfileViewProps {
 export function ProfileView({ userId, profile, matchHistory, isDemo = false, loadingHistory = false }: ProfileViewProps) {
   const [currentProfile, setCurrentProfile] = useState(profile)
   const { t } = useLanguage()
+  const isOwn = profile ? userId === profile.id : false
 
   return (
     <section className="py-12">
       <div className="mx-auto max-w-4xl px-4">
-        <ProfileHeader userId={userId} profile={currentProfile} onProfileUpdate={setCurrentProfile} isDemo={isDemo} />
+        <ProfileHeader profile={currentProfile} isOwn={isOwn} />
 
         <Tabs defaultValue="favorites" className="mt-8">
           <TabsList className="grid w-full grid-cols-2 bg-card">

@@ -121,7 +121,7 @@ export function TGBuilderPromoSection() {
                 </div>
 
                 <div className="space-y-4">
-                  {topSynergies.map((syn, index) => {
+                  {(topSynergies as any[]).map((syn, index) => {
                     const civ1 = CIVILIZATIONS.find((c) => c.name.toLowerCase() === syn.civs[0].toLowerCase())
                     const civ2 = CIVILIZATIONS.find((c) => c.name.toLowerCase() === syn.civs[1].toLowerCase())
 

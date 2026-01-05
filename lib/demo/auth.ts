@@ -65,3 +65,19 @@ export function setDemoMode(enabled: boolean) {
 export function validateDemoCredentials(username: string, password: string): boolean {
   return username === DEMO_CREDENTIALS.username && password === DEMO_CREDENTIALS.password
 }
+
+export function getDemoProfileById(id: string) {
+  const allUsers = [DEMO_USER, DEMO_OPPONENT];
+  const user = allUsers.find(u => u.id === id);
+  if (!user) return null;
+  
+  return {
+    id: user.id,
+    username: user.username,
+    avatar_url: null,
+    favorite_civs: [],
+    favorite_maps: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+}

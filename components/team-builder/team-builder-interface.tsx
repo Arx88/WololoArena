@@ -394,11 +394,11 @@ export function TeamBuilderInterface() {
                   <Button variant="ghost" onClick={() => setActiveTab("builder")} className="ml-auto text-yellow-500 text-[10px] font-black uppercase tracking-widest"><RotateCcw className="mr-2 h-4 w-4" /> Return to Builder</Button>
                </div>
                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                 {getBestCivSynergies().map((syn, i) => (
+                 {(getBestCivSynergies() as any[]).map((syn, i) => (
                    <Card key={i} className="bg-[#0a0a0b]/80 border-white/10 backdrop-blur-xl rounded-3xl p-6 hover:border-yellow-500/30 transition-all group">
                      <div className="flex items-center justify-between mb-6">
                         <div className="flex -space-x-3">
-                           {syn.civs.map(name => {
+                           {syn.civs.map((name: string) => {
                              const c = CIVILIZATIONS.find(civ => civ.name.toLowerCase() === name.toLowerCase())
                              return <div key={name} className="h-12 w-12 rounded-xl border-2 border-black bg-zinc-900 relative overflow-hidden p-2 shadow-xl"><Image src={c?.icon || ""} alt="" fill className="object-contain p-2" /></div>
                            })}

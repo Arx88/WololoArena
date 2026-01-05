@@ -6,7 +6,7 @@ import { type Language, translations } from "./translations"
 interface LanguageContextType {
   language: Language
   setLanguage: (lang: Language) => void
-  t: (key: keyof typeof translations.en) => string
+  t: (key: keyof typeof translations.en, variables?: Record<string, string | number>) => string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -27,9 +27,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("aoe2-language", lang)
   }
 
-  const t = (key: keyof typeof translations.en): string => {
+  const t = (key: keyof typeof translations.en, variables?: Record<string, string | number>): string => {
     const dict = (translations as any)[language] || translations.en
-    return dict[key] || (translations.en as any)[key] || key
+    let text = dict[key] || (translations.en as any)[key] || key
+
+    if (variables) {
+      Object.entries(variables).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, String(v))
+      })
+    }
+
+    return text
   }
 
   return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>

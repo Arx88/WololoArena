@@ -110,14 +110,12 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
             <p className="text-muted-foreground">{t("loadingProfile")}...</p>
           </div>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -125,7 +123,6 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
   if (error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center px-4">
           <Card className="stone-texture border-destructive/50 max-w-md w-full">
             <CardContent className="flex flex-col items-center justify-center py-16">
@@ -141,7 +138,6 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -149,7 +145,6 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
   if (!pageData || !pageData.profile) { // Check pageData.profile as well
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center px-4">
           <Card className="stone-texture max-w-md w-full">
             <CardContent className="flex flex-col items-center justify-center py-16">
@@ -160,14 +155,12 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
     )
   }
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
       <main className="flex-1 pt-16">
         <ProfileView
           userId={pageData.userId}
@@ -176,7 +169,6 @@ export default function DynamicProfilePage({ params }: DynamicProfilePageProps) 
           isDemo={pageData.isDemo}
         />
       </main>
-      <Footer />
     </div>
   )
 }

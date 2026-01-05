@@ -61,9 +61,7 @@ export default function UniversityPage() {
         </div>
       </div>
 
-      <Navbar />
-
-      <main className="relative z-10 flex-1 pt-32 pb-32">
+      <main className="relative z-10 flex-1 pt-40 pb-32">
         <div className="max-w-7xl mx-auto px-6">
           
           {/* --- HERO HEADER: 3D REVEAL --- */}
@@ -178,8 +176,6 @@ export default function UniversityPage() {
           </motion.div>
         </div>
       </main>
-
-      <Footer />
 
       <style jsx global>{`
         .gold-text-gradient {

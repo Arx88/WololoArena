@@ -20,7 +20,7 @@ export function CivilizationsShowcase() {
         <div className="flex flex-col items-start mb-16 border-l-4 border-primary pl-8">
           <div className="flex items-center gap-3 mb-4">
             <Database className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">Archivos de Civilizaciones // Global</span>
+            <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">{t("civArchives")}</span>
           </div>
           
           <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white uppercase italic">
@@ -29,16 +29,17 @@ export function CivilizationsShowcase() {
         </div>
 
         {/* Scrolling civilizations - Unified Sharp Style */}
-        <div className="relative">
+        <div className="relative mt-8">
           <div className="absolute left-0 top-0 bottom-0 z-20 w-32 bg-gradient-to-r from-[#020202] to-transparent pointer-events-none" />
           <div className="absolute right-0 top-0 bottom-0 z-20 w-32 bg-gradient-to-l from-[#020202] to-transparent pointer-events-none" />
 
           <div className="flex gap-1 overflow-hidden py-4">
-            <div className="flex animate-[scroll_120s_linear_infinite] gap-1 hover:[animation-play-state:paused]">
+            <div className="flex animate-marquee gap-1 hover:[animation-play-state:paused] will-change-transform">
               {[...showcaseCivs, ...showcaseCivs, ...showcaseCivs].map((civ, i) => (
                 <div
                   key={`${civ.id}-${i}`}
-                  className="group relative min-w-[220px] h-[300px] bg-[#0a0a0b]/60 border border-white/5 transition-all duration-500 hover:bg-primary/[0.02] hover:border-primary/30 overflow-hidden"
+                  className="group relative min-w-[220px] h-[300px] bg-[#0a0a0b] border border-white/5 transition-all duration-500 hover:bg-primary/[0.02] hover:border-primary/30 overflow-hidden"
+                  style={{ contain: 'paint' }}
                 >
                   {/* HUD Brackets - Consistentes */}
                   <div className="absolute top-0 left-0 w-3 h-3 border-t border-l border-white/10 group-hover:border-primary/50 transition-colors" />
@@ -71,13 +72,13 @@ export function CivilizationsShowcase() {
                       
                       <div className="flex flex-col gap-1">
                         <div className="flex justify-between text-[8px] font-mono text-white/30 uppercase tracking-tighter">
-                          <span>ESPECIALIDAD</span>
+                          <span>{t("specialty")}</span>
                           <span className="text-primary/50">{civ.specialty.split(' ')[0]}</span>
                         </div>
                         <div className="h-px bg-white/5 w-full" />
                         <div className="flex justify-between text-[8px] font-mono text-white/30 uppercase tracking-tighter">
-                          <span>ESTADO</span>
-                          <span className="text-green-500/50">VERIFICADO</span>
+                          <span>{t("status")}</span>
+                          <span className="text-green-500/50">{t("verified")}</span>
                         </div>
                       </div>
                     </div>
@@ -92,20 +93,19 @@ export function CivilizationsShowcase() {
         <div className="mt-16 flex items-center gap-4 text-primary/20">
            <div className="h-px w-12 bg-primary/20" />
            <span className="text-[9px] font-mono uppercase tracking-[0.4em] animate-pulse">
-             Exploring heritage... 100% Verified
+             {t("exploringHeritage")}
            </span>
            <div className="h-px flex-1 bg-gradient-to-r from-primary/20 to-transparent" />
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(calc(-220px * ${CIVILIZATIONS.length} - 0.25rem * ${CIVILIZATIONS.length}));
-          }
+        .animate-marquee {
+          animation: marquee 120s linear infinite;
+        }
+        @keyframes marquee {
+          0% { transform: translate3d(0, 0, 0); }
+          100% { transform: translate3d(calc(-220px * ${CIVILIZATIONS.length} - 0.25rem * ${CIVILIZATIONS.length}), 0, 0); }
         }
       `}</style>
     </section>

@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -69,24 +68,28 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
       if (code.startsWith("DEMO")) {
         // Load demo data
         const demoDraft: Draft = {
-          id: "demo-draft-1",
-          lobby_id: "demo-lobby-1",
+          id: "demo-draft",
+          lobby_id: "demo-lobby",
           current_phase: "completed",
+          current_step_index: 10,
           current_turn: null,
           phase_end_time: null,
-          host_civ_bans: ["Franks", "Mayans"],
-          guest_civ_bans: ["Britons", "Chinese"],
-          host_civ_picks: ["Vikings"],
-          guest_civ_picks: ["Mongols"],
-          host_map_bans: ["Arabia"],
-          guest_map_bans: ["Arena"],
+          host_civ_bans: ["franks", "mayans"],
+          guest_civ_bans: ["britons", "chinese"],
+          host_civ_picks: ["vikings"],
+          guest_civ_picks: ["mongols"],
+          host_map_bans: ["arabia"],
+          guest_map_bans: ["arena"],
           host_map_picks: [],
           guest_map_picks: [],
           host_home_map: null,
           guest_home_map: null,
-          final_map: "Black Forest",
+          final_map: "black_forest",
+          neutral_map: null,
           selected_game_mode: "Random Map",
           turn_number: 8,
+          coin_flip_winner: "demo-user-1",
+          first_picker: "demo-user-1",
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
@@ -136,8 +139,8 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
         const { data: profiles } = await supabase.from("profiles").select("*").in("id", userIds)
 
         if (profiles) {
-          setHostProfile(profiles.find((p) => p.id === draftData.lobbies.host_id) || null)
-          setGuestProfile(profiles.find((p) => p.id === draftData.lobbies.guest_id) || null)
+          setHostProfile(profiles.find((p: Profile) => p.id === draftData.lobbies.host_id) || null)
+          setGuestProfile(profiles.find((p: Profile) => p.id === draftData.lobbies.guest_id) || null)
         }
 
         // Generate actions
@@ -223,11 +226,9 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </main>
-        <Footer />
       </div>
     )
   }
@@ -235,7 +236,6 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
   if (!draft || !lobby) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center">
           <Card className="stone-texture max-w-md">
             <CardContent className="py-12 text-center">
@@ -246,7 +246,6 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -282,10 +281,9 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#020202] text-white">
-      <Navbar />
       <main className="flex-1">
         {/* Cinematic Header */}
-        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
+        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-40">
           <div className="absolute inset-0 z-0">
             <Image src="/images/Hero.png" alt="Draft Replay" fill className="object-cover opacity-40 grayscale-[0.5] brightness-110" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/60 to-transparent" />
@@ -457,7 +455,6 @@ export default function DraftReplayPage({ params }: ReplayPageProps) {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   )
 }

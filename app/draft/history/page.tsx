@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -36,19 +35,23 @@ const DEMO_DRAFTS: DraftHistoryItem[] = [
       current_phase: "completed",
       current_turn: null,
       phase_end_time: null,
-      host_civ_bans: ["Franks", "Mayans"],
-      guest_civ_bans: ["Britons", "Chinese"],
-      host_civ_picks: ["Vikings"],
-      guest_civ_picks: ["Mongols"],
-      host_map_bans: ["Arabia"],
-      guest_map_bans: ["Arena"],
+      host_civ_bans: ["franks", "mayans"],
+      guest_civ_bans: ["britons", "chinese"],
+      host_civ_picks: ["vikings"],
+      guest_civ_picks: ["mongols"],
+      host_map_bans: ["arabia"],
+      guest_map_bans: ["arena"],
       host_map_picks: [],
       guest_map_picks: [],
       host_home_map: null,
       guest_home_map: null,
-      final_map: "Black Forest",
+      final_map: "black_forest",
+      neutral_map: null,
       selected_game_mode: "Random Map",
       turn_number: 8,
+      current_step_index: 10,
+      coin_flip_winner: "demo-user-001",
+      first_picker: "demo-user-001",
       created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       share_code: "DEMO1234",
@@ -74,19 +77,23 @@ const DEMO_DRAFTS: DraftHistoryItem[] = [
       current_phase: "completed",
       current_turn: null,
       phase_end_time: null,
-      host_civ_bans: ["Aztecs", "Huns"],
-      guest_civ_bans: ["Vikings", "Persians"],
-      host_civ_picks: ["Franks"],
-      guest_civ_picks: ["Britons"],
+      host_civ_bans: ["aztecs", "huns"],
+      guest_civ_bans: ["vikings", "persians"],
+      host_civ_picks: ["franks"],
+      guest_civ_picks: ["britons"],
       host_map_bans: [],
       guest_map_bans: [],
-      host_map_picks: ["Arabia"],
-      guest_map_picks: ["Arena"],
-      host_home_map: "Arabia",
-      guest_home_map: "Arena",
+      host_map_picks: ["arabia"],
+      guest_map_picks: ["arena"],
+      host_home_map: "arabia",
+      guest_home_map: "arena",
       final_map: null,
+      neutral_map: null,
       selected_game_mode: "Empire Wars",
       turn_number: 6,
+      current_step_index: 8,
+      coin_flip_winner: "demo-user-003",
+      first_picker: "demo-user-003",
       created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
       share_code: "DEMO5678",
@@ -135,10 +142,12 @@ export default function DraftHistoryPage() {
 
       try {
         // Get all drafts where user was participant
-        const { data: lobbies } = await supabase
+        const { data: lobbiesData } = await supabase
           .from("lobbies")
           .select("*")
           .or(`host_id.eq.${user.id},guest_id.eq.${user.id}`)
+
+        const lobbies = lobbiesData as Lobby[] | null
 
         if (!lobbies) {
           setDrafts([])
@@ -170,10 +179,10 @@ export default function DraftHistoryPage() {
 
         const { data: profiles } = await supabase.from("profiles").select("*").in("id", Array.from(userIds))
 
-        const profileMap = new Map(profiles?.map((p) => [p.id, p]) || [])
-        const lobbyMap = new Map(lobbies.map((l) => [l.id, l]))
+        const profileMap = new Map(profiles?.map((p: Profile) => [p.id, p]) || [])
+        const lobbyMap = new Map(lobbies.map((l: Lobby) => [l.id, l]))
 
-        const formattedDrafts: DraftHistoryItem[] = draftsData.map((d) => {
+        const formattedDrafts: DraftHistoryItem[] = draftsData.map((d: Draft) => {
           const lobby = lobbyMap.get(d.lobby_id)!
           return {
             draft: d,
@@ -214,7 +223,7 @@ export default function DraftHistoryPage() {
       <Navbar />
       <main className="flex-1">
         {/* Cinematic Header */}
-        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
+        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-40">
           <div className="absolute inset-0 z-0">
             <Image src="/images/Hero.png" alt="Draft History" fill className="object-cover opacity-40 grayscale-[0.5] brightness-110" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/60 to-transparent" />
@@ -292,7 +301,6 @@ export default function DraftHistoryPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   )
 }

@@ -23,7 +23,7 @@ export function FeaturesSection() {
         <div className="flex flex-col items-start mb-20 border-l-4 border-primary pl-8">
           <div className="flex items-center gap-3 mb-4">
             <Activity className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">Core Capabilities // Specification</span>
+            <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">{t("coreCapabilities")}</span>
           </div>
           
           <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white uppercase italic">

@@ -33,7 +33,7 @@ import type { TournamentPrizes, Currency } from "@/lib/types/draft"
 interface HypedTournament {
   id: string
   name: string
-  description?: string
+  description: string | null
   format: string
   status: string
   max_participants: number
@@ -120,29 +120,29 @@ export function TournamentsHubSection() {
            <div className="flex flex-col items-start max-w-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-px w-8 bg-yellow-500" />
-                <span className="text-[10px] font-black text-yellow-500 tracking-[0.5em] uppercase">Competitive Hub</span>
+                <span className="text-[10px] font-black text-yellow-500 tracking-[0.5em] uppercase">{t("competitiveHub")}</span>
               </div>
               <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-white uppercase italic leading-[0.8] mb-6 overflow-visible">
-                GLOBAL <span className="gold-text-gradient block mt-2">CHAMPIONSHIPS</span>
+                {t("globalChampionships").split(' ')[0]} <span className="gold-text-gradient block mt-2">{t("globalChampionships").split(' ').slice(1).join(' ')}</span>
               </h2>
               <p className="text-xl text-white/40 font-light italic leading-relaxed">
-                The ultimate proving ground. Join official circuits, manage brackets, and claim glory in the world's most prestigious Age of Empires II events.
+                {t("provingGround")}
               </p>
            </div>
            <div className="flex gap-16 text-right pb-2">
               <div className="hidden md:block">
-                 <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Live Intel</p>
+                 <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">{t("liveIntel")}</p>
                  <div className="flex items-center gap-3 text-red-500 font-black italic uppercase text-lg">
                     <div className="relative flex h-3 w-3">
                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
                     </div>
-                    Active Broadcasts
+                    {t("activeBroadcasts")}
                  </div>
               </div>
               <div>
-                 <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">Registry</p>
-                 <p className="text-white font-black italic uppercase text-lg leading-none">{tournaments.length} ACTIVE EVENTS</p>
+                 <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mb-2">{t("registry")}</p>
+                 <p className="text-white font-black italic uppercase text-lg leading-none">{tournaments.length} {t("activeEvents")}</p>
               </div>
            </div>
         </div>
@@ -151,18 +151,23 @@ export function TournamentsHubSection() {
           {/* Main Featured Tournament - The "Invitation" style */}
           <div className="lg:col-span-8 relative group" onClick={() => handleTournamentClick(featured?.id)}>
              <motion.div 
-               whileHover={{ scale: 1.01 }}
+               whileHover={{ scale: 1.005 }}
                className="relative bg-[#0a0a0b] border-2 border-yellow-500/20 rounded-3xl overflow-hidden cursor-pointer h-full shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:border-yellow-500 transition-all duration-700"
              >
                 <div className="absolute inset-0 z-0">
-                   <Image src="/images/Hero2.png" alt="Tournament" fill className="object-cover opacity-40 grayscale group-hover:scale-105 group-hover:grayscale-0 transition-all duration-1000" />
+                   <Image 
+                    src="/images/Hero2.png" 
+                    alt="Tournament" 
+                    fill 
+                    className="object-cover opacity-40 grayscale group-hover:scale-105 group-hover:grayscale-0 transition-all duration-1000" 
+                   />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                 </div>
                 
                 <CardContent className="relative z-10 p-8 sm:p-12 h-full flex flex-col justify-between min-h-[500px]">
                    <div className="flex justify-between items-start">
                       <div className="flex flex-col gap-2">
-                         <Badge className="bg-yellow-600 text-black font-black text-[10px] rounded-lg px-4 py-1.5 italic tracking-widest shadow-lg">PREMIUM CIRCUIT</Badge>
+                         <Badge className="bg-yellow-600 text-black font-black text-[10px] rounded-lg px-4 py-1.5 italic tracking-widest shadow-lg">{t("premiumCircuit")}</Badge>
                          <div className="flex items-center gap-2 mt-2">
                             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
@@ -170,7 +175,7 @@ export function TournamentsHubSection() {
                          </div>
                       </div>
                       <div className="text-right bg-black/60 backdrop-blur-md p-5 rounded-2xl border border-yellow-500/20 shadow-2xl">
-                         <p className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-1 leading-none">Guaranteed Prize</p>
+                         <p className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-1 leading-none">{t("guaranteedPrize")}</p>
                          <p className="text-4xl font-black text-white italic tracking-tighter">$10,000 USD</p>
                       </div>
                    </div>
@@ -178,7 +183,7 @@ export function TournamentsHubSection() {
                    <div className="max-w-3xl">
                       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}>
                         <h3 className="text-5xl md:text-8xl font-black text-white uppercase italic leading-[0.8] mb-8 tracking-tighter group-hover:translate-x-2 transition-transform duration-500">
-                          {featured?.name || "Cargando..." }
+                          {featured?.name || t("loading") }
                         </h3>
                       </motion.div>
                       
@@ -188,7 +193,7 @@ export function TournamentsHubSection() {
                                <Users className="h-6 w-6 text-yellow-500" />
                             </div>
                             <div className="flex flex-col">
-                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Combatants</span>
+                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t("combatants")}</span>
                                <span className="text-base font-bold text-white uppercase tracking-wider">{featured?.participant_count} / {featured?.max_participants}</span>
                             </div>
                          </div>
@@ -197,8 +202,8 @@ export function TournamentsHubSection() {
                                <ShieldCheck className="h-6 w-6 text-emerald-500" />
                             </div>
                             <div className="flex flex-col">
-                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Security</span>
-                               <span className="text-base font-bold text-white uppercase tracking-wider italic">Verified Anticheat</span>
+                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t("security")}</span>
+                               <span className="text-base font-bold text-white uppercase tracking-wider italic">{t("verifiedAnticheat")}</span>
                             </div>
                          </div>
                          <div className="flex items-center gap-4">
@@ -206,8 +211,8 @@ export function TournamentsHubSection() {
                                <Activity className="h-6 w-6 text-red-500" />
                             </div>
                             <div className="flex flex-col">
-                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">Status</span>
-                               <span className="text-base font-bold text-white uppercase tracking-wider animate-pulse text-red-400">Battle in Progress</span>
+                               <span className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t("status")}</span>
+                               <span className="text-base font-bold text-white uppercase tracking-wider animate-pulse text-red-400">{t("battleInProgress")}</span>
                             </div>
                          </div>
                       </div>
@@ -257,8 +262,8 @@ export function TournamentsHubSection() {
                 <div className="h-14 w-14 rounded-full bg-white/5 flex items-center justify-center border border-white/5 group-hover:bg-yellow-500 group-hover:shadow-[0_0_30px_rgba(234,179,8,0.4)] transition-all mb-4">
                    <Plus className="h-7 w-7 text-white/20 group-hover:text-black transition-all" />
                 </div>
-                <h5 className="text-sm font-black text-white/40 group-hover:text-white uppercase tracking-[0.2em]">Launch Tournament</h5>
-                <p className="text-[10px] text-white/20 uppercase font-bold mt-1 group-hover:text-yellow-500/60">Organize your own arena</p>
+                <h5 className="text-sm font-black text-white/40 group-hover:text-white uppercase tracking-[0.2em]">{t("launchTournament")}</h5>
+                <p className="text-[10px] text-white/20 uppercase font-bold mt-1 group-hover:text-yellow-500/60">{t("organizeOwnArena")}</p>
              </motion.div>
           </div>
         </div>
@@ -268,18 +273,18 @@ export function TournamentsHubSection() {
            <div className="max-w-md text-center md:text-left">
               <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
                  <Globe className="h-4 w-4 text-yellow-500" />
-                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Global Synchronization Active</span>
+                 <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">{t("globalSyncActive")}</span>
               </div>
               <p className="text-sm text-white/30 font-light italic leading-relaxed">
-                Connect your account to the official competitive network. Access real-time results, manage your roster, and climb the global leaderboard.
+                {t("connectAccount")}
               </p>
            </div>
            <div className="flex gap-6">
               <Button onClick={() => router.push("/tournaments")} className="h-16 px-12 rounded-none bg-white text-black font-black uppercase text-xs tracking-[0.2em] hover:bg-yellow-500 transition-all border-r-8 border-black/20 hover:scale-105 shadow-xl">
-                 Explorar Torneos
+                 {t("exploreTournaments")}
               </Button>
               <Button variant="outline" onClick={() => router.push("/tournaments/create")} className="h-16 px-12 rounded-none border-2 border-white/10 text-white font-black uppercase text-xs tracking-[0.2em] hover:bg-white hover:text-black transition-all hover:border-white">
-                 Organizar Evento
+                 {t("organizeEvent")}
               </Button>
            </div>
         </div>

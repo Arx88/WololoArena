@@ -4,91 +4,174 @@ import * as React from "react"
 import { motion } from "framer-motion"
 import { Shield, Sword, Target, Move, Heart, Eye, Clock, Hammer, BookOpen, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLanguage } from "@/lib/i18n/language-context"
 import { getEntityStats } from "@/lib/data/aoe2-data-provider"
 import { UNIT_DATABASE } from "./unit-database"
 
 export function UnitTooltip({ unitId, civName }: { unitId: string, civName: string }) {
+
+  const { t } = useLanguage()
+
   const stats = getEntityStats(unitId);
+
   const extraData = UNIT_DATABASE[unitId];
+
+
 
   if (!stats && !extraData) return null;
 
+
+
   const cost = stats?.Cost || extraData?.cost || {};
+
   const name = extraData?.name || stats?.internal_name || "Unknown Entity";
+
   const description = extraData?.description || `Estadísticas para ${name}.`;
 
+
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.1 }}
-      className="w-[360px] bg-zinc-950/95 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[300] pointer-events-none ring-1 ring-white/10"
-    >
+
+        <motion.div 
+
+          initial={{ opacity: 0, scale: 0.95 }}
+
+          animate={{ opacity: 1, scale: 1 }}
+
+          exit={{ opacity: 0, scale: 0.95 }}
+
+          transition={{ duration: 0.1 }}
+
+          className="w-[360px] bg-[#0a0a0b] border border-white/10 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,1)] overflow-hidden z-[300] pointer-events-none"
+
+        >
+
       {/* HEADER: NAME & COST */}
+
       <div className="bg-gradient-to-br from-zinc-900 via-zinc-900 to-black p-5 border-b border-white/5">
+
         <div className="flex justify-between items-start mb-4">
+
             <h3 className="text-xl font-black uppercase tracking-tighter text-yellow-500 leading-none">
+
               {name}
+
             </h3>
+
             <div className="text-[8px] font-mono text-zinc-600 bg-black/50 px-2 py-1 rounded-lg border border-white/5 uppercase">ID: {unitId}</div>
+
         </div>
+
         
+
         {/* Cost Bar */}
+
         <div className="flex flex-wrap gap-2">
+
             {cost.Food > 0 && <ResourcePill type="food" value={cost.Food} />}
+
             {cost.Wood > 0 && <ResourcePill type="wood" value={cost.Wood} />}
+
             {cost.Gold > 0 && <ResourcePill type="gold" value={cost.Gold} />}
+
             {cost.Stone > 0 && <ResourcePill type="stone" value={cost.Stone} />}
+
         </div>
+
       </div>
+
+
 
       {/* BODY: INFO & STATS */}
+
       <div className="p-5 space-y-5">
+
         
+
         {/* Description */}
+
         <div className="bg-white/5 p-4 rounded-2xl border border-white/5 shadow-inner">
+
             <p className="text-[12px] font-medium text-zinc-400 leading-tight italic">
+
                 {description}
+
             </p>
+
         </div>
+
+
 
         {/* Main Stats Grid */}
+
         <div className="grid grid-cols-3 gap-2">
-            {stats?.HP !== undefined && <StatCompact icon={<Heart size={14} className="text-emerald-500" />} label="Vida" value={stats.HP} />}
-            {stats?.Attack !== undefined && <StatCompact icon={<Sword size={14} className="text-red-500" />} label="Atq" value={stats.Attack} />}
+
+            {stats?.HP !== undefined && <StatCompact icon={<Heart size={14} className="text-emerald-500" />} label={t("hp")} value={stats.HP} />}
+
+            {stats?.Attack !== undefined && <StatCompact icon={<Sword size={14} className="text-red-500" />} label={t("attack")} value={stats.Attack} />}
+
             {(stats?.MeleeArmor !== undefined || stats?.PierceArmor !== undefined) && 
-                <StatCompact icon={<Shield size={14} className="text-blue-500" />} label="Arm" value={`${stats.MeleeArmor || 0}/${stats.PierceArmor || 0}`} />
+
+                <StatCompact icon={<Shield size={14} className="text-blue-500" />} label={t("armor")} value={`${stats.MeleeArmor || 0}/${stats.PierceArmor || 0}`} />
+
             }
-            {stats?.Range !== undefined && stats.Range > 0 && <StatCompact icon={<Target size={14} className="text-orange-500" />} label="Alc" value={stats.Range} />}
-            {stats?.Speed !== undefined && <StatCompact icon={<Move size={14} className="text-cyan-500" />} label="Vel" value={stats.Speed} />}
-            {stats?.LineOfSight !== undefined && <StatCompact icon={<Eye size={14} className="text-purple-500" />} label="Vis" value={stats.LineOfSight} />}
+
+            {stats?.Range !== undefined && stats.Range > 0 && <StatCompact icon={<Target size={14} className="text-orange-500" />} label={t("range")} value={stats.Range} />}
+
+            {stats?.Speed !== undefined && <StatCompact icon={<Move size={14} className="text-cyan-500" />} label={t("speed")} value={stats.Speed} />}
+
+            {stats?.LineOfSight !== undefined && <StatCompact icon={<Eye size={14} className="text-purple-500" />} label={t("vision")} value={stats.LineOfSight} />}
+
         </div>
+
+
 
         {/* ADVANCED STATS: BONUSES */}
+
         {extraData?.advancedAttacks?.length > 0 && (
+
             <div className="space-y-2">
-                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-yellow-500/60 px-1">Bonificaciones</p>
+
+                <p className="text-[8px] font-black uppercase tracking-[0.2em] text-yellow-500/60 px-1">{t("bonuses")}</p>
+
                 <div className="grid grid-cols-2 gap-1.5">
+
                     {extraData.advancedAttacks.slice(0, 6).map((atk: any, i: number) => (
+
                         <div key={i} className="flex justify-between items-center bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
+
                             <span className="text-[9px] font-bold text-zinc-500 truncate mr-2">{atk.class}</span>
+
                             <span className="text-[10px] font-black text-yellow-500">+{atk.amount}</span>
+
                         </div>
+
                     ))}
+
                 </div>
+
             </div>
+
         )}
 
+
+
         {/* Technical Info */}
+
         <div className="pt-4 border-t border-white/5 grid grid-cols-2 gap-x-6 gap-y-2">
-            {stats?.TrainTime && <TechStat label="Creación" value={`${stats.TrainTime}s`} />}
-            {stats?.ReloadTime && <TechStat label="Recarga" value={`${stats.ReloadTime}s`} />}
+
+            {stats?.TrainTime && <TechStat label={t("trainTime")} value={`${stats.TrainTime}s`} />}
+
+            {stats?.ReloadTime && <TechStat label={t("reloadTime")} value={`${stats.ReloadTime}s`} />}
+
         </div>
+
       </div>
+
     </motion.div>
 
   )
+
 }
 
 function TechStat({ label, value }: { label: string, value: string }) {

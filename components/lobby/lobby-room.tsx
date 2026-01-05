@@ -5,14 +5,13 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { Crown, Copy, Check, User, Swords, Clock, Shield, Map, CheckCircle, Loader2 } from "lucide-react"
 import type { Lobby, Draft, Profile, LobbySettings } from "@/lib/types/draft"
 import { isDemoMode } from "@/lib/demo/auth"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { DraftChat } from "@/components/draft/draft-chat"
 import { useSoundEffects } from "@/hooks/use-sound-effects"
+import MatrixBackground from "@/components/matrix-background"
 
 interface LobbyRoomProps {
   lobby: Lobby
@@ -146,8 +145,8 @@ export function LobbyRoom({
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#020202] text-white relative">
+      <MatrixBackground />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.05)_0%,#020202_100%)] pointer-events-none" />
-      <Navbar />
       
       <main className="flex-1 flex flex-col pt-24 px-6 max-w-5xl mx-auto w-full relative z-10 pb-20">
         <div className="flex flex-col items-center mb-12 shrink-0">
@@ -242,8 +241,6 @@ export function LobbyRoom({
         isHost={isHost}
         isParticipant={true}
       />
-      
-      <Footer />
     </div>
   )
 }

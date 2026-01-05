@@ -42,6 +42,7 @@ import { useLanguage } from "@/lib/i18n/language-context"
 import { PrizeConfig } from "@/components/tournament/prize-config"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import MatrixBackground from "@/components/matrix-background"
 
 export default function CreateTournamentPage() {
   const router = useRouter()
@@ -114,7 +115,21 @@ export default function CreateTournamentPage() {
           start_date: startDate ? new Date(startDate).toISOString() : undefined,
           prizes: prizes.enabled ? prizes : undefined,
           banner_image: isPremium ? bannerImage : undefined,
-          settings: { ban_time: 30, pick_time: 45, civ_bans: 3, civ_picks: 1, enable_civ_bans: true, enable_civ_picks: true, enable_game_mode_roll: true },
+          settings: { 
+            ban_time: 30, 
+            pick_time: 45, 
+            civ_bans: 3, 
+            civ_picks: 1, 
+            map_bans: 1,
+            map_picks: 1,
+            civ_pool: "all",
+            map_pool: ["Arabia", "Arena"],
+            game_modes: ["Random Map"],
+            enable_civ_bans: true, 
+            enable_civ_picks: true, 
+            enable_map_bans: true,
+            enable_game_mode_roll: true 
+          },
         })
         toast({ title: t("tournamentCreated"), description: t("tournamentCreatedDesc") })
         router.push(`/tournaments/${newTournament.id}`)
@@ -149,8 +164,8 @@ export default function CreateTournamentPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#020202] text-white flex flex-col relative">
-      <Navbar />
-      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-32 pb-20 overflow-y-auto custom-scrollbar">
+      <MatrixBackground />
+      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-40 pb-20 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-3xl">
           <Card className="border-white/10 bg-[#0a0a0b]/80 backdrop-blur-xl shadow-2xl overflow-hidden rounded-3xl">
             <div className="h-1.5 w-full bg-white/5 flex">
@@ -352,7 +367,6 @@ export default function CreateTournamentPage() {
           </Card>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

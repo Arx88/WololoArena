@@ -37,9 +37,10 @@ export function CivilizationsManager({ civs, onUpdate }: CivilizationsManagerPro
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const filteredCivs = civs.filter(
+  const filteredCivilizations = civilizations.filter(
     (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) || c.specialty.toLowerCase().includes(search.toLowerCase()),
+      c.name.toLowerCase().includes(search.toLowerCase()) || 
+      (c.specialty?.toLowerCase() || "").includes(search.toLowerCase()),
   )
 
   const resetForm = () => {

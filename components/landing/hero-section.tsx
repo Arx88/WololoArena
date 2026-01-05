@@ -10,6 +10,7 @@ import { useLanguage } from "@/lib/i18n/language-context"
 import { CIVILIZATIONS } from "@/lib/data/civilizations"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import MatrixBackground from "@/components/matrix-background"
 
 const BATTLE_SEQUENCES = [
   { 
@@ -74,38 +75,6 @@ const BATTLE_SEQUENCES = [
   },
 ]
 
-function MatrixBackground() {
-  const allIcons = useMemo(() => CIVILIZATIONS.map(c => c.icon).filter(Boolean), [])
-  return (
-    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none bg-black antialiased">
-      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.03] z-10" />
-      <div className="absolute inset-0 flex justify-between opacity-10 md:opacity-15 mask-gradient-vertical transform -skew-x-6 scale-110">
-        {[...Array(8)].map((_, i) => {
-          const rotatedIcons = [...allIcons.slice(i * 5), ...allIcons.slice(0, i * 5)].slice(0, 15)
-          return (
-            <div key={i} className="flex flex-col animate-infinite-scroll" style={{ animationDuration: `${30 + i * 5}s`, animationDelay: `-${i * 3}s` }}>
-              <div className="flex flex-col gap-20 py-10">
-                {rotatedIcons.map((icon, j) => (
-                  <div key={`a-${j}`} className="relative w-12 h-12 grayscale brightness-50 opacity-40">
-                    <Image src={icon || ""} alt="" width={48} height={48} className="object-contain" quality={100} />
-                  </div>
-                ))}
-              </div>
-              <div className="flex flex-col gap-20 py-10">
-                {rotatedIcons.map((icon, j) => (
-                  <div key={`b-${j}`} className="relative w-12 h-12 grayscale brightness-50 opacity-40">
-                    <Image src={icon || ""} alt="" width={48} height={48} className="object-contain" quality={100} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
 export function HeroSection() {
   const { t } = useLanguage()
   return (
@@ -114,7 +83,7 @@ export function HeroSection() {
       <div className="container relative z-30 mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-6 flex flex-col items-start text-left pt-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2.5 px-3.5 py-1 rounded-full border border-yellow-500/30 bg-yellow-500/10 text-yellow-500 text-[10px] font-black tracking-[0.2em] uppercase mb-6">
-            <Sparkles className="w-3 h-3" /><span>Next Gen Drafting</span>
+            <Sparkles className="w-3 h-3" /><span>{t("nextGenDrafting")}</span>
           </motion.div>
           <h1 className="text-5xl md:text-7xl lg:text-[82px] font-black text-white tracking-tighter leading-[0.9] mb-6 font-cinzel">
             <span className="block text-transparent bg-clip-text bg-gradient-to-br from-white via-zinc-200 to-zinc-500">{t("heroTitle1")}</span>
@@ -150,12 +119,25 @@ export function HeroSection() {
 }
 
 function BattleDraftSimulator() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(true)
+  const { t } = useLanguage()
   const [mounted, setMounted] = useState(false)
   const [roundIdx, setRoundIdx] = useState(0)
   const [states, setStates] = useState<Record<number, 'hidden' | 'reveal' | 'ban' | 'pick'>>({})
   const [shake, setShake] = useState(false)
   
   useEffect(() => { setMounted(true) }, [])
+
+  // Optimization: Intersection Observer to pause logic
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   const current = BATTLE_SEQUENCES[roundIdx]
   const grid = useMemo(() => {
@@ -167,11 +149,16 @@ function BattleDraftSimulator() {
   }, [roundIdx])
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted || !isVisible) return
     let active = true
     const runSequence = async () => {
       setStates({}); await new Promise(r => setTimeout(r, 1500))
-      for(let i=0; i<3; i++) { setStates(prev => ({ ...prev, [Math.floor(Math.random() * 12)]: 'reveal' })); await new Promise(r => setTimeout(r, 200)) }
+      if (!active) return
+      for(let i=0; i<3; i++) { 
+        if (!active) break
+        setStates(prev => ({ ...prev, [Math.floor(Math.random() * 12)]: 'reveal' })); 
+        await new Promise(r => setTimeout(r, 200)) 
+      }
       const banPositions = grid.map((item, idx) => item.type === 'ban' ? idx : -1).filter(i => i !== -1)
       for (const pos of banPositions) {
         if (!active) return
@@ -179,6 +166,7 @@ function BattleDraftSimulator() {
         setShake(true); setTimeout(() => setShake(false), 250)
         setStates(prev => ({ ...prev, [pos]: 'ban' })); await new Promise(r => setTimeout(r, 900))
       }
+      if (!active) return
       const pickPos = grid.findIndex(c => c.type === 'pick')
       setStates(prev => ({ ...prev, [pickPos]: 'reveal' })); await new Promise(r => setTimeout(r, 1200))
       setStates(prev => ({ ...prev, [pickPos]: 'pick' }))
@@ -186,10 +174,15 @@ function BattleDraftSimulator() {
       if(active) setRoundIdx(prev => (prev + 1) % BATTLE_SEQUENCES.length)
     }
     runSequence(); return () => { active = false }
-  }, [grid, mounted])
+  }, [grid, mounted, isVisible])
 
   return (
-    <motion.div animate={shake ? { x: [-12, 12, -12, 6, -6, 0], y: [2, -2, 2, 0] } : {}} className="relative w-full h-full flex flex-col items-center justify-center p-4">
+    <motion.div 
+      ref={containerRef}
+      animate={shake ? { x: [-12, 12, -12, 6, -6, 0], y: [2, -2, 2, 0] } : {}} 
+      className="relative w-full h-full flex flex-col items-center justify-center p-4"
+      style={{ transform: 'translate3d(0,0,0)' }}
+    >
        <div className="absolute inset-0 pointer-events-none">
           {mounted && [...Array(20)].map((_, i) => (
              <motion.div key={i} animate={{ y: [0, -600], opacity: [0, 1, 0] }} transition={{ duration: 8, repeat: Infinity, delay: i * 0.5 }} className="absolute bottom-0 w-1 h-1 bg-yellow-500/20 rounded-full blur-[1px]" style={{ left: `${(i * 5) % 100}%` }} />
@@ -221,12 +214,12 @@ function BattleDraftSimulator() {
                       <div className="flex-1 text-center md:text-left">
                          <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                             <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Strategy Advice</span>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">{t("strategyAdvice")}</span>
                          </div>
-                         <p className="text-xl md:text-2xl font-bold text-white uppercase italic leading-tight font-cinzel tracking-tight">"{current.advice}"</p>
+                         <p className="text-xl md:text-2xl font-bold text-white uppercase italic leading-tight font-cinzel tracking-tight">"{t(`hero.advice.${current.pick}` as any)}"</p>
                       </div>
                       <div className="shrink-0 border-t md:border-t-0 md:border-l border-white/10 pt-6 md:pt-0 md:pl-10 text-center md:text-right">
-                         <span className="block text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">Map</span>
+                         <span className="block text-[10px] font-black text-white/30 uppercase tracking-widest mb-1">{t("map")}</span>
                          <span className="text-2xl font-black text-primary uppercase italic font-cinzel leading-none">{current.map}</span>
                       </div>
                    </div>

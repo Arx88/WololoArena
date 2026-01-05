@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useRef, useState, useEffect, useMemo, memo, useCallback } from "react"
+import { useLanguage } from "@/lib/i18n/language-context"
 import { UNIQUE_UNITS, UniqueUnit } from "@/lib/data/unique-units"
 import { cn } from "@/lib/utils"
 import {
@@ -156,6 +157,7 @@ const StatBar = memo(({ label, valA, valB, max, inverse = false }: { label: stri
 StatBar.displayName = "StatBar"
 
 function BattleSimulator() {
+  const { t } = useLanguage()
   const [unitA, setUnitA] = useState<UniqueUnit>(UNIQUE_UNITS[0])
   const [unitB, setUnitB] = useState<UniqueUnit>(UNIQUE_UNITS[4])
   const [ageA, setAgeA] = useState<'castle' | 'imperial'>('imperial')
@@ -228,11 +230,11 @@ function BattleSimulator() {
        <div className="h-20 border-b border-white/5 bg-zinc-950/90 flex items-center justify-between px-6 z-50 absolute top-0 left-0 right-0">
           <div className="flex items-center gap-3 text-yellow-500 w-1/3">
              <Swords className="h-6 w-6" />
-             <span className="font-black tracking-[0.3em] text-sm uppercase hidden lg:inline">Battle Lab</span>
+             <span className="font-black tracking-[0.3em] text-sm uppercase hidden lg:inline">{t("battleLab")}</span>
           </div>
           <div className="flex justify-center w-1/3">
              <Button onClick={startBattle} disabled={isFighting || !!winner} className="h-14 bg-red-600 hover:bg-red-500 text-white font-black text-lg md:text-xl uppercase tracking-[0.2em] px-10 md:px-16 shadow-[0_0_30px_rgba(220,38,38,0.5)] border-b-4 border-red-800 clip-path-slant">
-                {isFighting ? "SIMULATING..." : winner ? "ENDED" : "FIGHT"}
+                {isFighting ? t("simulating") : winner ? t("ended") : t("fight")}
              </Button>
           </div>
           <div className="flex items-center justify-end gap-4 w-1/3"> 
@@ -256,14 +258,14 @@ function BattleSimulator() {
                 <UnitSelector selected={unitA} onSelect={setUnitA} side="left" />
                 <div className="flex bg-zinc-950/80 rounded-lg p-1 border border-white/10 w-fit">
                    {['castle', 'imperial'].map(a => (
-                      <button key={a} onClick={() => setAgeA(a as any)} className={cn("px-4 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md transition-all", ageA === a ? "bg-yellow-600 text-black" : "text-white/40 hover:text-white")}>{a}</button>
+                      <button key={a} onClick={() => setAgeA(a as any)} className={cn("px-4 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md transition-all", ageA === a ? "bg-yellow-600 text-black" : "text-white/40 hover:text-white")}>{a === 'castle' ? t("castleAge").split(' ')[0] : t("imperialAge").split(' ')[0]}</button>
                    ))}
                 </div>
              </div>
              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 pt-52 bg-gradient-to-t from-black via-black/90 to-transparent z-20">
                 <div className="flex flex-col-reverse md:flex-row md:items-end justify-between mb-4 gap-y-2">
                    <div className="flex-1 min-w-0">
-                      <p className="text-yellow-500 text-[10px] md:text-xs font-black tracking-widest uppercase mb-1">{unitA.civilization} • {ageA === 'castle' ? 'BASE' : 'ELITE'}</p>
+                      <p className="text-yellow-500 text-[10px] md:text-xs font-black tracking-widest uppercase mb-1">{unitA.civilization} • {ageA === 'castle' ? t("base") : t("elite")}</p>
                       <h2 className="text-2xl sm:text-4xl md:text-6xl font-black italic uppercase leading-none text-white truncate md:whitespace-normal">{unitA.name}</h2>
                    </div>
                    <div className="shrink-0"><span className="text-4xl sm:text-5xl md:text-7xl font-black tabular-nums text-white leading-none">{Math.ceil((hpA/100)*unitA.stats[ageA].hp)}</span></div>
@@ -276,18 +278,18 @@ function BattleSimulator() {
           {/* CENTER */}
           <div className="hidden md:flex w-[1px] bg-white/5 relative z-40 flex-col items-center justify-center pointer-events-none">
              <div className="absolute top-1/2 -translate-y-1/2 w-72 bg-zinc-950/95 border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col gap-5 pointer-events-auto backdrop-blur-md">
-                <div className="text-center border-b border-white/5 pb-4 mb-2"><span className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em]">STATS</span></div>
-                <StatBar label="Attack" valA={unitA.stats[ageA].attack} valB={unitB.stats[ageB].attack} max={25} />
-                <StatBar label="Atk. Rate" valA={unitA.stats[ageA].reloadTime} valB={unitB.stats[ageB].reloadTime} max={5} inverse />
-                <StatBar label="Melee Arm." valA={unitA.stats[ageA].meleeArmor} valB={unitB.stats[ageB].meleeArmor} max={15} />
-                <StatBar label="Pierce Arm." valA={unitA.stats[ageA].pierceArmor} valB={unitB.stats[ageB].pierceArmor} max={15} />
+                <div className="text-center border-b border-white/5 pb-4 mb-2"><span className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.4em]">{t("stats")}</span></div>
+                <StatBar label={t("attack")} valA={unitA.stats[ageA].attack} valB={unitB.stats[ageB].attack} max={25} />
+                <StatBar label={t("reloadTime")} valA={unitA.stats[ageA].reloadTime} valB={unitB.stats[ageB].reloadTime} max={5} inverse />
+                <StatBar label={t("armor")} valA={unitA.stats[ageA].meleeArmor} valB={unitB.stats[ageB].meleeArmor} max={15} />
+                <StatBar label={t("armor")} valA={unitA.stats[ageA].pierceArmor} valB={unitB.stats[ageB].pierceArmor} max={15} />
                 {winner && (
                    <motion.div 
                      initial={{ scale: 0.9, opacity: 0 }} 
                      animate={{ scale: 1, opacity: 1 }} 
                      className="mt-4 pt-6 border-t border-white/10 flex flex-col items-center text-center w-full"
                    >
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-bold w-full text-center">Winner</p>
+                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2 font-bold w-full text-center">{t("winner")}</p>
                       <p className={cn(
                         "text-3xl font-black uppercase italic w-full text-center px-2 break-words leading-tight", 
                         winner.id === unitA.id ? "text-yellow-500" : "text-red-500"
@@ -311,7 +313,7 @@ function BattleSimulator() {
                 <UnitSelector selected={unitB} onSelect={setUnitB} side="right" />
                 <div className="flex bg-zinc-950/80 rounded-lg p-1 border border-white/10 w-fit">
                    {['castle', 'imperial'].map(a => (
-                      <button key={a} onClick={() => setAgeB(a as any)} className={cn("px-4 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md transition-all", ageB === a ? "bg-red-600 text-white" : "text-white/40 hover:text-white")}>{a}</button>
+                      <button key={a} onClick={() => setAgeB(a as any)} className={cn("px-4 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-md transition-all", ageB === a ? "bg-red-600 text-white" : "text-white/40 hover:text-white")}>{a === 'castle' ? t("castleAge").split(' ')[0] : t("imperialAge").split(' ')[0]}</button>
                    ))}
                 </div>
              </div>
@@ -319,7 +321,7 @@ function BattleSimulator() {
                 <div className="flex flex-col-reverse md:flex-row md:items-end justify-between mb-4 gap-y-2">
                    <div className="shrink-0 md:order-2"><span className="text-4xl sm:text-5xl md:text-7xl font-black tabular-nums text-white leading-none">{Math.ceil((hpB/100)*unitB.stats[ageB].hp)}</span></div>
                    <div className="text-right flex-1 md:order-1 min-w-0">
-                      <p className="text-red-500 text-[10px] md:text-xs font-black tracking-widest uppercase mb-1">{unitB.civilization} • {ageB === 'castle' ? 'BASE' : 'ELITE'}</p>
+                      <p className="text-red-500 text-[10px] md:text-xs font-black tracking-widest uppercase mb-1">{unitB.civilization} • {ageB === 'castle' ? t("base") : t("elite")}</p>
                       <h2 className="text-2xl sm:text-4xl md:text-6xl font-black italic uppercase leading-none text-white truncate md:whitespace-normal">{unitB.name}</h2>
                    </div>
                 </div>
@@ -340,6 +342,7 @@ ParallaxBackground.displayName = "ParallaxBackground"
 
 function PromoContent({ displayUnits }: { displayUnits: any[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const { t } = useLanguage()
   const [activeIndex, setActiveIndex] = useState(0)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] })
   const yParallax = useTransform(scrollYProgress, [0, 1], [-50, 50])
@@ -353,19 +356,19 @@ function PromoContent({ displayUnits }: { displayUnits: any[] }) {
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-20 items-center">
           <div className="flex flex-col items-start order-2 lg:order-1">
-            <Badge variant="outline" className="mb-8 gap-2 border-yellow-500/40 bg-yellow-500/10 text-yellow-500 px-5 py-1.5 uppercase tracking-[0.4em] text-[10px] font-black"><Target className="h-3.5 w-3.5" /> Intelligence Database</Badge>
-            <h2 className="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-[0.8] mb-10"><span className="block opacity-50">UNVEIL THE</span><span className="block gold-text-gradient pr-12 -mr-12">UNIQUE META</span></h2>
-            <p className="text-2xl text-white/40 font-light italic leading-relaxed mb-12 max-w-xl">Knowledge is power. Analyze hidden mechanics, passive stats, and the math behind every unique soldier.</p>
+            <Badge variant="outline" className="mb-8 gap-2 border-yellow-500/40 bg-yellow-500/10 text-yellow-500 px-5 py-1.5 uppercase tracking-[0.4em] text-[10px] font-black"><Target className="h-3.5 w-3.5" /> {t("intelDatabase")}</Badge>
+            <h2 className="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-[0.8] mb-10"><span className="block opacity-50">{t("unveilMeta").split(' ').slice(0, -2).join(' ')}</span><span className="block gold-text-gradient pr-12 -mr-12">{t("unveilMeta").split(' ').slice(-2).join(' ')}</span></h2>
+            <p className="text-2xl text-white/40 font-light italic leading-relaxed mb-12 max-w-xl">{t("knowledgeIsPower")}</p>
             <div className="flex flex-col gap-4 mb-12 w-full max-w-md">
                <div className="flex items-center gap-6 p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-yellow-500/30 transition-all group cursor-default">
                   <div className="h-12 w-12 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20"><Zap className="h-6 w-6 text-yellow-500" /></div>
-                  <div><span className="block text-sm font-black text-white uppercase italic tracking-wider">Dynamic Stats</span><span className="text-[11px] text-white/30 uppercase font-bold">Real Winrates & Hidden Classes</span></div>
+                  <div><span className="block text-sm font-black text-white uppercase italic tracking-wider">{t("dynamicStats")}</span><span className="text-[11px] text-white/30 uppercase font-bold">{t("realWinrates")}</span></div>
                </div>
                <Dialog>
                  <DialogTrigger asChild>
                    <div className="flex items-center gap-6 p-5 rounded-2xl bg-red-900/10 border border-red-500/20 hover:border-red-500 hover:bg-red-900/20 transition-all group cursor-pointer shadow-[0_0_30px_-10px_rgba(220,38,38,0.2)]">
                       <div className="h-12 w-12 rounded-xl bg-red-500/20 flex items-center justify-center border border-red-500/30 group-hover:scale-110 transition-transform"><Swords className="h-6 w-6 text-red-500" /></div>
-                      <div><span className="block text-sm font-black text-white uppercase italic tracking-wider group-hover:text-red-400 transition-colors">Battle Simulator </span><span className="text-[11px] text-red-400/60 uppercase font-bold">Test 1v1 Scenarios</span></div>
+                      <div><span className="block text-sm font-black text-white uppercase italic tracking-wider group-hover:text-red-400 transition-colors">{t("battleSimulator")}</span><span className="text-[11px] text-red-400/60 uppercase font-bold">{t("test1v1")}</span></div>
                       <ArrowRight className="ml-auto h-5 w-5 text-red-500 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                    </div>
                  </DialogTrigger>
@@ -375,7 +378,7 @@ function PromoContent({ displayUnits }: { displayUnits: any[] }) {
                  </DialogContent>
                </Dialog>
             </div>
-            <Link href="/civilizations/units"><Button size="lg" className="h-20 px-12 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black text-base tracking-[0.2em] uppercase transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.5)] border-r-8 border-black/20 hover:scale-105 group">Explore Encyclopedia<ArrowRight className="ml-4 h-6 w-6 group-hover:translate-x-2 transition-transform" /></Button></Link>
+            <Link href="/civilizations/units"><Button size="lg" className="h-20 px-12 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black text-base tracking-[0.2em] uppercase transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.5)] border-r-8 border-black/20 hover:scale-105 group">{t("exploreEncyclopedia")}<ArrowRight className="ml-4 h-6 w-6 group-hover:translate-x-2 transition-transform" /></Button></Link>
           </div>
           <div className="relative h-[750px] w-full flex items-center justify-center order-1 lg:order-2" style={{ perspective: '2000px' }}>
              <div className="relative w-full h-full flex items-center justify-center">
@@ -396,6 +399,7 @@ function PromoContent({ displayUnits }: { displayUnits: any[] }) {
                       "absolute w-80 sm:w-[400px] h-[550px] rounded-[3rem] border-2 bg-[#0a0a0b] shadow-2xl overflow-hidden cursor-pointer", 
                       idx === activeIndex ? "z-30 border-yellow-500/60 shadow-[0_0_100px_rgba(234,179,8,0.2)]" : "z-10 border-white/10 grayscale"
                     )}
+                    style={{ contain: 'content' }}
                   >
                     <Image src={unit.image} alt={unit.name} fill className="object-cover" sizes="400px" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
@@ -403,7 +407,7 @@ function PromoContent({ displayUnits }: { displayUnits: any[] }) {
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="absolute bottom-12 left-10 right-10">
                         <p className="text-xs font-black text-yellow-500 uppercase tracking-widest mb-2">{unit.civilization}</p>
                         <h3 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-6">{unit.name}</h3>
-                        <div className="flex gap-2"><div className="px-3 py-1 bg-yellow-600 text-black text-[10px] font-black uppercase italic">Mastery Intel</div></div>
+                        <div className="flex gap-2"><div className="px-3 py-1 bg-yellow-600 text-black text-[10px] font-black uppercase italic">{t("masteryIntel")}</div></div>
                       </motion.div>
                     )}
                   </motion.div>

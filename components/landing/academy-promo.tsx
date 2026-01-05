@@ -31,7 +31,11 @@ const PREVIEW_QUESTIONS = [
   }
 ]
 
+import { useLanguage } from "@/lib/i18n/language-context"
+
 export function AcademyPromo() {
+  const { t } = useLanguage()
+
   return (
     <section className="py-24 relative overflow-hidden bg-[#020202]">
       {/* Background Decor */}
@@ -53,7 +57,7 @@ export function AcademyPromo() {
                 <div className="p-2.5 rounded-xl bg-primary/10 border border-primary/20">
                   <GraduationCap className="h-5 w-5 text-primary" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Academy Protocol</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">{t("academyProtocol")}</span>
               </motion.div>
 
               <motion.h2 
@@ -71,23 +75,23 @@ export function AcademyPromo() {
                 transition={{ delay: 0.1 }}
                 className="text-zinc-400 text-lg md:text-xl max-w-xl font-light italic leading-relaxed mb-12"
               >
-                From Dark Age fundamentals to Imperial conquest. Take our specialized multiple-choice gauntlet and earn elite certifications for your profile.
+                {t("academyDesc")}
               </motion.p>
 
               <div className="grid grid-cols-2 gap-8 mb-12 border-y border-white/5 py-8">
                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-primary">
                        <Star className="h-4 w-4 fill-primary" />
-                       <span className="text-sm font-black uppercase tracking-widest italic">100+ Questions</span>
+                       <span className="text-sm font-black uppercase tracking-widest italic">{t("questionsCount")}</span>
                     </div>
-                    <p className="text-[10px] text-white/30 uppercase font-bold">Per academic level</p>
+                    <p className="text-[10px] text-white/30 uppercase font-bold">{t("perAcademicLevel")}</p>
                  </div>
                  <div className="space-y-2">
                     <div className="flex items-center gap-2 text-primary">
                        <Zap className="h-4 w-4 fill-primary" />
-                       <span className="text-sm font-black uppercase tracking-widest italic">Live Feedback</span>
+                       <span className="text-sm font-black uppercase tracking-widest italic">{t("liveFeedback")}</span>
                     </div>
-                    <p className="text-[10px] text-white/30 uppercase font-bold">Real-time debriefing</p>
+                    <p className="text-[10px] text-white/30 uppercase font-bold">{t("realTimeDebriefing")}</p>
                  </div>
               </div>
 
@@ -99,7 +103,7 @@ export function AcademyPromo() {
               >
                 <Link href="/university">
                   <Button className="h-20 px-12 rounded-none bg-yellow-600 hover:bg-yellow-500 text-black font-black text-base tracking-[0.2em] uppercase transition-all shadow-[0_0_50px_-10px_rgba(234,179,8,0.5)] border-r-8 border-black/20 hover:scale-105 active:scale-95 group">
-                    Enrollment Protocol <ArrowRight className="ml-4 h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                    {t("enrollmentProtocol")} <ArrowRight className="ml-4 h-6 w-6 group-hover:translate-x-2 transition-transform" />
                   </Button>
                 </Link>
 
@@ -110,7 +114,7 @@ export function AcademyPromo() {
                      </div>
                    ))}
                    <div className="h-10 px-4 rounded-full border-2 border-[#0a0a0b] bg-zinc-900 flex items-center justify-center text-[10px] font-black text-white/40 uppercase tracking-widest">
-                      +2.4k Enrolled
+                      {t("enrolledCount")}
                    </div>
                 </div>
               </motion.div>
@@ -136,11 +140,33 @@ export function AcademyPromo() {
 }
 
 function QuizAnimation() {
+  const { t, language } = useLanguage()
   const [qIdx, setQIdx] = useState(0)
   const [state, setState] = useState<'idle' | 'selecting' | 'result'>('idle')
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
 
-  const current = PREVIEW_QUESTIONS[qIdx]
+  const questions = useMemo(() => [
+    {
+      q: language === "es" ? "¿Mejor counter para Longbowmen?" : "Best counter to Longbowmen?",
+      options: language === "es" ? ["Piqueros", "Guerrilleros", "Paladines", "Arietes de Asedio"] : ["Pikes", "Skirmishers", "Paladins", "Siege Rams"],
+      correct: 1,
+      category: language === "es" ? "Militar" : "Military"
+    },
+    {
+      q: language === "es" ? "¿Número de aldeanos en madera para 21-pop?" : "Standard 21-pop wood count?",
+      options: ["2 Vills", "4 Vills", "6 Vills", "8 Vills"],
+      correct: 1,
+      category: language === "es" ? "Economía" : "Economy"
+    },
+    {
+      q: language === "es" ? "¿Bono inicial de Lituanos?" : "Lithuanians start bonus?",
+      options: ["+100 Food", "+150 Food", "+200 Food", "Free Horse"],
+      correct: 1,
+      category: language === "es" ? "Stats Civ" : "Civ Stats"
+    }
+  ], [language])
+
+  const current = questions[qIdx]
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -159,13 +185,13 @@ function QuizAnimation() {
       
       // 4. Move to next
       await new Promise(r => setTimeout(r, 2000))
-      setQIdx(prev => (prev + 1) % PREVIEW_QUESTIONS.length)
+      setQIdx(prev => (prev + 1) % questions.length)
       setState('idle')
       setSelectedIdx(null)
     }
 
     runCycle()
-  }, [qIdx])
+  }, [qIdx, questions])
 
   return (
     <motion.div 
@@ -189,7 +215,7 @@ function QuizAnimation() {
 
           <div className="flex items-center justify-between mb-8">
              <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] font-black tracking-widest px-3">
-               LEVEL: {current.category.toUpperCase()}
+               {t("level")}: {current.category.toUpperCase()}
              </Badge>
              <div className="flex items-center gap-2 text-white/20">
                 <Clock className="h-3.5 w-3.5" />
@@ -242,7 +268,7 @@ function QuizAnimation() {
               className="mt-6 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 flex items-center gap-3"
             >
                <Zap className="h-4 w-4 text-emerald-500" />
-               <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">Correct Answer</span>
+               <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em]">{t("correctAnswer")}</span>
             </motion.div>
           )}
         </motion.div>

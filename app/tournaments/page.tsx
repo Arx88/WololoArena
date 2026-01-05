@@ -38,6 +38,7 @@ import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import MatrixBackground from "@/components/matrix-background"
 
 interface TournamentWithMeta {
   id: string
@@ -167,15 +168,16 @@ export default function TournamentsPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <main className="flex-1 pt-16">
+    <div className="flex min-h-screen flex-col bg-[#020202]">
+      <MatrixBackground />
+      <main className="flex-1 pt-16 relative z-10">
         {/* Cinematic Header */}
         <section className="relative h-[55vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
           <div className="absolute inset-0 z-0">
             <Image src="/images/Hero.png" alt="Tournaments" fill className="object-cover opacity-40 grayscale-[0.5] brightness-110" priority />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.15)_0%,#020202_100%)]" />
           </div>
-          <div className="relative z-10 text-center px-6 max-w-4xl mt-10">
+          <div className="relative z-10 text-center px-6 max-w-5xl">
             <Badge className="mb-6 bg-yellow-600 text-black font-black uppercase tracking-[0.4em] px-6 py-2 shadow-[0_0_30px_rgba(234,179,8,0.3)]">Global Competitive Network</Badge>
             <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white drop-shadow-[0_10px_30px_rgba(0,0,0,1)] leading-tight mb-8">
               World <span className="gold-text-gradient pr-6 -mr-6">Championships</span>
@@ -185,7 +187,7 @@ export default function TournamentsPage() {
         </section>
 
         {/* Command Center Bar */}
-        <section className="sticky top-16 z-40 bg-black/60 backdrop-blur-2xl border-b border-white/5 py-6">
+        <section className="sticky top-[120px] z-40 bg-black/60 backdrop-blur-2xl border-b border-white/5 py-6">
           <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row gap-6 items-center justify-between">
             <div className="flex items-center gap-4 w-full md:w-auto">
                <div className="relative flex-1 md:w-80 group">

@@ -13,17 +13,10 @@ import { getDemoTournaments } from "@/lib/demo/demo-data"
 import { HypeButton } from "@/components/tournament/hype-button"
 import type { TournamentPrizes } from "@/lib/types/draft"
 
-interface HypedTournament {
-  id: string
-  name: string
-  description?: string
-  format: string
-  status: string
-  max_participants: number
-  start_date?: string
+interface HypedTournament extends Tournament {
   hype_count: number
   participant_count: number
-  prizes?: TournamentPrizes
+  description: string | null
 }
 
 const DEMO_HYPE_KEY = "demo_tournament_hype"

@@ -1,4 +1,6 @@
 import { Draft, Lobby, Preset, DraftStep, DraftActionType, DraftTarget } from "./types/draft";
+import { CIVILIZATIONS } from "@/lib/data/civilizations";
+import { GAME_MODES } from "@/lib/data/game-modes";
 
 /**
  * Retrieves the next step from the preset based on the current index.
@@ -130,6 +132,8 @@ export function processSelection(
       // The "Standard" preset I wrote has individual steps for each ban.
       
       update[key] = [...currentList, selectionId] as any;
+  } else if (currentStep.target === "mode" && (currentStep.action === "reveal" || currentStep.action === "pick")) {
+      update.selected_game_mode = selectionId;
   }
   
   // Special Case: Map Finalization
@@ -171,12 +175,15 @@ export function handleTimeout(
       if (lobby.settings.civ_pool === 'custom' && lobby.settings.custom_civ_pool) {
           pool = lobby.settings.custom_civ_pool;
       } else {
-          // If 'all' or others, we'd need the full list. 
-          // For now, let's fallback to empty or handle gracefully.
-          return null; 
+          // Default to all civilizations if not custom
+          pool = CIVILIZATIONS.map(c => c.id);
       }
   } else if (currentStep.target === 'map') {
       pool = lobby.settings.map_pool;
+  } else if (currentStep.target === 'mode') {
+      pool = lobby.settings.game_modes && lobby.settings.game_modes.length > 0 
+          ? lobby.settings.game_modes 
+          : GAME_MODES.map(m => m.id);
   }
 
   // Filter available
@@ -191,7 +198,9 @@ export function handleTimeout(
     ...(draft.guest_map_picks || []),
   ];
 
-  const available = pool.filter(id => !allSelected.includes(id));
+  // For modes, we don't usually track 'taken' modes unless we implement mode bans.
+  // For now, assume all in pool are available for the roll.
+  const available = currentStep.target === 'mode' ? pool : pool.filter(id => !allSelected.includes(id));
 
   if (available.length === 0) return null;
 

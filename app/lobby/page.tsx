@@ -2,15 +2,14 @@
 
 import { useEffect, useState, Suspense } from "react"
 import Image from "next/image"
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from "next/navigation"
 import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { Badge } from "@/components/ui/badge"
 import { LobbyHub } from "@/components/lobby/lobby-hub"
 import { LobbyRoom } from "@/components/lobby/lobby-room" // New import
 import type { Lobby, Draft, Profile } from "@/lib/types/draft" // New import
 import { isDemoMode } from "@/lib/demo/auth" // New import
 import { createClient } from "@/lib/supabase/client" // New import
+import MatrixBackground from "@/components/matrix-background"
 
 function LobbyPageContent() {
   const searchParams = useSearchParams();
@@ -75,21 +74,39 @@ function LobbyPageContent() {
             setIsHost(currentIsHost);
 
             // Always set hostProfile and guestProfile for demo mode based on lobby data
-            setHostProfile({ id: parsedLobby.host_id, username: parsedLobby.host_id === currentUserId ? currentUsername : "Demo Host" });
-
-            if (parsedLobby.guest_id) {
-                setGuestProfile({ id: parsedLobby.guest_id, username: parsedLobby.guest_id === currentUserId ? currentUsername : "Demo Guest" });
-            } else {
-                // If no guest is explicitly set in demo lobby data, create a placeholder if current user is host
-                if (currentIsHost) {
-                    setGuestProfile({ id: "demo-guest-001", username: "Simulated Guest" });
-                } else {
-                    // If current user is guest but no guest_id on lobby, means they are waiting for host to become guest.
-                    // Or if current user is not host and no guest_id, then there is no guest.
-                    setGuestProfile(null); // Explicitly null if no guest in demo data
-                }
-            }
-          } else {
+            setHostProfile({
+              id: parsedLobby.host_id,
+              username: parsedLobby.host_id === currentUserId ? currentUsername : "Demo Host",
+              avatar_url: null,
+              favorite_civs: [],
+              favorite_maps: [],
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+                        if (parsedLobby.guest_id) {
+                            setGuestProfile({ 
+                              id: parsedLobby.guest_id, 
+                              username: parsedLobby.guest_id === currentUserId ? currentUsername : "Demo Guest",
+                              avatar_url: null,
+                              favorite_civs: [],
+                              favorite_maps: [],
+                              created_at: new Date().toISOString(),
+                              updated_at: new Date().toISOString()
+                            });
+                        } else if (isDemo) {
+                            // In demo mode, if no guest, simulate one after a delay
+                            setTimeout(() => {
+                                setGuestProfile({ 
+                                  id: "demo-user-002", 
+                                  username: "Simulated Guest",
+                                  avatar_url: null,
+                                  favorite_civs: [],
+                                  favorite_maps: [],
+                                  created_at: new Date().toISOString(),
+                                  updated_at: new Date().toISOString()
+                                });
+                            }, 2000);
+                        }          } else {
             // If no demo lobby data, redirect to main lobby page
             router.push("/lobby");
             return;
@@ -174,11 +191,12 @@ function LobbyPageContent() {
 
   // If no lobbyId, render the main LobbyHub for creating/joining
   return (
-    <div className="h-screen w-full bg-[#020202] text-white overflow-hidden flex flex-col relative">
+    <div className="min-h-screen w-full bg-[#020202] text-white flex flex-col relative">
+      <MatrixBackground />
       <Navbar />
       
-      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-32 pb-10">
-        <div className="w-full max-w-4xl">
+      <main className="flex-1 relative z-10 w-full flex flex-col items-center justify-start px-6 pt-32 pb-24">
+        <div className="w-full max-w-4xl mx-auto">
           <LobbyHub userId={userId} username={username} />
         </div>
       </main>

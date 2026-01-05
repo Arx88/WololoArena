@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-01-04T02:32:40.253Z",
+  "civilization": "Goths",
+  "selectorImage": "/images/civs/goths_shield.png",
+  "sidebarData": {
+    "teamBonus": "Barracks work 20% faster",
+    "bonuses": [
+      "Infantry cost -20-35%",
+      "Population cap +10"
+    ]
+  },
+  "uniqueUnit": {
+    "visible": true,
+    "tooltip": {
+      "name": "Huscarle",
+      "stats": "VIDA\n60\nATAQUE\n10\nARMOR\n0/6\nVEL.\n1.05\nVISIÓN\n3"
+    }
+  }
+}

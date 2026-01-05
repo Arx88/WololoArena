@@ -39,7 +39,11 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+      const isScrolled = window.scrollY > 20
+      setScrolled(prev => {
+        if (prev !== isScrolled) return isScrolled
+        return prev
+      })
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
@@ -158,14 +162,14 @@ export function Navbar() {
     { href: "/tournaments", label: t("tournaments"), icon: Trophy },
     { href: "/lobby", label: t("draft"), icon: Swords },
     { href: "/team-builder", label: t("tgBuilder"), icon: Users },
-    { href: "/techtree", label: "Tech Tree", icon: LayoutGrid },
-    { href: "/civilizations/units", label: "Unique Units", icon: Shield },
-    { href: "/university", label: "Wololo University", icon: GraduationCap },
+    { href: "/techtree", label: t("techTree"), icon: LayoutGrid },
+    { href: "/civilizations/units", label: t("uniqueUnits"), icon: Shield },
+    { href: "/university", label: t("wololoUniversity"), icon: GraduationCap },
   ]
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col font-sans">
-      <nav className={cn("relative z-20 border-b border-yellow-900/50 bg-zinc-950/95 backdrop-blur-md shadow-2xl")}>
+      <nav className={cn("relative z-20 border-b border-yellow-900/50 bg-[#050505] shadow-2xl")}>
         <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent" />
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-8 px-6 relative">
           <Link href="/" className="flex items-center gap-4 group shrink-0">
@@ -198,7 +202,7 @@ export function Navbar() {
             <div className="flex items-center gap-4 pl-6 border-l border-white/10 h-10">
               <LanguageSwitcher />
               {user ? (
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 pl-2 pr-4 bg-zinc-900 border border-white/10 hover:border-yellow-500/50 rounded-lg group transition-all">
                       <Avatar className="h-6 w-6 mr-2">
@@ -207,21 +211,21 @@ export function Navbar() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col items-start text-left">
-                        <span className="text-[10px] font-bold text-zinc-300 uppercase leading-none">{user?.username || "Commander"}</span>
-                        <span className="text-[8px] text-yellow-600 font-bold uppercase">{user?.isDemo ? "Demo" : "Online"}</span>
+                        <span className="text-[10px] font-bold text-zinc-300 uppercase leading-none">{user?.username || t("commander")}</span>
+                        <span className="text-[8px] text-yellow-600 font-bold uppercase">{user?.isDemo ? t("demo") : t("online")}</span>
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border border-yellow-500/20 text-zinc-300 rounded-xl p-2">
+                  <DropdownMenuContent align="end" className="w-56 bg-zinc-950 border border-yellow-500/20 text-zinc-300 rounded-xl p-2" collisionPadding={10}>
                       <DropdownMenuItem asChild className="focus:bg-yellow-950/30 focus:text-yellow-400 rounded-lg cursor-pointer">
-                        <Link href="/profile" className="flex items-center gap-3 py-2">
+                        <Link href="/profile" className="flex items-center gap-3 py-2" prefetch={false}>
                           <User className="h-4 w-4" />
                           <span className="font-bold text-xs uppercase">{t("myProfile")}</span>
                         </Link>
                       </DropdownMenuItem>
                       {isAdmin && (
                         <DropdownMenuItem asChild className="focus:bg-yellow-950/30 focus:text-yellow-400 rounded-lg cursor-pointer">
-                          <Link href="/admin" className="flex items-center gap-3 py-2">
+                          <Link href="/admin" className="flex items-center gap-3 py-2" prefetch={false}>
                             <Settings className="h-4 w-4" />
                             <span className="font-bold text-xs uppercase">{t("adminPanel")}</span>
                           </Link>

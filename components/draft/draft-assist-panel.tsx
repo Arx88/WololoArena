@@ -44,7 +44,7 @@ export function DraftAssistPanel({
   const foundMap = currentMap ? MAPS.find(m => m.id === currentMap) : null;
 
   return (
-    <div className="w-full bg-yellow-500/5 border-y border-white/10 backdrop-blur-md overflow-hidden">
+    <div className="w-full bg-black/40 border-y border-white/5 backdrop-blur-md overflow-hidden">
       <div className="max-w-[1800px] mx-auto px-8 py-4 flex items-center gap-10">
         {/* Label - Taller and more defined */}
         <div className="flex items-center gap-3 shrink-0 border-r border-white/10 pr-10 mr-2">

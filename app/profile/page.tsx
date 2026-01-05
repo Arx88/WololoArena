@@ -158,10 +158,9 @@ export default function ProfilePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#020202] text-white">
-      <Navbar />
       <main className="flex-1">
         {/* Cinematic Header */}
-        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
+        <section className="relative h-[45vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-40">
           <div className="absolute inset-0 z-0">
             <Image src="/images/Hero.png" alt="Profile" fill className="object-cover opacity-40 grayscale-[0.5] brightness-110" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/60 to-transparent" />
@@ -188,7 +187,6 @@ export default function ProfilePage() {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

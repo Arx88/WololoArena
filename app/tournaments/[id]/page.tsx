@@ -3,8 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -152,10 +150,10 @@ export default function TournamentPage({ params }: TournamentPageProps) {
         }
         const { data: participantsData } = await supabase.from("tournament_participants").select("*").eq("tournament_id", currentId).order("seed", { ascending: true })
         if (participantsData && participantsData.length > 0) {
-          const userIds = participantsData.map((p) => p.user_id).filter(Boolean)
+          const userIds = participantsData.map((p: TournamentParticipant) => p.user_id).filter(Boolean)
           const { data: profilesData } = await supabase.from("profiles").select("*").in("id", userIds)
-          const profilesMap = new Map(profilesData?.map((p) => [p.id, p]) || [])
-          setParticipants(participantsData.map((p) => ({ ...p, profile: profilesMap.get(p.user_id) || undefined })))
+          const profilesMap = new Map(profilesData?.map((p: Profile) => [p.id, p]) || [])
+          setParticipants(participantsData.map((p: TournamentParticipant) => ({ ...p, profile: profilesMap.get(p.user_id) || undefined })))
         }
         const { data: matchesData } = await supabase.from("tournament_matches").select("*").eq("tournament_id", currentId).order("round", { ascending: true })
         if (matchesData) setMatches(matchesData)
@@ -203,7 +201,9 @@ export default function TournamentPage({ params }: TournamentPageProps) {
     if (!tournament) return
     setIsChangingStatus(true)
     if (isDemo) {
-      toast({ title: "Demo Mode", description: "Tournament deletion is simulated." })
+      const { deleteDemoTournament } = await import("@/lib/demo/demo-data")
+      deleteDemoTournament(tournament.id)
+      toast({ title: "Arena Collapsed", description: "Demo tournament removed from local memory." })
       router.push("/tournaments")
       return
     }
@@ -250,15 +250,22 @@ export default function TournamentPage({ params }: TournamentPageProps) {
         const player2 = sortedParticipants[numParticipants - 1 - i]
         newMatches.push({
           id: `match-${Date.now()}-${i}`,
-          tournament_id: tournament.id,
+          tournament_id: id,
           round: 1,
           match_number: i + 1,
           bracket_type: "winners",
-          player1_id: player1?.user_id || null,
-          player2_id: player2?.user_id || null,
+          player1_id: player1 ? player1.user_id : null,
+          player2_id: player2 ? player2.user_id : null,
+          winner_id: null,
+          draft_id: null,
+          lobby_id: null,
           player1_score: 0,
           player2_score: 0,
           status: player1 && player2 ? "ready" : "pending",
+          scheduled_at: null,
+          completed_at: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
       }
 
@@ -268,15 +275,22 @@ export default function TournamentPage({ params }: TournamentPageProps) {
         for (let m = 0; m < matchesInRound; m++) {
           newMatches.push({
             id: `match-${Date.now()}-${round}-${m}`,
-            tournament_id: tournament.id,
-            round,
+            tournament_id: id,
+            round: round,
             match_number: m + 1,
             bracket_type: "winners",
             player1_id: null,
             player2_id: null,
+            winner_id: null,
+            draft_id: null,
+            lobby_id: null,
             player1_score: 0,
             player2_score: 0,
             status: "pending",
+            scheduled_at: null,
+            completed_at: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           })
         }
       }
@@ -364,11 +378,9 @@ export default function TournamentPage({ params }: TournamentPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#020202] text-white">
-      <Navbar />
-      
       <main className="flex-1">
         {/* Cinematic Header - FIXED CENTERING */}
-        <section className="relative h-[55vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-20">
+        <section className="relative h-[55vh] flex items-center justify-center overflow-hidden border-b border-yellow-500/20 pt-40">
           <div className="absolute inset-0 z-0">
             <Image src={tournament.banner_image || "/images/Hero.png"} alt="Tournament Header" fill className="object-cover opacity-40 grayscale-[0.5] brightness-110 transition-all duration-1000" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-[#020202]/60 to-transparent" />
@@ -506,8 +518,6 @@ export default function TournamentPage({ params }: TournamentPageProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      <Footer />
     </div>
   )
 }

@@ -13,7 +13,6 @@ export function ProfileHeader({ profile, isOwn }: { profile: any, isOwn: boolean
 
   return (
     <Card className="bg-[#0a0a0b]/80 border-2 border-yellow-500/20 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.8)] relative">
-      <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-10 pointer-events-none" />
       <div className="h-32 w-full bg-gradient-to-r from-yellow-600/20 via-yellow-900/40 to-black/20" />
       
       <CardContent className="px-10 pb-10 -mt-16 relative z-10">

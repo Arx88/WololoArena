@@ -193,7 +193,6 @@ export default function JoinTournamentPage({ params }: JoinTournamentPageProps) 
   if (error || !tournament) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Navbar />
         <main className="flex-1 pt-16 flex items-center justify-center">
           <Card className="max-w-md w-full mx-4">
             <CardContent className="pt-6 text-center">
@@ -205,7 +204,6 @@ export default function JoinTournamentPage({ params }: JoinTournamentPageProps) 
             </CardContent>
           </Card>
         </main>
-        <Footer />
       </div>
     )
   }
@@ -228,7 +226,6 @@ export default function JoinTournamentPage({ params }: JoinTournamentPageProps) 
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Navbar />
       <main className="flex-1 pt-16 flex items-center justify-center p-4">
         <Card className="max-w-lg w-full stone-texture">
           <CardHeader className="text-center">
@@ -324,7 +321,6 @@ export default function JoinTournamentPage({ params }: JoinTournamentPageProps) 
           </CardContent>
         </Card>
       </main>
-      <Footer />
     </div>
   )
 }

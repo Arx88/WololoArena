@@ -79,46 +79,46 @@ export default function DraftPage({ params }: DraftPageProps) {
       const demoMode = isDemoMode()
       const isDemoId = isDemoLobbyId(id)
 
-      if (demoMode || isDemoId) {
-        let settings = DEMO_SETTINGS
-        const savedLobbyData = localStorage.getItem(`demo_lobby_data_${id}`) || localStorage.getItem("demo_lobby_data")
-        if (savedLobbyData) {
-          try {
-            const parsed = JSON.parse(savedLobbyData)
-            if (parsed.settings) {
-              settings = parsed.settings
-            }
-          } catch (e) {
-            console.log("[v0] DraftPage: Error parsing saved lobby data")
-          }
-        }
-
-        const startPhase = getStartingPhase(settings)
-        const coinFlipWinner = settings.enable_coin_flip ? (Math.random() > 0.5 ? DEMO_USER.id : DEMO_OPPONENT.id) : null
-
-        let initialTurn: string | null = null
-        if (startPhase === "coin_flip") {
-          initialTurn = DEMO_USER.id // Host handles coin flip
-        } else if (startPhase !== "map_random" && startPhase !== "mode_roll" && startPhase !== "completed") {
-          // If no coin flip, host starts by default or based on first step
-          initialTurn = DEMO_USER.id
-        }
+      if (isDemoMode()) {
+        const storedLobby = localStorage.getItem(`demo_lobby_data_${id}`);
+        const parsedStoredLobby = storedLobby ? JSON.parse(storedLobby) : null;
 
         const demoLobby: Lobby = {
-          id,
-          code: "AOE2GG",
-          host_id: DEMO_USER.id,
-          guest_id: DEMO_OPPONENT.id,
+          id: id,
+          code: parsedStoredLobby?.code || "DEMO01",
+          host_id: "demo-user-001",
+          guest_id: "demo-user-002",
           status: "drafting",
-          settings,
+          visibility: "public",
+          settings: parsedStoredLobby?.settings || {
+            ban_time: 30,
+            pick_time: 30,
+            civ_bans: 3,
+            civ_picks: 1,
+            map_bans: 2,
+            map_picks: 1,
+            civ_pool: "all",
+            map_pool: ["arabia", "arena", "black_forest", "islands", "nomad", "gold_rush", "hideout"],
+            game_modes: ["Random Map"],
+            enable_civ_bans: true,
+            enable_civ_picks: true,
+            enable_map_bans: true,
+            enable_game_mode_roll: true,
+            map_mode: "ban_until_one"
+          },
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
 
+        const startPhase = parsedStoredLobby?.settings?.enable_coin_flip ? "coin_flip" : "map_ban";
+        const initialTurn = startPhase === "coin_flip" ? null : "demo-user-001";
+        const coinWinner = startPhase === "coin_flip" ? (Math.random() > 0.5 ? "demo-user-001" : "demo-user-002") : null;
+
         const demoDraft: Draft = {
-          id: `draft-${id}`,
+          id: "demo-draft",
           lobby_id: id,
-          current_phase: startPhase,
+          current_phase: startPhase as any,
+          current_step_index: 0,
           current_turn: initialTurn,
           phase_end_time: new Date(Date.now() + 30000).toISOString(),
           host_civ_bans: [],
@@ -132,10 +132,11 @@ export default function DraftPage({ params }: DraftPageProps) {
           host_home_map: null,
           guest_home_map: null,
           final_map: null,
+          neutral_map: null,
           selected_game_mode: null,
           turn_number: 0,
-          current_step_index: 0,
-          coin_flip_winner: coinFlipWinner,
+          coin_flip_winner: coinWinner, 
+          first_picker: coinWinner,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         }
@@ -143,9 +144,9 @@ export default function DraftPage({ params }: DraftPageProps) {
         setPageData({
           lobby: demoLobby,
           draft: demoDraft,
-          userId: DEMO_USER.id,
-          hostProfile: DEMO_HOST_PROFILE,
-          guestProfile: DEMO_GUEST_PROFILE,
+          userId: "demo-user-001",
+          hostProfile: { id: "demo-user-001", username: "Admin", avatar_url: null, favorite_civs: [], favorite_maps: [], created_at: "", updated_at: "" },
+          guestProfile: { id: "demo-user-002", username: "Opponent", avatar_url: null, favorite_civs: [], favorite_maps: [], created_at: "", updated_at: "" },
           isHost: true,
         })
         setIsLoading(false)
@@ -196,8 +197,8 @@ export default function DraftPage({ params }: DraftPageProps) {
       const userIds = [lobby.host_id, lobby.guest_id].filter(Boolean)
       const { data: profiles } = await supabase.from("profiles").select("*").in("id", userIds)
 
-      const hostProfile = profiles?.find((p) => p.id === lobby.host_id) || null
-      const guestProfile = profiles?.find((p) => p.id === lobby.guest_id) || null
+      const hostProfile = profiles?.find((p: Profile) => p.id === lobby.host_id) || null
+      const guestProfile = profiles?.find((p: Profile) => p.id === lobby.guest_id) || null
 
       setPageData({
         lobby,

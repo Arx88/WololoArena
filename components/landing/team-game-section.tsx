@@ -31,14 +31,14 @@ export function TeamGameSection() {
                 {/* Synergy Core */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-primary/20 rounded-full flex flex-col items-center justify-center bg-[#0a0a0b]/80 backdrop-blur-xl z-10 shadow-[0_0_40px_rgba(var(--primary),0.1)]">
                    <Users className="h-10 w-10 text-primary mb-2 opacity-80" />
-                   <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Sinergy Core</p>
+                   <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{t("synergyCore")}</p>
                 </div>
 
                 {/* Floating Asset Icons (Representing Team Members) */}
                 {[
-                  { icon: Shield, label: "POCKET", pos: "top-0 left-1/2 -translate-x-1/2", color: "text-primary" },
-                  { icon: Target, label: "FLANK_A", pos: "bottom-10 left-0", color: "text-primary/60" },
-                  { icon: Crown, label: "FLANK_B", pos: "bottom-10 right-0", color: "text-primary/60" },
+                  { icon: Shield, label: t("pocketPos"), pos: "top-0 left-1/2 -translate-x-1/2", color: "text-primary" },
+                  { icon: Target, label: t("flankAPos"), pos: "bottom-10 left-0", color: "text-primary/60" },
+                  { icon: Crown, label: t("flankBPos"), pos: "bottom-10 right-0", color: "text-primary/60" },
                 ].map((member, i) => (
                   <div key={member.label} className={cn("absolute flex flex-col items-center gap-3 animate-float", member.pos)} style={{ animationDelay: `${i * 1.2}s` }}>
                      <div className="h-20 w-20 bg-[#0a0a0b] border border-white/10 flex items-center justify-center relative group">
@@ -66,7 +66,7 @@ export function TeamGameSection() {
             <div className="flex flex-col items-start border-l-4 border-primary pl-8 mb-12">
               <div className="flex items-center gap-3 mb-4">
                 <Users className="h-3.5 w-3.5 text-primary" />
-                <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">SCOUTING INTEL // TEAM SYNERGY</span>
+                <span className="text-[10px] font-mono font-bold text-primary tracking-[0.4em] uppercase">{t("scoutingIntel")}</span>
               </div>
               
               <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white uppercase italic mb-6 overflow-visible">

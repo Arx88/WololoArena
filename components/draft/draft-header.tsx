@@ -6,6 +6,7 @@ import { SpectatorCounter } from "./spectator-counter"
 import { NotificationSettings, type NotificationSettingsState } from "./notification-settings"
 import { MAPS } from "@/lib/data/maps"
 import { useLanguage } from "@/lib/i18n/language-context"
+import { cn } from "@/lib/utils"
 
 interface DraftHeaderProps {
   phase: string
@@ -37,53 +38,52 @@ export function DraftHeader({
   const foundMapName = foundMap?.name;
 
   return (
-    <header className="relative z-50 border-b border-border/50 bg-card/50 backdrop-blur-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <Image src="/images/logo-mini.png" alt="AOE2 Wololo Arena" width={32} height={32} className="h-8 w-auto" />
-          <span className="font-semibold text-primary">AOE2 Wololo Arena</span>
-        </Link>
-
-        <div className="flex flex-col items-center">
-          <h1 className="text-lg font-bold">{phase}</h1>
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+    <div className="relative z-50 border-b border-white/10 bg-black/80 backdrop-blur-2xl shadow-2xl">
+      <div className="mx-auto flex h-24 w-full items-center justify-between px-12">
+        
+        {/* Left: Draft Metadata */}
+        <div className="flex items-center gap-8">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] leading-none">Session ID</span>
+            <span className="text-sm font-mono font-bold text-white/80 tracking-widest leading-none uppercase">
+              {draftId?.substring(0, 8) || "LOCAL-SIM"}
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {onNotificationSettingsChange && onRequestNotificationPermission && (
-            <NotificationSettings
-              onSettingsChange={onNotificationSettingsChange}
-              permissionGranted={notificationPermissionGranted}
-              onRequestPermission={onRequestNotificationPermission}
-            />
+        {/* Center: Instruction / Phase */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none w-full max-w-2xl">
+          <h1 className="text-4xl font-black uppercase italic tracking-[0.15em] text-white font-cinzel leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+            {phase}
+          </h1>
+          <p className={cn(
+            "text-xs font-bold uppercase tracking-[0.5em] mt-3 transition-colors duration-300",
+            isMyTurn ? "text-yellow-500 animate-pulse" : "text-white/40"
+          )}>
+            {isMyTurn ? "Action Required" : "Awaiting Strategy"}
+          </p>
+        </div>
+
+        {/* Right: User Status & Tools */}
+        <div className="flex items-center gap-8">
+          {draftId && visibility === "public" && (
+            <div className="flex items-center gap-3 px-4 py-2 bg-white/[0.03] border border-white/10 rounded-xl hover:bg-white/[0.05] transition-colors">
+               <SpectatorCounter draftId={draftId} visibility={visibility} />
+            </div>
           )}
-          <Badge variant="outline" className="gap-1.5 hidden sm:flex">
-            {visibility === "public" ? (
-              <>
-                <Globe className="h-3 w-3" />
-                <span>{t("public")}</span>
-              </>
-            ) : (
-              <>
-                <Lock className="h-3 w-3" />
-                <span>{t("private")}</span>
-              </>
+
+          <div className="flex items-center gap-6">
+            {onNotificationSettingsChange && onRequestNotificationPermission && (
+              <NotificationSettings
+                onSettingsChange={onNotificationSettingsChange}
+                permissionGranted={notificationPermissionGranted}
+                onRequestPermission={onRequestNotificationPermission}
+              />
             )}
-          </Badge>
-          {draftId && visibility === "public" && <SpectatorCounter draftId={draftId} visibility={visibility} />}
-          {isMyTurn ? (
-            <Badge className="animate-pulse-gold gap-1 bg-primary text-primary-foreground">
-              <Swords className="h-3 w-3" />
-              {t("yourTurnBadge")}
-            </Badge>
-          ) : (
-            <Badge variant="secondary" className="gap-1">
-              <Swords className="h-3 w-3" />
-              {t("turnOfBadge", { name: currentTurnName || t("opponent") })}
-            </Badge>
-          )}
+          </div>
         </div>
+
       </div>
-    </header>
+    </div>
   )
 }

@@ -4,10 +4,14 @@ import Link from "next/link"
 import Image from "next/image"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { Github, Twitter, Youtube, Trophy, Shield, Info } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 export function Footer() {
+  const pathname = usePathname()
   const { t } = useLanguage()
   const currentYear = new Date().getFullYear()
+
+  if (pathname?.startsWith("/techtree") || pathname?.startsWith("/draft")) return null
 
   return (
     <footer className="bg-[#020202] border-t border-white/5 pt-20 pb-10 relative overflow-hidden">
@@ -24,8 +28,7 @@ export function Footer() {
               <span className="text-2xl font-black tracking-tighter text-white uppercase italic">Wololo Arena</span>
             </Link>
             <p className="text-white/40 text-sm font-light italic leading-relaxed max-w-sm mb-8">
-              La plataforma de mando definitiva para la competición profesional de Age of Empires II. 
-              Estrategia, análisis y torneos en un ecosistema táctico unificado.
+              {t("brandDesc")}
             </p>
             <div className="flex gap-5">
               {[Twitter, Github, Youtube].map((Icon, i) => (
@@ -39,7 +42,7 @@ export function Footer() {
           {/* Links Columns */}
           <div className="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
             <div className="flex flex-col gap-6">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Operaciones</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{t("operations")}</span>
               <div className="flex flex-col gap-4">
                 {[
                   { label: t("draft"), href: "/lobby" },
@@ -54,11 +57,11 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-6">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Plataforma</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{t("platform")}</span>
               <div className="flex flex-col gap-4">
                 {[
                   { label: t("profile"), href: "/profile" },
-                  { label: "Estadísticas", href: "/civilizations" },
+                  { label: t("stats"), href: "/civilizations" },
                   { label: "Leaderboard", href: "/lobby" }
                 ].map(link => (
                   <Link key={link.label} href={link.href} className="text-xs font-mono text-white/30 hover:text-white transition-colors uppercase tracking-widest italic">
@@ -69,15 +72,15 @@ export function Footer() {
             </div>
 
             <div className="flex flex-col gap-6 col-span-2 sm:col-span-1">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Estado</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">{t("status")}</span>
               <div className="px-4 py-3 bg-white/[0.02] border border-white/5 flex flex-col gap-2">
                  <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 bg-green-500 rounded-full shadow-[0_0_8px_#22c55e]" />
-                    <span className="text-[9px] font-mono text-green-500/80 uppercase">All Systems Live</span>
+                    <span className="text-[9px] font-mono text-green-500/80 uppercase">{t("allSystemsLive")}</span>
                  </div>
                  <div className="flex items-center gap-2">
                     <div className="h-1.5 w-1.5 bg-primary/50 rounded-full" />
-                    <span className="text-[9px] font-mono text-white/30 uppercase">v2.4.0 Competitive</span>
+                    <span className="text-[9px] font-mono text-white/30 uppercase">{t("competitiveVersion")}</span>
                  </div>
               </div>
             </div>
@@ -89,7 +92,7 @@ export function Footer() {
           <div className="flex items-center gap-4 text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]">
             <span>© {currentYear} Wololo Arena</span>
             <span className="hidden sm:block opacity-50">|</span>
-            <span className="hidden sm:block">Tactical Strategic Hub</span>
+            <span className="hidden sm:block">{t("tacticalHub")}</span>
           </div>
           <div className="flex items-center gap-6">
              <span className="text-[9px] font-mono text-white/10 uppercase italic">

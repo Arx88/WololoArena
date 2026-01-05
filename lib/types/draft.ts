@@ -156,7 +156,7 @@ export type MatchStatus = "pending" | "ready" | "in_progress" | "completed"
 export interface Tournament {
   id: string
   name: string
-  description: string | null
+  description?: string | null
   format: TournamentFormat
   status: TournamentStatus
   visibility: Visibility

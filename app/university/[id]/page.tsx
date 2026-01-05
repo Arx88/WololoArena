@@ -184,9 +184,8 @@ export default function QuizPage() {
     <div className="min-h-screen bg-[#020202] text-white flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--primary),0.05)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.02] pointer-events-none" />
-      <Navbar />
 
-      <main className="flex-1 flex flex-col pt-28 pb-12 px-6 relative z-10">
+      <main className="flex-1 flex flex-col pt-40 pb-12 px-6 relative z-10">
         <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col">
           
           <div className="flex items-center justify-between mb-12">

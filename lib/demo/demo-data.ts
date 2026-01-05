@@ -1,7 +1,18 @@
 // Demo data storage for full functionality in demo mode
 // All data is stored in localStorage and simulates real database operations
 
-import type { Profile, Tournament, TournamentParticipant, TournamentMatch, TournamentPrizes, TournamentCaster } from "@/lib/types/draft"
+import type {
+  Tournament,
+  TournamentParticipant,
+  TournamentMatch,
+  Lobby,
+  Draft,
+  Profile,
+  LobbySettings,
+  TournamentPrizes,
+  MatchHistory,
+  TournamentCaster
+} from "@/lib/types/draft"
 import type { CivilizationConfig, MapConfig, GameModeConfig } from "@/lib/types/admin"
 
 const DEMO_TOURNAMENTS_KEY = "demo_tournaments"
@@ -86,7 +97,23 @@ export const DEFAULT_DEMO_TOURNAMENTS: Tournament[] = [
     max_participants: 32,
     created_by: "demo-user-001",
     start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    settings: { ban_time: 30, pick_time: 45, civ_bans: 3, civ_picks: 1 },
+    end_date: null,
+    settings: { 
+      ban_time: 30, 
+      pick_time: 45, 
+      civ_bans: 3, 
+      civ_picks: 1,
+      map_bans: 1,
+      map_picks: 1,
+      civ_pool: "all",
+      map_pool: ["arabia", "arena"],
+      game_modes: ["Random Map"],
+      enable_civ_bans: true,
+      enable_civ_picks: true,
+      enable_map_bans: true,
+      enable_game_mode_roll: true,
+      map_mode: "ban_until_one"
+    },
     prizes: DEFAULT_PRIZES,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
@@ -101,7 +128,23 @@ export const DEFAULT_DEMO_TOURNAMENTS: Tournament[] = [
     max_participants: 16,
     created_by: "demo-user-001",
     start_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-    settings: { ban_time: 30, pick_time: 45, civ_bans: 2, civ_picks: 1 },
+    end_date: null,
+    settings: { 
+      ban_time: 30, 
+      pick_time: 45, 
+      civ_bans: 2, 
+      civ_picks: 1,
+      map_bans: 1,
+      map_picks: 1,
+      civ_pool: "all",
+      map_pool: ["arabia", "arena"],
+      game_modes: ["Random Map"],
+      enable_civ_bans: true,
+      enable_civ_picks: true,
+      enable_map_bans: true,
+      enable_game_mode_roll: true,
+      map_mode: "ban_until_one"
+    },
     prizes: {
       enabled: true,
       prize_count: 2,
@@ -123,7 +166,23 @@ export const DEFAULT_DEMO_TOURNAMENTS: Tournament[] = [
     max_participants: 8,
     created_by: "demo-user-001",
     start_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-    settings: { ban_time: 45, pick_time: 60, civ_bans: 4, civ_picks: 2 },
+    end_date: null,
+    settings: { 
+      ban_time: 45, 
+      pick_time: 60, 
+      civ_bans: 4, 
+      civ_picks: 2,
+      map_bans: 2,
+      map_picks: 1,
+      civ_pool: "all",
+      map_pool: ["arabia", "arena", "islands"],
+      game_modes: ["Random Map", "Empire Wars"],
+      enable_civ_bans: true,
+      enable_civ_picks: true,
+      enable_map_bans: true,
+      enable_game_mode_roll: true,
+      map_mode: "ban_until_one"
+    },
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -139,6 +198,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 1,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p2",
@@ -148,6 +208,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 2,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p3",
@@ -157,6 +218,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 3,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p4",
@@ -165,6 +227,8 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       status: "pending",
       seed: 4,
       invited_at: new Date().toISOString(),
+      confirmed_at: null,
+      created_at: new Date().toISOString(),
     },
   ],
   "demo-tournament-2": [
@@ -176,6 +240,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 1,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p6",
@@ -185,6 +250,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 2,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
   ],
   "demo-tournament-3": [
@@ -196,6 +262,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 1,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p8",
@@ -205,6 +272,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 2,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p9",
@@ -214,6 +282,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 3,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
     {
       id: "p10",
@@ -223,6 +292,7 @@ export const DEFAULT_DEMO_PARTICIPANTS: Record<string, TournamentParticipant[]> 
       seed: 4,
       invited_at: new Date().toISOString(),
       confirmed_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     },
   ],
 }
@@ -327,40 +397,43 @@ export const DEFAULT_DEMO_PROFILES: Profile[] = [
 ]
 
 export const DEFAULT_DEMO_CIVS: CivilizationConfig[] = [
-  { id: "civ-1", name: "Britons", icon_url: "/britons-medieval-castle.jpg", is_active: true },
-  { id: "civ-2", name: "Franks", icon_url: "/franks-knight-cavalry.jpg", is_active: true },
-  { id: "civ-3", name: "Mayans", icon_url: "/mayan-pyramid-temple.jpg", is_active: true },
-  { id: "civ-4", name: "Chinese", icon_url: "/chinese-dynasty-pagoda.jpg", is_active: true },
-  { id: "civ-5", name: "Mongols", icon_url: "/mongol-warrior-horse.jpg", is_active: true },
-  { id: "civ-6", name: "Vikings", icon_url: "/viking-longship-warrior.jpg", is_active: true },
-  { id: "civ-7", name: "Aztecs", icon_url: "/aztec-eagle-warrior-temple.jpg", is_active: true },
-  { id: "civ-8", name: "Huns", icon_url: "/hun-cavalry-warrior.jpg", is_active: true },
-  { id: "civ-9", name: "Persians", icon_url: "/persian-war-elephant.jpg", is_active: true },
-  { id: "civ-10", name: "Byzantines", icon_url: "/byzantine-cataphract.jpg", is_active: true },
-  { id: "civ-11", name: "Japanese", icon_url: "/samurai-warrior-castle.jpg", is_active: true },
-  { id: "civ-12", name: "Turks", icon_url: "/turkish-janissary-cannon.jpg", is_active: true },
+  { id: "civ-1", name: "Britons", expansion: "base", specialty: "Foot Archers", icon: "/images/civs/britons_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-2", name: "Franks", expansion: "base", specialty: "Cavalry", icon: "/images/civs/franks_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-3", name: "Mayans", expansion: "conquerors", specialty: "Archers", icon: "/images/civs/mayans_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-4", name: "Chinese", expansion: "base", specialty: "Archers", icon: "/images/civs/chinese_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-5", name: "Mongols", expansion: "base", specialty: "Cavalry Archers", icon: "/images/civs/mongols_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-6", name: "Vikings", expansion: "base", specialty: "Infantry & Naval", icon: "/images/civs/vikings_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-7", name: "Aztecs", expansion: "conquerors", specialty: "Infantry", icon: "/images/civs/aztecs_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-8", name: "Huns", expansion: "conquerors", specialty: "Cavalry", icon: "/images/civs/huns_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-9", name: "Persians", expansion: "base", specialty: "Cavalry", icon: "/images/civs/persians_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-10", name: "Byzantines", expansion: "base", specialty: "Defense", icon: "/images/civs/byzantines_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-11", name: "Japanese", expansion: "base", specialty: "Infantry", icon: "/images/civs/japanese_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "civ-12", name: "Turks", expansion: "base", specialty: "Gunpowder", icon: "/images/civs/turks_shield.png", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 export const DEFAULT_DEMO_MAPS: MapConfig[] = [
-  { id: "map-1", name: "Arabia", icon_url: "/desert-oasis-map.jpg", is_active: true, pool: "standard" },
-  { id: "map-2", name: "Arena", icon_url: "/walled-arena-map.jpg", is_active: true, pool: "standard" },
-  { id: "map-3", name: "Black Forest", icon_url: "/dense-forest-map.jpg", is_active: true, pool: "standard" },
-  { id: "map-4", name: "Islands", icon_url: "/placeholder.svg?height=64&width=64", is_active: true, pool: "water" },
-  { id: "map-5", name: "Nomad", icon_url: "/placeholder.svg?height=64&width=64", is_active: true, pool: "special" },
+  { id: "map-1", name: "Arabia", category: "land", description: "Open land map", image: "/desert-oasis-map.jpg", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "map-2", name: "Arena", category: "land", description: "Walled map", image: "/walled-arena-map.jpg", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "map-3", name: "Black Forest", category: "land", description: "Closed forest map", image: "/dense-forest-map.jpg", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "map-4", name: "Islands", category: "water", description: "Naval focused map", image: "/placeholder.svg", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "map-5", name: "Nomad", category: "special", description: "Scatter start", image: "/placeholder.svg", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
   {
     id: "map-6",
     name: "Runestones",
-    icon_url: "/placeholder.svg?height=64&width=64",
+    category: "land",
+    description: "Open land map",
+    image: "/placeholder.svg",
     is_active: true,
-    pool: "standard",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
   },
 ]
 
 export const DEFAULT_DEMO_MODES: GameModeConfig[] = [
-  { id: "mode-1", name: "Random Map", is_active: true },
-  { id: "mode-2", name: "Empire Wars", is_active: true },
-  { id: "mode-3", name: "Death Match", is_active: true },
-  { id: "mode-4", name: "Regicide", is_active: true },
+  { id: "mode-1", name: "Random Map", description: "Standard AoE2 mode", icon: "Swords", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mode-2", name: "Empire Wars", description: "Fast start mode", icon: "Zap", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mode-3", name: "Death Match", description: "Infinite resources", icon: "Skull", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mode-4", name: "Regicide", description: "Kill the king", icon: "Crown", is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ]
 
 // Helper functions for localStorage operations
@@ -395,6 +468,12 @@ export function getDemoTournament(id: string): Tournament | null {
   return tournaments.find((t) => t.id === id) || null
 }
 
+export function deleteDemoTournament(id: string): void {
+  const tournaments = getDemoTournaments()
+  const filtered = tournaments.filter((t) => t.id !== id)
+  setItem(DEMO_TOURNAMENTS_KEY, filtered)
+}
+
 export function createDemoTournament(tournament: Partial<Tournament>): Tournament {
   const tournaments = getDemoTournaments()
   const newTournament: Tournament = {
@@ -407,7 +486,22 @@ export function createDemoTournament(tournament: Partial<Tournament>): Tournamen
     max_participants: tournament.max_participants || 8,
     created_by: tournament.created_by || "demo-user-001",
     start_date: tournament.start_date || null,
-    settings: tournament.settings || { ban_time: 30, pick_time: 45, civ_bans: 3, civ_picks: 1 },
+    settings: tournament.settings || { 
+      ban_time: 30, 
+      pick_time: 45, 
+      civ_bans: 3, 
+      civ_picks: 1,
+      map_bans: 1,
+      map_picks: 1,
+      civ_pool: "all",
+      map_pool: ["arabia", "arena"],
+      game_modes: ["Random Map"],
+      enable_civ_bans: true,
+      enable_civ_picks: true,
+      enable_map_bans: true,
+      enable_game_mode_roll: true,
+      map_mode: "ban_until_one"
+    },
     prizes: tournament.prizes,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),

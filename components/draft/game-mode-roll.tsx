@@ -7,9 +7,10 @@ import { Dices } from "lucide-react"
 interface GameModeRollProps {
   selectedMode: string | null
   gameModes: string[]
+  onRevealComplete?: () => void
 }
 
-export function GameModeRoll({ selectedMode, gameModes }: GameModeRollProps) {
+export function GameModeRoll({ selectedMode, gameModes, onRevealComplete }: GameModeRollProps) {
   const [displayMode, setDisplayMode] = useState(gameModes[0])
   const [isRolling, setIsRolling] = useState(true)
 
@@ -28,13 +29,18 @@ export function GameModeRoll({ selectedMode, gameModes }: GameModeRollProps) {
       clearInterval(interval)
       setDisplayMode(selectedMode)
       setIsRolling(false)
+      
+      // Notify parent after a delay to allow reading
+      if (onRevealComplete) {
+        setTimeout(onRevealComplete, 3000)
+      }
     }, 2000)
 
     return () => {
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [selectedMode, gameModes])
+  }, [selectedMode, gameModes, onRevealComplete])
 
   const mode = getGameModeById(displayMode)
 

@@ -66,7 +66,7 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
     random_map: true, empire_wars: true, death_match: false, regicide: false, king_of_the_hill: false, wonder_race: false,
   })
 
-  const skipMapPool = settings.map_settings.mode === "disabled"
+  const skipMapPool = settings.map_settings?.mode === "disabled"
   const isAdmin = settings.is_admin_created
 
   const nextStep = useCallback(() => {
@@ -111,7 +111,12 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
     
     setIsLoading(true)
     const activeModes = Object.entries(selectedModes).filter(([, active]) => active).map(([id]) => id)
-    const finalSettings = { ...settings, map_pool: settings.map_settings.pool, game_modes: activeModes, map_mode: settings.map_settings.mode }
+    const finalSettings = { 
+      ...settings, 
+      map_pool: settings.map_settings?.pool || [], 
+      game_modes: activeModes, 
+      map_mode: settings.map_settings?.mode || "random" 
+    }
 
     if (isDemoMode()) {
       const fakeId = `demo-${Date.now()}`
@@ -160,7 +165,7 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="px-8 pb-8 pt-4 max-h-[60vh] overflow-y-auto custom-scrollbar flex flex-col">
+      <CardContent className="px-8 pb-8 pt-4 flex flex-col">
         <form onSubmit={handleCreateLobby} className="flex-1 flex flex-col">
           <div className="flex-1 space-y-8">
             {step === 1 && (
@@ -214,13 +219,13 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
 
             {step === 4 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <MapSettingsPanel view="mode" settings={settings.map_settings} onChange={m => setSettings(s => ({...s, map_settings: m}))} />
+                <MapSettingsPanel view="mode" settings={settings.map_settings!} onChange={m => setSettings(s => ({...s, map_settings: m}))} />
               </div>
             )}
 
             {step === 4.5 && (
               <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-                <MapSettingsPanel view="pool" settings={settings.map_settings} onChange={m => setSettings(s => ({...s, map_settings: m}))} />
+                <MapSettingsPanel view="pool" settings={settings.map_settings!} onChange={m => setSettings(s => ({...s, map_settings: m}))} />
               </div>
             )}
 

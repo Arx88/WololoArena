@@ -29,13 +29,15 @@ export function MapsManager({ maps, onUpdate }: MapsManagerProps) {
   const [search, setSearch] = useState("")
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [editingMap, setEditingMap] = useState<MapConfig | null>(null)
-  const [formData, setFormData] = useState({
-    id: "",
-    name: "",
-    category: "land" as const,
-    description: "",
-    image: "/placeholder.svg?height=120&width=200",
-  })
+  const [formData, setFormData] = useState<{ id: string; name: string; category: "land" | "water" | "hybrid" | "special"; description: string; image: string }>(
+    {
+      id: "",
+      name: "",
+      category: "land",
+      description: "",
+      image: "",
+    },
+  )
   const [isLoading, setIsLoading] = useState(false)
 
   const CATEGORIES = [

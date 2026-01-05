@@ -956,7 +956,7 @@ export const CIVILIZATIONS: Civilization[] = [
   {
     id: "wei",
     name: "Wei",
-    expansion: "dyn dynasties",
+    expansion: "dynasties",
     specialty: "Cavalry",
     icon: "/images/civs/wei_shield.png",
     uniqueUnit: "Tiger Cavalry",
