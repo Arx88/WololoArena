@@ -230,13 +230,13 @@ function LevelCard({ level, index }: { level: UniversityLevel, index: number }) 
       <Link href={`/university/${level.id}`} className="block h-full group">
         <motion.div
           style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          className="h-full p-10 rounded-[2.5rem] bg-[#0a0a0b]/90 border border-white/5 transition-all duration-500 flex flex-col relative overflow-hidden group-hover:border-primary/40 group-hover:bg-[#0d0d0e]"
+          className="h-full p-8 rounded-[2.5rem] bg-[#0a0a0b]/90 border border-white/5 transition-all duration-500 flex flex-col relative overflow-hidden group-hover:border-primary/40 group-hover:bg-[#0d0d0e]"
         >
           {/* Shine Sweep Effect */}
           <div className="absolute inset-0 z-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent pointer-events-none" />
 
           {/* Icon Header */}
-          <div className="flex justify-between items-start mb-12" style={{ transform: "translateZ(40px)" }}>
+          <div className="flex justify-between items-start mb-10" style={{ transform: "translateZ(40px)" }}>
             <div className="relative">
                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                <div className="relative p-4 rounded-2xl bg-white/5 border border-white/10 text-white/40 group-hover:bg-primary group-hover:text-black group-hover:border-primary transition-all duration-500">
@@ -258,11 +258,11 @@ function LevelCard({ level, index }: { level: UniversityLevel, index: number }) 
           </div>
 
           {/* Content */}
-          <div className="space-y-4 mb-12" style={{ transform: "translateZ(30px)" }}>
-            <h3 className="text-3xl font-black italic uppercase tracking-tighter text-white group-hover:text-primary transition-colors leading-none font-cinzel">
+          <div className="space-y-4 mb-10" style={{ transform: "translateZ(30px)" }}>
+            <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter text-white group-hover:text-primary transition-colors leading-tight font-cinzel break-words">
               {level.title}
             </h3>
-            <p className="text-zinc-500 font-medium italic leading-relaxed text-base group-hover:text-zinc-400 transition-colors">
+            <p className="text-zinc-500 font-medium italic leading-relaxed text-sm xl:text-base group-hover:text-zinc-400 transition-colors">
               {level.description}
             </p>
           </div>

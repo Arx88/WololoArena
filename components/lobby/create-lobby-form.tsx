@@ -139,15 +139,15 @@ export function CreateLobbyForm({ userId }: CreateLobbyFormProps) {
   const displayStep = step === 1 ? 1 : (!isAdmin && step >= 3 ? step - 1 : step)
 
   return (
-    <Card className="border-white/10 bg-[#0a0a0b]/80 backdrop-blur-xl shadow-2xl overflow-hidden rounded-2xl">
-      <div className="h-1.5 w-full bg-white/5 flex">
+    <Card className="border-white/10 bg-[#0a0a0b]/80 backdrop-blur-xl shadow-2xl overflow-hidden rounded-2xl min-h-[600px] flex flex-col">
+      <div className="h-1.5 w-full bg-white/5 flex shrink-0">
         {[1, 2, 3, 4, 5].map(i => {
           if (i === 2 && !isAdmin) return null;
           return <div key={i} className={`h-full flex-1 transition-all duration-500 ${step >= i ? "bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]" : "bg-transparent"}`} />
         })}
       </div>
       
-      <CardHeader className="p-8 pb-4">
+      <CardHeader className="p-8 pt-10 pb-6 shrink-0">
         <div className="flex justify-between items-center mb-4">
            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500/60">Phase 0{Math.floor(displayStep)} / 0{isAdmin ? 5 : 4}</span>
            <Badge variant="outline" className="border-white/10 text-[10px] uppercase font-bold text-white/40 tracking-widest px-3">

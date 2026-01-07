@@ -11,7 +11,7 @@ export function Footer() {
   const { t } = useLanguage()
   const currentYear = new Date().getFullYear()
 
-  if (pathname?.startsWith("/techtree") || pathname?.startsWith("/draft")) return null
+  if (pathname?.startsWith("/techtree") || pathname?.startsWith("/draft") || pathname?.includes("/university/")) return null
 
   return (
     <footer className="bg-[#020202] border-t border-white/5 pt-20 pb-10 relative overflow-hidden">

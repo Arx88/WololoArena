@@ -165,7 +165,7 @@ export default function CreateTournamentPage() {
   return (
     <div className="min-h-screen w-full bg-[#020202] text-white flex flex-col relative">
       <MatrixBackground />
-      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-40 pb-20 overflow-y-auto custom-scrollbar">
+      <main className="flex-1 relative z-10 w-full flex items-center justify-center px-6 pt-36 pb-20 overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-3xl">
           <Card className="border-white/10 bg-[#0a0a0b]/80 backdrop-blur-xl shadow-2xl overflow-hidden rounded-3xl">
             <div className="h-1.5 w-full bg-white/5 flex">

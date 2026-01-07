@@ -7,23 +7,17 @@ import { cn } from "@/lib/utils"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { getEntityStats } from "@/lib/data/aoe2-data-provider"
 import { UNIT_DATABASE } from "./unit-database"
+import { calculateDynamicCost } from "@/lib/utils/cost-calculator"
 
 export function UnitTooltip({ unitId, civName }: { unitId: string, civName: string }) {
-
   const { t } = useLanguage()
-
   const stats = getEntityStats(unitId);
-
   const extraData = UNIT_DATABASE[unitId];
-
-
 
   if (!stats && !extraData) return null;
 
-
-
-  const cost = stats?.Cost || extraData?.cost || {};
-
+  const baseCost = stats?.Cost || extraData?.cost || {};
+  const cost = calculateDynamicCost(civName, baseCost, unitId);
   const name = extraData?.name || stats?.internal_name || "Unknown Entity";
 
   const description = extraData?.description || `Estadísticas para ${name}.`;

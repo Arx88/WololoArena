@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { Plus, Trash2, Edit2, EyeOff, ExternalLink, Radio, ChevronDown, Megaphone, Settings2, Save, History, Bell, AlertCircle, GripVertical } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, AnimatePresence, Reorder } from "framer-motion"
+import { motion, AnimatePresence, Reorder, useDragControls } from "framer-motion"
 import { useNews, NewsItem } from "@/lib/news-context"
 import { useLanguage } from "@/lib/i18n/language-context"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,78 @@ import { Badge } from "@/components/ui/badge"
 
 interface NewsTickerProps {
   isAdmin: boolean
+}
+
+interface NewsItemRowProps {
+  item: NewsItem
+  editingId: string | null
+  toggleActive: (id: string) => void
+  startEditing: (item: NewsItem) => void
+  removeNews: (id: string) => void
+}
+
+function NewsItemRow({ item, editingId, toggleActive, startEditing, removeNews }: NewsItemRowProps) {
+  const controls = useDragControls()
+  
+  return (
+    <Reorder.Item 
+      value={item}
+      dragListener={false}
+      dragControls={controls}
+      dragMomentum={false}
+      whileDrag={{ 
+        scale: 1.02, 
+        boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+        zIndex: 100,
+        cursor: "grabbing"
+      }}
+      className={cn(
+        "group relative flex items-center gap-6 p-6 rounded-3xl border transition-all duration-200", // Faster transition for snappier feel
+        editingId === item.id ? "bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(var(--primary),0.1)]" : "bg-white/[0.01] border-white/5 hover:border-white/20"
+      )}
+    >
+      <div 
+        className="text-white/10 group-hover:text-primary/40 transition-colors cursor-grab active:cursor-grabbing p-2 -m-2 touch-none"
+        onPointerDown={(e) => controls.start(e)}
+        style={{ touchAction: "none" }}
+      >
+        <GripVertical className="h-6 w-6" />
+      </div>
+
+      <Button
+        variant="ghost" size="icon"
+        className={cn("h-14 w-14 shrink-0 rounded-2xl transition-all border", item.active ? "text-green-400 bg-green-400/5 border-green-400/20" : "text-white/10 bg-white/5 border-transparent")}
+        onClick={(e) => { e.stopPropagation(); toggleActive(item.id); }}
+      >
+        {item.active ? <Bell className="h-7 w-7" /> : <EyeOff className="h-7 w-7" />}
+      </Button>
+      
+      <div className="flex-1 min-w-0">
+        <p className={cn("text-lg font-black truncate leading-none mb-2", !item.active && "opacity-20 line-through")}>{item.message}</p>
+        <div className="flex items-center gap-4">
+          <span className="text-[9px] text-white/20 font-mono tracking-tighter uppercase">ID: {item.id.slice(-8)}</span>
+          {item.description && <span className="text-[10px] text-primary/40 font-black uppercase tracking-tighter">• Content</span>}
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+        <Button 
+          variant="ghost" size="icon" 
+          onClick={(e) => { e.stopPropagation(); startEditing(item); }} 
+          className="h-11 w-11 text-white/40 hover:text-primary bg-white/5 rounded-xl border border-transparent hover:border-primary/30"
+        >
+          <Edit2 className="h-5 w-5" />
+        </Button>
+        <Button 
+          variant="ghost" size="icon" 
+          onClick={(e) => { e.stopPropagation(); removeNews(item.id); }} 
+          className="h-11 w-11 text-white/10 hover:text-red-400 bg-white/5 rounded-xl border border-transparent hover:border-red-400/30"
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
+      </div>
+    </Reorder.Item>
+  )
 }
 
 export function NewsTicker({ isAdmin }: NewsTickerProps) {
@@ -87,8 +159,10 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
 
   if (activeNews.length === 0 && !isAdmin) return null
 
+  // Create a robust marquee list by repeating items enough times to fill wide screens
+  // We want the total width to be substantial so the -50% translation is smooth and invisible
   const marqueeItems = activeNews.length > 0 
-    ? [...activeNews, ...activeNews].slice(0, 20)
+    ? Array(10).fill(activeNews).flat().slice(0, 40) // Repeat up to 10 times, cap at 40 items
     : []
 
   return (
@@ -115,7 +189,7 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
             </span>
           </div>
 
-          <div className="flex-1 overflow-hidden relative h-full flex items-center translate-z-0">
+          <div className="flex-1 overflow-hidden relative h-full flex items-center translate-z-0 mask-image-linear-gradient">
              {activeNews.length > 0 && isVisible ? (
                <div 
                 className={cn("flex animate-marquee items-center whitespace-nowrap", isTickerHovered && "paused")}
@@ -123,7 +197,8 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                     willChange: "transform",
                     transform: "translate3d(0,0,0)",
                     backfaceVisibility: "hidden",
-                    animationDuration: `${Math.max(30, marqueeItems.length * 10)}s`
+                    // Slower base speed: 10s per item ensures readability even with few items
+                    animationDuration: `${Math.max(40, marqueeItems.length * 8)}s`
                 }}
                >
                  {marqueeItems.map((item, i) => (
@@ -242,54 +317,18 @@ export function NewsTicker({ isAdmin }: NewsTickerProps) {
                           axis="y" 
                           values={news} 
                           onReorder={setNews}
+                          layoutScroll
                           className="flex-1 space-y-4 overflow-y-auto pr-4 custom-scrollbar"
                         >
                           {news.map((item) => (
-                            <Reorder.Item 
-                              key={item.id} 
-                              value={item}
-                              className={cn(
-                                "group relative flex items-center gap-6 p-6 rounded-3xl border transition-all duration-500 cursor-grab active:cursor-grabbing",
-                                editingId === item.id ? "bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(var(--primary),0.1)]" : "bg-white/[0.01] border-white/5 hover:border-white/20"
-                              )}
-                            >
-                              <div className="text-white/10 group-hover:text-primary/40 transition-colors">
-                                <GripVertical className="h-6 w-6" />
-                              </div>
-
-                              <Button
-                                variant="ghost" size="icon"
-                                className={cn("h-14 w-14 shrink-0 rounded-2xl transition-all border", item.active ? "text-green-400 bg-green-400/5 border-green-400/20" : "text-white/10 bg-white/5 border-transparent")}
-                                onClick={(e) => { e.stopPropagation(); toggleActive(item.id); }}
-                              >
-                                {item.active ? <Bell className="h-7 w-7" /> : <EyeOff className="h-7 w-7" />}
-                              </Button>
-                              
-                              <div className="flex-1 min-w-0">
-                                <p className={cn("text-lg font-black truncate leading-none mb-2", !item.active && "opacity-20 line-through")}>{item.message}</p>
-                                <div className="flex items-center gap-4">
-                                  <span className="text-[9px] text-white/20 font-mono tracking-tighter uppercase">ID: {item.id.slice(-8)}</span>
-                                  {item.description && <span className="text-[10px] text-primary/40 font-black uppercase tracking-tighter">• Content</span>}
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                                <Button 
-                                  variant="ghost" size="icon" 
-                                  onClick={(e) => { e.stopPropagation(); startEditing(item); }} 
-                                  className="h-11 w-11 text-white/40 hover:text-primary bg-white/5 rounded-xl border border-transparent hover:border-primary/30"
-                                >
-                                  <Edit2 className="h-5 w-5" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" size="icon" 
-                                  onClick={(e) => { e.stopPropagation(); removeNews(item.id); }} 
-                                  className="h-11 w-11 text-white/10 hover:text-red-400 bg-white/5 rounded-xl border border-transparent hover:border-red-400/30"
-                                >
-                                  <Trash2 className="h-5 w-5" />
-                                </Button>
-                              </div>
-                            </Reorder.Item>
+                            <NewsItemRow
+                              key={item.id}
+                              item={item}
+                              editingId={editingId}
+                              toggleActive={toggleActive}
+                              startEditing={startEditing}
+                              removeNews={removeNews}
+                            />
                           ))}
                           
                           {news.length === 0 && (

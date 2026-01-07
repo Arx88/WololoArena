@@ -195,7 +195,7 @@ function LobbyPageContent() {
       <MatrixBackground />
       <Navbar />
       
-      <main className="flex-1 relative z-10 w-full flex flex-col items-center justify-start px-6 pt-32 pb-24">
+      <main className="flex-1 relative z-10 w-full flex flex-col items-center justify-center px-6 pt-36 pb-12">
         <div className="w-full max-w-4xl mx-auto">
           <LobbyHub userId={userId} username={username} />
         </div>

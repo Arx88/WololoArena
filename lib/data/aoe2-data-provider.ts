@@ -1,22 +1,20 @@
+
 import fullData from './aoe2-data.json';
 
-// Type definitions based on the SiegeEngineers data structure
 interface Aoe2Data {
     civ_names: Record<string, string>;
-    civ_helptexts: Record<string, string>;
     techtrees: Record<string, CivTechTree>;
     data: {
-        buildings: Record<string, EntityData>;
-        units: Record<string, EntityData>;
-        techs: Record<string, EntityData>;
+        buildings: Record<string, any>;
+        units: Record<string, any>;
+        techs: Record<string, any>;
     };
-    meta: any;
 }
 
 interface CivTechTree {
-    buildings: number[];
-    units: number[];
-    techs: number[];
+    buildings: { id: number, age: number }[];
+    units: { id: number, age: number }[];
+    techs: { id: number, age: number }[];
     unique: {
         castleAgeUniqueUnit: number;
         imperialAgeUniqueUnit: number;
@@ -25,88 +23,65 @@ interface CivTechTree {
     };
 }
 
-interface EntityData {
-    internal_name: string;
-    ID: number;
-    Cost: {
-        Food?: number;
-        Wood?: number;
-        Gold?: number;
-        Stone?: number;
-    };
-    HP?: number;
-    Attack?: number;
-    MeleeArmor?: number;
-    PierceArmor?: number;
-    Range?: number;
-    LineOfSight?: number;
-    Speed?: number;
-    ReloadTime?: number;
-    TrainTime?: number;
-    AttackDelay?: number;
-    FrameDelay?: number;
-}
-
 const DATA = fullData as unknown as Aoe2Data;
 
-// --- PUBLIC API ---
-
 /**
- * Checks if a specific tech/unit/building ID is available for a civilization.
+ * Gets the availability AND the actual age of a unit/tech for a specific civ.
  */
-export function isIdAvailable(civName: string, id: string | number, type: 'unit' | 'tech' | 'building' | 'unique_unit' | 'unique_tech'): boolean {
-    // Map lowercase app names to capitalized JSON keys
+export function getEntityAvailability(civName: string, id: string | number, type: string): { available: boolean, age: number | null } {
     const civKey = civName.charAt(0).toUpperCase() + civName.slice(1).toLowerCase();
     const tree = DATA.techtrees[civKey];
     
-    if (!tree) return true; 
+    if (!tree) return { available: true, age: null };
 
-    // Extract numeric ID
     let numId = typeof id === 'string' ? parseInt(id.replace('b_', '').replace('_tech', '').replace('_sie', '').replace('_ship', '').replace('_farm', ''), 10) : id;
-    if (isNaN(numId)) return true;
+    if (isNaN(numId)) return { available: true, age: null };
 
-    // Strict category check to avoid ID collisions
-    // The official JSON uses arrays of objects like [{ age: 1, id: 12 }, ...]
-    if (type === 'building') return tree.buildings.some((b: any) => b.id === numId);
-    
-    // Check if it matches any unique unit/tech ID directly
-    if (Object.values(tree.unique).includes(numId)) return true;
+    // 1. Unique Units/Techs
+    if (Object.values(tree.unique).includes(numId)) {
+        const isElite = numId === tree.unique.imperialAgeUniqueUnit;
+        const isImperialTech = numId === tree.unique.imperialAgeUniqueTech;
+        return { available: true, age: (isElite || isImperialTech) ? 4 : 3 };
+    }
 
-    if (type === 'unit' || type === 'unique_unit') return tree.units.some((u: any) => u.id === numId);
-    if (type === 'tech' || type === 'unique_tech') return tree.techs.some((t: any) => t.id === numId);
+    // 2. Check in specific arrays
+    const findIn = (arr: { id: number, age: number }[]) => arr.find(i => i.id === numId);
 
-    return true;
+    if (type === 'building') {
+        const b = findIn(tree.buildings) || findIn(tree.units as any); // Some unique buildings are in units
+        return { available: !!b, age: b ? b.age : null };
+    }
+
+    if (type.includes('unit')) {
+        const u = findIn(tree.units);
+        return { available: !!u, age: u ? u.age : null };
+    }
+
+    if (type.includes('tech')) {
+        const t = findIn(tree.techs);
+        return { available: !!t, age: t ? t.age : null };
+    }
+
+    return { available: true, age: null };
 }
 
-/**
- * Retrieves the full statistics for a unit, building, or technology.
- */
-export function getEntityStats(id: string | number): EntityData | null {
+export function isIdAvailable(civName: string, id: string | number, type: string): boolean {
+    return getEntityAvailability(civName, id, type).available;
+}
+
+export function getEntityStats(id: string | number): any | null {
     const numId = typeof id === 'string' ? parseInt(id.replace('b_', ''), 10) : id;
-    
-    if (DATA.data.units[numId]) return DATA.data.units[numId];
-    if (DATA.data.buildings[numId]) return DATA.data.buildings[numId];
-    if (DATA.data.techs[numId]) return DATA.data.techs[numId];
-    
-    return null;
+    return DATA.data.units[numId] || DATA.data.buildings[numId] || DATA.data.techs[numId] || null;
 }
 
-/**
- * Gets the Unique Unit ID for a civ (Castle Age or Imperial Age).
- */
 export function getUniqueUnitId(civName: string, elite: boolean = false): number | null {
     const civKey = civName.charAt(0).toUpperCase() + civName.slice(1).toLowerCase();
     const tree = DATA.techtrees[civKey];
-    if (!tree) return null;
-    return elite ? tree.unique.imperialAgeUniqueUnit : tree.unique.castleAgeUniqueUnit;
+    return tree ? (elite ? tree.unique.imperialAgeUniqueUnit : tree.unique.castleAgeUniqueUnit) : null;
 }
 
-/**
- * Gets the Unique Tech ID for a civ (Castle or Imperial).
- */
 export function getUniqueTechId(civName: string, imperial: boolean = false): number | null {
     const civKey = civName.charAt(0).toUpperCase() + civName.slice(1).toLowerCase();
     const tree = DATA.techtrees[civKey];
-    if (!tree) return null;
-    return imperial ? tree.unique.imperialAgeUniqueTech : tree.unique.castleAgeUniqueTech;
+    return tree ? (imperial ? tree.unique.imperialAgeUniqueTech : tree.unique.castleAgeUniqueTech) : null;
 }
